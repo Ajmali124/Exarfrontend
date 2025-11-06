@@ -1,0 +1,190 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model User {
+  id            String    @id
+  name          String    @db.Text
+  email         String
+  username      String?   @unique
+  emailVerified Boolean   @default(false)
+  image         String?   @db.Text
+  inviteCode    String?   @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+
+  // Relations
+  userBalances    UserBalance[]
+  invitedMembers  InvitedMember[] @relation("Sponsor")
+  inviteeRecords  InvitedMember[] @relation("Invitee")
+  transactions    TransactionRecord[]
+  stakingEntries  StakingEntry[]
+  
+  @@unique([email])
+  @@map("user")
+  
+}
+
+model InvitedMember {
+  id        String @id @default(uuid())
+  sponsor   User   @relation("Sponsor", fields: [sponsorId], references: [id], onDelete: Cascade)
+  invitee   User   @relation("Invitee", fields: [userId], references: [id], onDelete: Cascade)
+
+  sponsorId String // The user who did the inviting
+  userId    String // The user who was invited
+  firstName String
+  lastName  String
+  email     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sponsorId])
+  @@index([userId])
+  @@map("invited_member")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?  @db.Text
+  userAgent String?  @db.Text
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+  @@index([userId])
+}
+
+model Account {
+  id                    String    @id
+  accountId             String    @db.Text
+  providerId            String    @db.Text
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  idToken               String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?   @db.Text
+  password              String?   @db.Text
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+  @@index([userId])
+}
+
+model Verification {
+  id         String   @id
+  identifier String   @db.Text
+  value      String   @db.Text
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@map("verification")
+}
+
+model UserBalance {
+  id   String @id @default(uuid())
+  user User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  userId              String @unique
+  balance             Float  @default(0)
+  onStaking           Float  @default(0)
+  maxEarn             Float  @default(0)
+  dailyEarning        Float  @default(0)
+  teamEarning         Float  @default(0)
+  earningWithdraw     Float  @default(0)
+  latestEarning       Float  @default(0)
+  teamEarningWithdraw Float  @default(0)
+  missedEarnings      Float  @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("user_balance")
+}
+
+model TransactionRecord {
+  id          String   @id @default(uuid())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  
+  type        String   // 'deposit', 'withdrawal', 'transfer', 'reward', etc.
+  amount      Float
+  currency    String   @default("USDT")
+  status      String   // 'pending', 'completed', 'failed', 'cancelled'
+  description String?  @db.Text
+  
+  // Optional fields for tracking
+  transactionHash String? @db.Text
+  fromAddress     String? @db.Text
+  toAddress       String? @db.Text
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+  @@map("transaction_record")
+}
+
+model StakingEntry {
+  id          String   @id @default(uuid())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  
+  // Package information
+  packageName String   // e.g., 'Bronze Node', 'Silver Node', etc.
+  packageId   Int      // Package ID (1-7)
+  
+  amount      Float
+  currency    String   @default("USDT")
+  
+  // ROI and cap tracking
+  dailyROI    Float    // Daily ROI percentage (e.g., 0.8 for 0.8%)
+  cap         Float    // Maximum earning multiplier (e.g., 1.8 for 180%)
+  maxEarning  Float    // Maximum earning = amount * cap
+  totalEarned Float    @default(0) // Total earned so far
+  
+  // Status tracking
+  status      String   @default("active") // 'active', 'unstaking', 'completed', 'cancelled'
+  
+  // Dates
+  startDate   DateTime @default(now())
+  unstakeRequestedDate DateTime? // When user requested unstake
+  cooldownEndDate DateTime?      // When cooldown ends (3 days after unstake request)
+  endDate     DateTime?          // When stake was completed
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([startDate])
+  @@index([packageId])
+  @@map("staking_entry")
+}
+

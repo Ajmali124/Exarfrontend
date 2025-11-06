@@ -1,0 +1,4 @@
+---
+alwaysApply: true
+---
+Read my trpc configuration and alway use it for server side and cliend side data layer 
