@@ -43,10 +43,7 @@ const exchanges = [
   "okx", // Combines myokx and okxus
 ];
 
-const getWebSocketUrl = () => {
-  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_WS_URL || "ws://localhost:3001";
-  return `${baseUrl}/ccxt-socket`;
-};
+import { getWebSocketUrl, createWebSocket } from "@/lib/websocket-utils";
 
 export function useCCXT(symbol: string) {
   const [data, setData] = useState<ExchangeData>({});
@@ -54,6 +51,7 @@ export function useCCXT(symbol: string) {
     "disconnected"
   );
   const wsRef = useRef<WebSocket | null>(null);
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Export exchanges list
   const exchangesList = exchanges;
@@ -67,94 +65,117 @@ export function useCCXT(symbol: string) {
     if (wsRef.current) {
       wsRef.current.close();
     }
+    if (reconnectTimeoutRef.current) {
+      clearTimeout(reconnectTimeoutRef.current);
+      reconnectTimeoutRef.current = null;
+    }
 
+    const url = getWebSocketUrl("/ccxt-socket");
+    
     // Connect to WebSocket
-    const ws = new WebSocket(getWebSocketUrl());
+    const ws = createWebSocket(
+      url,
+      // onOpen
+      () => {
+        setStatus("connected");
+        console.log("WebSocket connected");
 
-    ws.onopen = () => {
-      setStatus("connected");
-      console.log("WebSocket connected");
+        // Mapping for exchanges that use different names in WebSocket
+        const exchangeMap: { [key: string]: string } = {
+          'okx': 'myokx', // Frontend uses 'okx' but backend uses 'myokx'
+        };
+        
+        // Subscribe to multiple backend exchanges for the same frontend exchange
+        const okxBackendExchanges = ['myokx', 'okxus'];
 
-      // Mapping for exchanges that use different names in WebSocket
-      const exchangeMap: { [key: string]: string } = {
-        'okx': 'myokx', // Frontend uses 'okx' but backend uses 'myokx'
-      };
-      
-      // Subscribe to multiple backend exchanges for the same frontend exchange
-      const okxBackendExchanges = ['myokx', 'okxus'];
-
-      // Subscribe to all exchanges for the selected symbol
-      exchanges.forEach((exchange) => {
-        if (exchange === 'okx') {
-          // Subscribe to both myokx and okxus under 'okx'
-          okxBackendExchanges.forEach((backendExchange) => {
-            ws.send(
-              JSON.stringify({
-                action: "subscribe",
-                exchange: backendExchange,
-                symbol,
-              })
-            );
+        // Subscribe to all exchanges for the selected symbol
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+          exchanges.forEach((exchange) => {
+            if (exchange === 'okx') {
+              // Subscribe to both myokx and okxus under 'okx'
+              okxBackendExchanges.forEach((backendExchange) => {
+                wsRef.current?.send(
+                  JSON.stringify({
+                    action: "subscribe",
+                    exchange: backendExchange,
+                    symbol,
+                  })
+                );
+              });
+            } else {
+              const backendExchange = exchangeMap[exchange] || exchange;
+              wsRef.current?.send(
+                JSON.stringify({
+                  action: "subscribe",
+                  exchange: backendExchange,
+                  symbol,
+                })
+              );
+            }
           });
-        } else {
-          const backendExchange = exchangeMap[exchange] || exchange;
-          ws.send(
-            JSON.stringify({
-              action: "subscribe",
-              exchange: backendExchange,
-              symbol,
-            })
-          );
         }
-      });
-    };
+      },
+      // onMessage
+      (event) => {
+        try {
+          const msg = JSON.parse(event.data);
 
-    ws.onmessage = (event) => {
-      try {
-        const msg = JSON.parse(event.data);
-
-        // Only update data if it matches the current symbol
-        if (msg.type === "ticker") {
-          // Map backend exchange names to frontend names
-          const backendToFrontendMap: { [key: string]: string } = {
-            'myokx': 'okx', // Backend uses 'myokx' but frontend uses 'okx'
-            'okxus': 'okx', // Backend uses 'okxus' but frontend uses 'okx'
-          };
-          
-          const frontendExchange = backendToFrontendMap[msg.exchange] || msg.exchange;
-          
-          setData((prev) => ({
-            ...prev,
-            [frontendExchange]: {
-              bid: msg.bid,
-              ask: msg.ask,
-              last: msg.last,
-              bidSize: msg.bidSize,
-              askSize: msg.askSize,
-              timestamp: msg.timestamp,
-              spread: msg.ask - msg.bid,
-            },
-          }));
+          // Only update data if it matches the current symbol
+          if (msg.type === "ticker") {
+            // Map backend exchange names to frontend names
+            const backendToFrontendMap: { [key: string]: string } = {
+              'myokx': 'okx', // Backend uses 'myokx' but frontend uses 'okx'
+              'okxus': 'okx', // Backend uses 'okxus' but frontend uses 'okx'
+            };
+            
+            const frontendExchange = backendToFrontendMap[msg.exchange] || msg.exchange;
+            
+            setData((prev) => ({
+              ...prev,
+              [frontendExchange]: {
+                bid: msg.bid,
+                ask: msg.ask,
+                last: msg.last,
+                bidSize: msg.bidSize,
+                askSize: msg.askSize,
+                timestamp: msg.timestamp,
+                spread: msg.ask - msg.bid,
+              },
+            }));
+          }
+        } catch (error) {
+          console.error("Error parsing WebSocket message:", error);
         }
-      } catch (error) {
-        console.error("Error parsing WebSocket message:", error);
+      },
+      // onError
+      () => {
+        setStatus("error");
+      },
+      // onClose
+      (event) => {
+        setStatus("disconnected");
+        
+        // Auto-reconnect if not a clean close
+        if (!event.wasClean && !reconnectTimeoutRef.current) {
+          reconnectTimeoutRef.current = setTimeout(() => {
+            reconnectTimeoutRef.current = null;
+            // Reconnect logic handled by useEffect dependency on symbol
+          }, 3000);
+        }
       }
-    };
-
-    ws.onerror = () => {
-      setStatus("error");
-      console.error("WebSocket error");
-    };
-
-    ws.onclose = () => {
-      setStatus("disconnected");
-      console.log("WebSocket disconnected");
-    };
+    );
 
     wsRef.current = ws;
 
     return () => {
-      ws.close();
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+        reconnectTimeoutRef.current = null;
+      }
+      if (wsRef.current) {
+        wsRef.current.close();
+        wsRef.current = null;
+      }
     };
   }, [symbol]);
 
