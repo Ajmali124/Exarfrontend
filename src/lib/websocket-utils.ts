@@ -19,15 +19,12 @@ export function getWebSocketUrl(path: string = "/ccxt-socket"): string {
   // If on HTTPS and using ws://, convert to wss://
   if (isHttps && baseUrl.startsWith("ws://")) {
     baseUrl = baseUrl.replace("ws://", "wss://");
-    console.log("🔒 Converting ws:// to wss:// for HTTPS connection");
   }
   
   // Ensure path starts with /
   const cleanPath = path.startsWith("/") ? path : `/${path}`;
   
   const fullUrl = `${baseUrl}${cleanPath}`;
-  
-  console.log("🔌 WebSocket URL:", fullUrl);
   
   return fullUrl;
 }
@@ -50,7 +47,6 @@ export function createWebSocket(
   onClose?: (event: CloseEvent) => void
 ): WebSocket | null {
   if (!isWebSocketSupported()) {
-    console.error("❌ WebSocket is not supported in this browser");
     return null;
   }
 
@@ -58,7 +54,6 @@ export function createWebSocket(
     const ws = new WebSocket(url);
     
     ws.onopen = () => {
-      console.log("✅ WebSocket connected:", url);
       onOpen?.();
     };
     
@@ -67,27 +62,15 @@ export function createWebSocket(
     };
     
     ws.onerror = (error) => {
-      console.error("❌ WebSocket error:", error);
-      console.error("URL:", url);
-      console.error("Possible causes:");
-      console.error("1. Backend server is not running");
-      console.error("2. CORS/Mixed content issue (ws:// from HTTPS)");
-      console.error("3. Firewall blocking connection");
       onError?.(error);
     };
     
     ws.onclose = (event) => {
-      console.log("❌ WebSocket closed:", {
-        code: event.code,
-        reason: event.reason,
-        wasClean: event.wasClean,
-      });
       onClose?.(event);
     };
     
     return ws;
   } catch (error) {
-    console.error("❌ Failed to create WebSocket:", error);
     return null;
   }
 }

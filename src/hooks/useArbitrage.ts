@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef } from "react";
 import { getWebSocketUrl, createWebSocket } from "@/lib/websocket-utils";
-import { logWebSocketDiagnostics } from "@/lib/websocket-diagnostics";
 
 interface ArbitrageOpportunity {
   id: string;
@@ -69,7 +68,7 @@ export function useArbitrage() {
             setOpportunities(itemsWithIds);
           }
         } catch (error) {
-          console.error("Error parsing arbitrage WebSocket message:", error);
+          // Silently handle parsing errors
         }
       },
       // onError
@@ -85,14 +84,10 @@ export function useArbitrage() {
           reconnectAttempts.current += 1;
           const delay = Math.min(1000 * Math.pow(2, reconnectAttempts.current), 30000);
           
-          console.log(`🔄 Reconnecting in ${delay}ms (attempt ${reconnectAttempts.current}/${maxReconnectAttempts})...`);
-          
           reconnectTimeoutRef.current = setTimeout(() => {
             reconnectTimeoutRef.current = null;
             connect();
           }, delay);
-        } else if (reconnectAttempts.current >= maxReconnectAttempts) {
-          console.error("❌ Max reconnection attempts reached. Please check your backend server.");
         }
       }
     );
@@ -104,9 +99,6 @@ export function useArbitrage() {
     setOpportunities([]);
     setStatus("disconnected");
     reconnectAttempts.current = 0;
-
-    // Log diagnostics on first mount
-    logWebSocketDiagnostics("/ccxt-socket");
 
     connect();
 

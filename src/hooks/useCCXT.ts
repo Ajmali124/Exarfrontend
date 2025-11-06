@@ -78,7 +78,6 @@ export function useCCXT(symbol: string) {
       // onOpen
       () => {
         setStatus("connected");
-        console.log("WebSocket connected");
 
         // Mapping for exchanges that use different names in WebSocket
         const exchangeMap: { [key: string]: string } = {
@@ -144,7 +143,7 @@ export function useCCXT(symbol: string) {
             }));
           }
         } catch (error) {
-          console.error("Error parsing WebSocket message:", error);
+          // Silently handle parsing errors
         }
       },
       // onError

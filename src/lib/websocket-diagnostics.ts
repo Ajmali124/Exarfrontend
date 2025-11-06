@@ -68,27 +68,14 @@ export function diagnoseWebSocketConnection(path: string = "/ccxt-socket"): WebS
 }
 
 export function logWebSocketDiagnostics(path: string = "/ccxt-socket"): void {
+  // Diagnostics function kept for potential future debugging
+  // All console logs removed for production
   const diag = diagnoseWebSocketConnection(path);
   
-  console.group("🔍 WebSocket Diagnostics");
-  console.log("Browser Support:", diag.isSupported ? "✅ Yes" : "❌ No");
-  console.log("Current Protocol:", diag.currentProtocol);
-  console.log("Is HTTPS:", diag.isHttps ? "✅ Yes" : "❌ No");
-  console.log("Environment URL:", diag.envUrl);
-  console.log("Final WebSocket URL:", diag.finalUrl);
-  
-  if (diag.issues.length > 0) {
-    console.group("⚠️ Issues Found");
-    diag.issues.forEach((issue) => console.error(issue));
-    console.groupEnd();
+  // Silently store diagnostics if needed for error reporting
+  if (diag.issues.length > 0 && typeof window !== "undefined") {
+    // Store in window for debugging if absolutely necessary
+    // (window as any).__wsDiagnostics = diag;
   }
-  
-  if (diag.recommendations.length > 0) {
-    console.group("💡 Recommendations");
-    diag.recommendations.forEach((rec) => console.log(rec));
-    console.groupEnd();
-  }
-  
-  console.groupEnd();
 }
 
