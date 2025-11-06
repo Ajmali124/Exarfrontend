@@ -60,7 +60,7 @@ const MainCrypto = () => {
             
             <div className="space-y-1">
               <div className="text-gray-900 dark:text-white text-sm sm:text-lg font-bold">
-                {btcprice ? `$${parseFloat(btcprice).toLocaleString()}` : "--"}
+                {btcprice ? `$${btcprice.toLocaleString()}` : "--"}
               </div>
               <div className={`text-xs sm:text-sm font-medium ${btcPercentChange >= 0 ? "text-green-500" : "text-red-500"}`}>
                 {btcPercentChange !== null ? `${btcPercentChange >= 0 ? "+" : ""}${btcPercentChange.toFixed(2)}%` : "--"}
@@ -93,7 +93,7 @@ const MainCrypto = () => {
             
             <div className="space-y-1">
               <div className="text-gray-900 dark:text-white text-sm sm:text-lg font-bold">
-                {ethPrice ? `$${parseFloat(ethPrice).toLocaleString()}` : "--"}
+                {ethPrice ? `$${ethPrice.toLocaleString()}` : "--"}
               </div>
               <div className={`text-xs sm:text-sm font-medium ${ethPercentChange >= 0 ? "text-green-500" : "text-red-500"}`}>
                 {ethPercentChange !== null ? `${ethPercentChange >= 0 ? "+" : ""}${ethPercentChange.toFixed(2)}%` : "--"}
@@ -128,7 +128,7 @@ const MainCrypto = () => {
               <div className="text-gray-900 dark:text-white text-sm sm:text-lg font-bold">
                 {solPrice ? `$${solPrice.toLocaleString()}` : "--"}
               </div>
-              <div className={`text-xs sm:text-sm font-medium ${solPercentChange >= 0 ? "text-green-500" : "text-red-500"}`}>
+              <div className={`text-xs sm:text-sm font-medium ${solPercentChange !== null && solPercentChange >= 0 ? "text-green-500" : "text-red-500"}`}>
                 {solPercentChange !== null ? `${solPercentChange >= 0 ? "+" : ""}${solPercentChange.toFixed(2)}%` : "--"}
               </div>
             </div>

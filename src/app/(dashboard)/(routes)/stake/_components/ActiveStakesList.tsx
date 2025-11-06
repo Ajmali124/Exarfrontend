@@ -60,7 +60,7 @@ const ActiveStakesList = () => {
     completeUnstakeMutation.mutate({ stakeId });
   };
 
-  const getRemainingCooldown = (cooldownEndDate: Date | null) => {
+  const getRemainingCooldown = (cooldownEndDate: Date | string | null) => {
     if (!cooldownEndDate) return null;
     const now = new Date();
     const end = new Date(cooldownEndDate);
