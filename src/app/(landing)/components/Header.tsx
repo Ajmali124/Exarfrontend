@@ -11,7 +11,13 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("En");
+  const [mounted, setMounted] = useState(false);
   const { theme, toggleTheme } = useTheme();
+
+  // Prevent hydration mismatch by only rendering theme-dependent content after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const languages = [
     { code: "En", name: "English" },
@@ -182,8 +188,12 @@ export default function Header() {
               transition={{ duration: 0.3 }}
               aria-label="Toggle theme"
             >
-              {theme === "dark" ? (
-                <Sun className="w-4 h-4" />
+              {mounted ? (
+                theme === "dark" ? (
+                  <Sun className="w-4 h-4" />
+                ) : (
+                  <Moon className="w-4 h-4" />
+                )
               ) : (
                 <Moon className="w-4 h-4" />
               )}
@@ -333,8 +343,12 @@ export default function Header() {
                   transition={{ duration: 0.3 }}
                   aria-label="Toggle theme"
                 >
-                  {theme === "dark" ? (
-                    <Sun className="w-4 h-4" />
+                  {mounted ? (
+                    theme === "dark" ? (
+                      <Sun className="w-4 h-4" />
+                    ) : (
+                      <Moon className="w-4 h-4" />
+                    )
                   ) : (
                     <Moon className="w-4 h-4" />
                   )}
