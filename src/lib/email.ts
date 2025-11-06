@@ -3,7 +3,9 @@ import { Resend } from 'resend';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const sendVerificationEmail = async (email: string, token: string) => {
-  const domain = process.env.BETTER_AUTH_URL || "http://localhost:3000";
+  // Use BETTER_AUTH_URL, fallback to VERCEL_URL, or localhost for development
+  const domain = process.env.BETTER_AUTH_URL || 
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
   
   const emailHTML = `
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -176,7 +178,7 @@ export const sendVerificationEmail = async (email: string, token: string) => {
   `;
 
   await resend.emails.send({
-    from: "RoohX <onboarding@resend.dev>",
+    from: "RoohX <noreply@exar.online>",
     to: email,
     subject: "🔐 Verify your RoohX account",
     html: emailHTML,
@@ -184,7 +186,9 @@ export const sendVerificationEmail = async (email: string, token: string) => {
 };
 
 export const sendPasswordResetEmail = async (email: string, token: string) => {
-  const domain = process.env.BETTER_AUTH_URL || "http://localhost:3000";
+  // Use BETTER_AUTH_URL, fallback to VERCEL_URL, or localhost for development
+  const domain = process.env.BETTER_AUTH_URL || 
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
   
   const emailHTML = `
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -357,7 +361,7 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
   `;
 
   await resend.emails.send({
-    from: "RoohX <onboarding@resend.dev>",
+    from: "RoohX <noreply@exar.online>",
     to: email,
     subject: "🔑 Reset your RoohX password",
     html: emailHTML,

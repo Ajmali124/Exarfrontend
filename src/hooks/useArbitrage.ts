@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { getWebSocketUrl, createWebSocket } from "@/lib/websocket-utils";
+import { logWebSocketDiagnostics } from "@/lib/websocket-diagnostics";
 
 interface ArbitrageOpportunity {
   id: string;
@@ -103,6 +104,9 @@ export function useArbitrage() {
     setOpportunities([]);
     setStatus("disconnected");
     reconnectAttempts.current = 0;
+
+    // Log diagnostics on first mount
+    logWebSocketDiagnostics("/ccxt-socket");
 
     connect();
 
