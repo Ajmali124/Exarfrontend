@@ -190,7 +190,7 @@ export default function Header() {
             >
               {mounted ? (
                 theme === "dark" ? (
-                  <Sun className="w-4 h-4" />
+                <Sun className="w-4 h-4" />
                 ) : (
                   <Moon className="w-4 h-4" />
                 )
@@ -345,7 +345,7 @@ export default function Header() {
                 >
                   {mounted ? (
                     theme === "dark" ? (
-                      <Sun className="w-4 h-4" />
+                    <Sun className="w-4 h-4" />
                     ) : (
                       <Moon className="w-4 h-4" />
                     )

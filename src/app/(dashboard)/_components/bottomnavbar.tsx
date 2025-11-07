@@ -27,9 +27,9 @@ const routes = [
     href: "/arbify",
   },
   {
-    label: "LeaderBoard",
+    label: "Subscribe",
     icon: Gift,
-    href: "/leaderboard",
+    href: "/stake",
   },
   {
     label: "Wallet",

@@ -1,211 +1,146 @@
 "use client";
 
-import { useState } from "react";
 import * as React from "react";
-import { useThemeClasses } from "@/lib/theme-utils";
-import { SquareStack, TrendingUp } from "lucide-react";
-import { trpc } from "@/trpc/client";
-import PackageCard from "./PackageCard";
-import ActiveStakesList from "./ActiveStakesList";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useState } from "react";
+import { SquareStack, Wallet2 } from "lucide-react";
+
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
+import { trpc } from "@/trpc/client";
+
+import PackageCard from "./PackageCard";
 
 const StakePageContent = () => {
-  const { text, bg, border } = useThemeClasses();
-  const [selectedPackageId, setSelectedPackageId] = useState<number | null>(
-    null
-  );
-  const [api, setApi] = useState<any>();
-  const [current, setCurrent] = useState(0);
+  const [carouselApi, setCarouselApi] = useState<any>();
+  const [currentSlide, setCurrentSlide] = useState(0);
 
-  const { data: packages, isLoading: packagesLoading } =
-    trpc.user.getStakingPackages.useQuery();
+  const { data: packages, isLoading: packagesLoading } = trpc.user.getStakingPackages.useQuery();
   const { data: walletBalance } = trpc.user.getWalletBalance.useQuery();
 
-  // Track carousel position
+  const maxRoi = React.useMemo(() => {
+    if (!packages || packages.length === 0) return 1;
+    return packages.reduce((max, pkg) => Math.max(max, pkg.roi), packages[0].roi);
+  }, [packages]);
+
+  const maxCap = React.useMemo(() => {
+    if (!packages || packages.length === 0) return 1;
+    return packages.reduce((max, pkg) => Math.max(max, pkg.cap), packages[0].cap);
+  }, [packages]);
+
   React.useEffect(() => {
-    if (!api) return;
-    setCurrent(api.selectedScrollSnap());
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap());
+    if (!carouselApi) return;
+    setCurrentSlide(carouselApi.selectedScrollSnap());
+    carouselApi.on("select", () => {
+      setCurrentSlide(carouselApi.selectedScrollSnap());
     });
-  }, [api]);
+  }, [carouselApi]);
 
   return (
-    <div className="w-full p-4 md:p-6 space-y-6">
-      {/* Header */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-3">
-          <div
-            className={`
-              p-3 rounded-xl
-              bg-green-100 dark:bg-purple-500/20
-              text-green-600 dark:text-purple-400
-            `}
-          >
-            <SquareStack className="h-6 w-6" />
+    <div className="relative w-full space-y-6 p-4 pb-14 md:p-6">
+      <div className="absolute inset-x-0 top-0 -z-10 h-[320px] bg-gradient-to-b from-emerald-500/10 via-transparent to-transparent dark:from-purple-600/10" />
+
+      <section className="relative z-10">
+        <Card className="relative overflow-hidden rounded-3xl border border-emerald-500/25 bg-gradient-to-br from-white via-white/70 to-emerald-100/40 p-6 shadow-[0_20px_90px_-60px_rgba(16,185,129,0.45)] backdrop-blur dark:border-purple-500/25 dark:from-neutral-950 dark:via-neutral-950/70 dark:to-purple-900/25">
+          <div className="absolute -top-24 right-0 h-40 w-40 rounded-full bg-emerald-400/25 blur-3xl dark:bg-purple-500/35" />
+          <div className="relative z-10 space-y-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-emerald-600/80 dark:text-purple-100/70">
+                  Wallet
+                </p>
+                <h2 className="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                  Available balance
+                </h2>
+              </div>
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/70 text-emerald-500 shadow-sm dark:bg-white/10 dark:text-purple-200">
+                <Wallet2 className="h-5 w-5" />
+              </span>
+            </div>
+
+            <div>
+              <p className="text-4xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                {(walletBalance?.balance ?? 0).toFixed(2)}
+                <span className="ml-2 text-base font-medium text-gray-500 dark:text-gray-400">USDT</span>
+              </p>
+              <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                Instantly deployable across every staking node.
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className={`text-2xl font-bold ${text.primary}`}>Subscriptions</h1>
-            <p className={`text-sm ${text.secondary}`}>
-              Subscribe to packages and earn daily ROI
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Available Balance Card */}
-      <Card
-        className={cn(
-          bg.card,
-          border.primary,
-          "border p-4"
-        )}
-      >
-        <div className="flex items-center justify-between">
-          <div>
-            <p className={`text-sm ${text.muted} mb-1`}>Available Balance</p>
-            <p className={`text-2xl font-bold ${text.primary}`}>
-              {(walletBalance?.balance ?? 0).toFixed(2)} USDT
-            </p>
-          </div>
-          <div
-            className={`
-              p-3 rounded-lg
-              bg-green-100 dark:bg-purple-500/20
-              text-green-600 dark:text-purple-400
-            `}
-          >
-            <TrendingUp className="h-6 w-6" />
-          </div>
-        </div>
-      </Card>
-
-      {/* Tabs: Packages and Active Stakes */}
-      <Tabs defaultValue="packages" className="w-full">
-        <TabsList
-          className={cn(
-            bg.secondary,
-            "w-full grid grid-cols-2"
-          )}
-        >
-          <TabsTrigger value="packages" className={text.primary}>
-            Packages
-          </TabsTrigger>
-          <TabsTrigger value="stakes" className={text.primary}>
-            Active Subscriptions
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="packages" className="space-y-4 mt-4">
-          {/* Packages - Mobile Carousel / Desktop Grid */}
-          <div>
-            <h2 className={`text-lg font-semibold ${text.primary} mb-4`}>
-              Select a Package to Subscribe
-            </h2>
-            {packagesLoading ? (
-              <>
-                {/* Mobile Skeleton */}
-                <div className="md:hidden">
-                  <Skeleton className="h-80 w-full" />
-                </div>
-                {/* Desktop Skeleton */}
-                <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {Array.from({ length: 9 }).map((_, i) => (
-                    <Skeleton key={i} className="h-80 w-full" />
-                  ))}
-                </div>
-              </>
-            ) : (
-              <>
-                {/* Mobile: Horizontal Carousel */}
-                <div className="md:hidden space-y-4">
-                  <Carousel
-                    setApi={setApi}
-                    opts={{
-                      align: "start",
-                      loop: false,
-                      dragFree: false,
-                      containScroll: "trimSnaps",
-                    }}
-                    className="w-full"
-                  >
-                    <CarouselContent className="-ml-2">
-                      {packages?.map((pkg, index) => (
-                        <CarouselItem
-                          key={pkg.id}
-                          className="pl-2 basis-[92%] sm:basis-[85%]"
-                        >
-                          <PackageCard
-                            pkg={pkg}
-                            isSelected={selectedPackageId === pkg.id}
-                            onSelect={() => setSelectedPackageId(pkg.id)}
-                            walletBalance={walletBalance?.balance ?? 0}
-                          />
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                  </Carousel>
-
-                  {/* Package Indicators */}
-                  <div className="flex items-center justify-center gap-2">
-                    {packages?.map((pkg, index) => (
-                      <button
-                        key={pkg.id}
-                        onClick={() => api?.scrollTo(index)}
-                        className={cn(
-                          "h-2 rounded-full transition-all",
-                          current === index
-                            ? "w-8 bg-green-500 dark:bg-purple-500"
-                            : "w-2 bg-gray-300 dark:bg-neutral-600"
-                        )}
-                        aria-label={`Go to ${pkg.name}`}
-                      />
-                    ))}
-                  </div>
-
-                  {/* Package Quick Info */}
-                  <div className="text-center">
-                    <p className={`text-sm ${text.muted}`}>
-                      {current + 1} of {packages?.length} packages
-                    </p>
-                    {packages && packages[current] && (
-                      <p className={`text-xs ${text.secondary} mt-1`}>
-                        {packages[current].name} •{" "}
-                        {packages[current].amount.toLocaleString()} USDT
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Desktop: Grid Layout */}
-                <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        </Card>
+      </section>
+      <section className="relative z-10 space-y-5">
+        {packagesLoading ? (
+          <>
+            <div className="md:hidden">
+              <Skeleton className="h-80 w-full rounded-3xl" />
+            </div>
+            <div className="hidden gap-5 md:grid md:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <Skeleton key={index} className="h-80 w-full rounded-3xl" />
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="space-y-4 md:hidden">
+              <Carousel
+                setApi={setCarouselApi}
+                opts={{ align: "start", loop: false, dragFree: false, containScroll: "trimSnaps" }}
+                className="w-full"
+              >
+                <CarouselContent className="-ml-3">
                   {packages?.map((pkg) => (
-                    <PackageCard
+                    <CarouselItem key={pkg.id} className="pl-3">
+                      <PackageCard
+                        pkg={pkg}
+                        walletBalance={walletBalance?.balance ?? 0}
+                        maxRoi={maxRoi}
+                        maxCap={maxCap}
+                      />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
+
+              {packages && packages.length > 0 && (
+                <div className="flex items-center justify-center gap-2">
+                  {packages.map((pkg, index) => (
+                    <button
                       key={pkg.id}
-                      pkg={pkg}
-                      isSelected={selectedPackageId === pkg.id}
-                      onSelect={() => setSelectedPackageId(pkg.id)}
-                      walletBalance={walletBalance?.balance ?? 0}
+                      type="button"
+                      onClick={() => carouselApi?.scrollTo(index)}
+                      className={
+                        currentSlide === index
+                          ? "h-2.5 w-8 rounded-full bg-gradient-to-r from-emerald-400 to-teal-400 transition-all dark:from-purple-500 dark:to-indigo-500"
+                          : "h-2.5 w-2.5 rounded-full bg-emerald-200/70 transition-all dark:bg-purple-500/30"
+                      }
+                      aria-label={`Scroll to ${pkg.name}`}
                     />
                   ))}
                 </div>
-              </>
-            )}
-          </div>
-        </TabsContent>
+              )}
+            </div>
 
-        <TabsContent value="stakes" className="mt-4">
-          <ActiveStakesList />
-        </TabsContent>
-      </Tabs>
+            <div className="hidden gap-5 md:grid md:grid-cols-2 xl:grid-cols-3">
+              {packages?.map((pkg) => (
+                <PackageCard
+                  key={pkg.id}
+                  pkg={pkg}
+                  walletBalance={walletBalance?.balance ?? 0}
+                  maxRoi={maxRoi}
+                  maxCap={maxCap}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </section>
     </div>
   );
 };

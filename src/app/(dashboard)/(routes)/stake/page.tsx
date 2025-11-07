@@ -1,7 +1,9 @@
+import { Suspense } from "react";
+
 import { requireAuth } from "@/lib/auth-utils";
 import { dashboardTheme } from "@/lib/theme-utils";
+
 import StakePageContent from "./_components/StakePageContent";
-import { Suspense } from "react";
 import Loading from "../../loading";
 
 const StakePage = async () => {
