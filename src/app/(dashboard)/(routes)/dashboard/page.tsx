@@ -24,7 +24,7 @@ const DashboardPage = async () => {
           <ImageSlider />
         </div>
         <ArbitrageList />
-        <LogoutButton />
+        {/* <LogoutButton /> */}
       </div>
     </Suspense>
   </div>

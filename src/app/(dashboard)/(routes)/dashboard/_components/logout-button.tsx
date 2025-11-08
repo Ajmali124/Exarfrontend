@@ -1,14 +1,21 @@
 "use client";
 
-import { Button } from '@/components/ui/button';
-import { authClient } from '@/lib/auth-client';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import { useThemeClasses } from '@/lib/theme-utils';
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
-export function LogoutButton() {
+export function LogoutButton({
+  variant = "default",
+  fullWidth = false,
+  className,
+}: {
+  variant?: "default" | "danger";
+  fullWidth?: boolean;
+  className?: string;
+} = {}) {
   const router = useRouter();
-  const { buttonSecondary } = useThemeClasses();
 
   const handleLogout = async () => {
     try {
@@ -21,7 +28,11 @@ export function LogoutButton() {
   };
 
   return (
-    <Button onClick={handleLogout} variant="outline" className={buttonSecondary}>
+    <Button
+      onClick={handleLogout}
+      variant={variant === "danger" ? "destructive" : "outline"}
+      className={cn(fullWidth && "w-full", className)}
+    >
       Logout
     </Button>
   );

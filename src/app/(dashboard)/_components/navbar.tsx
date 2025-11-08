@@ -9,6 +9,7 @@ import { Sun, Moon } from "lucide-react";
 import { trpc } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
+import MobileProfileSheet from "./mobile-profile-sheet";
 
 const poppins = Montserrat({ weight: "600", subsets: ["latin"] });
 
@@ -31,16 +32,21 @@ const Navbar = () => {
       "border-b"
     )}>
       <div className="flex items-center gap-3">
-        {/* Profile Icon */}
-        <Link href="/dashboard" className="flex items-center">
-          <div className="relative w-8 h-8 rounded-full overflow-hidden ring-2 ring-green-500/20 dark:ring-purple-500/20">
+        {/* Profile Sheet Trigger */}
+        <MobileProfileSheet>
+          <button
+            type="button"
+            className="flex items-center"
+          >
+            <div className="relative h-8 w-8 overflow-hidden rounded-full ring-2 ring-green-500/20 dark:ring-purple-500/20">
             <img
               src={userBasic?.image || "/user.png"}
               alt="User Profile"
-              className="w-full h-full object-cover"
+                className="h-full w-full object-cover"
             />
           </div>
-        </Link>
+          </button>
+        </MobileProfileSheet>
         
         {/* Logo */}
         <Link href="/dashboard" className="flex items-center">

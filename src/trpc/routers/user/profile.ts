@@ -50,13 +50,20 @@ export const profileRouter = {
         where: {
           id: ctx.auth.user.id,
         },
+        // Cast to any until Prisma client is regenerated with new fields
         select: {
           id: true,
           name: true,
           email: true,
           username: true,
           image: true,
-        },
+          nickname: true,
+          gender: true,
+          homepage: true,
+          location: true,
+          linkEmail: true,
+          inviteCode: true,
+        } as any,
       });
 
       if (!user) {
@@ -78,19 +85,67 @@ export const profileRouter = {
   // Update user profile
   updateProfile: protectedProcedure
     .input(
-      z.object({
-        name: z.string().min(1).max(100).optional(),
+      z
+        .object({
+          name: z.string().trim().min(1).max(100).optional(),
         image: z.string().url().optional(),
-      })
+          nickname: z.string().trim().min(1).max(50).optional().or(z.literal("")),
+          gender: z
+            .enum(["male", "female", "non_binary", "prefer_not_to_say", "unknown"])
+            .optional(),
+          homepage: z.string().url().optional().or(z.literal("")),
+          location: z.string().trim().max(120).optional().or(z.literal("")),
+          linkEmail: z.string().email().optional().or(z.literal("")),
+        })
+        .refine(
+          (data) =>
+            Object.values(data).some((value) => value !== undefined),
+          {
+            message: "No fields provided",
+          }
+        )
     )
     .mutation(async ({ ctx, input }) => {
       try {
+        const updateData: Record<string, string | null | undefined> = {};
+
+        if (input.name !== undefined) {
+          updateData.name = input.name;
+        }
+
+        if (input.image !== undefined) {
+          updateData.image = input.image;
+        }
+
+        if (input.nickname !== undefined) {
+          updateData.nickname = input.nickname === "" ? null : input.nickname;
+        }
+
+        if (input.gender !== undefined) {
+          updateData.gender = input.gender;
+        }
+
+        if (input.homepage !== undefined) {
+          updateData.homepage =
+            input.homepage === "" ? null : input.homepage;
+        }
+
+        if (input.location !== undefined) {
+          updateData.location =
+            input.location === "" ? null : input.location;
+        }
+
+        if (input.linkEmail !== undefined) {
+          updateData.linkEmail =
+            input.linkEmail === "" ? null : input.linkEmail;
+        }
+
         const updatedUser = await prisma.user.update({
           where: {
             id: ctx.auth.user.id,
           },
           data: {
-            ...input,
+            ...updateData,
             updatedAt: new Date(),
           },
           select: {
@@ -98,8 +153,13 @@ export const profileRouter = {
             name: true,
             email: true,
             image: true,
+            nickname: true,
+            gender: true,
+            homepage: true,
+            location: true,
+            linkEmail: true,
             updatedAt: true,
-          },
+          } as any,
         });
 
         return updatedUser;

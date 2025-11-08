@@ -3,6 +3,8 @@ import { profileRouter } from "./profile";
 import { walletRouter } from "./wallet";
 import { teamRouter } from "./team";
 import { stakingRouter } from "./staking";
+import { depositRouter } from "./deposit";
+import { withdrawRouter } from "./withdraw";
 
 /**
  * Main user router
@@ -20,5 +22,11 @@ export const userRouter = createTRPCRouter({
 
   // Staking operations
   ...stakingRouter,
+
+  // Deposit operations
+  ...depositRouter,
+
+  // Withdrawal operations
+  ...withdrawRouter,
 });
 
