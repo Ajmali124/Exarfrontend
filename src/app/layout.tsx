@@ -13,7 +13,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Arbify AI - Institutional-Grade Crypto Arbitrage Platform",
+  title: "EXAR AI - Crypto Arbitrage Platform",
   description:
     "Deploy arbitrage bots across top exchanges with zero fees, pro-grade analytics, and institutional precision. Execute profitable trades with real-time market data.",
   keywords:

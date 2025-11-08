@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { LucideIcon } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -8,7 +9,23 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useThemeClasses } from "@/lib/theme-utils";
-import { Users, User, Calendar, DollarSign, TrendingUp } from "lucide-react";
+import {
+  Users,
+  User,
+  Calendar,
+  DollarSign,
+  TrendingUp,
+  Sparkles,
+  Rocket,
+  Crown,
+  Gem,
+  Shield,
+  Target,
+  Zap,
+  Medal,
+  Flame,
+  Star,
+} from "lucide-react";
 import { trpc } from "@/trpc/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,6 +37,19 @@ import { cn } from "@/lib/utils";
 interface TeamLevelAccordionProps {
   level: number;
 }
+
+const LEVEL_ICONS: LucideIcon[] = [
+  Sparkles,
+  Rocket,
+  Crown,
+  Gem,
+  Shield,
+  Target,
+  Zap,
+  Medal,
+  Flame,
+  Star,
+];
 
 const TeamLevelAccordion = ({ level }: TeamLevelAccordionProps) => {
   const { text, bg, border } = useThemeClasses();
@@ -45,6 +75,9 @@ const TeamLevelAccordion = ({ level }: TeamLevelAccordionProps) => {
       .slice(0, 2);
   };
 
+  const LevelIcon: LucideIcon =
+    LEVEL_ICONS[(level - 1) % LEVEL_ICONS.length] ?? Users;
+
   return (
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem
@@ -61,13 +94,12 @@ const TeamLevelAccordion = ({ level }: TeamLevelAccordionProps) => {
         >
           <div className="flex items-center gap-3 w-full">
             <div
-              className={`
-                p-2 rounded-lg
-                bg-green-100 dark:bg-purple-500/20
-                text-green-600 dark:text-purple-400
-              `}
+              className={cn(
+                "p-2 rounded-lg",
+                "bg-emerald-100 text-emerald-600 dark:bg-purple-500/20 dark:text-purple-300"
+              )}
             >
-              <Users className="h-5 w-5" />
+              <LevelIcon className="h-5 w-5" />
             </div>
             <div className="flex-1 text-left">
               <div className="flex items-center gap-2">
