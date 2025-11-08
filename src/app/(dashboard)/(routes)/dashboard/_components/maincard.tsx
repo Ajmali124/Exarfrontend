@@ -8,16 +8,26 @@ import MainNav from "./mainnav";
 import { trpc } from "@/trpc/client";
 import { useThemeClasses } from "@/lib/theme-utils";
 import { dashboardTheme } from "@/lib/theme-utils";
+import Image from "next/image";
 
 const poppins = Montserrat({ weight: "600", subsets: ["latin"] });
+
+const resolveProfileImage = (source: unknown): string | undefined => {
+  if (typeof source === "string" && source.trim().length > 0) {
+    return source;
+  }
+  return undefined;
+};
 
 const MainCard = () => {
   // Use tRPC to fetch only basic user info (name, username) for fast loading
   const { data: userBasic, isLoading } = trpc.user.getBasicInfo.useQuery();
   const { text } = useThemeClasses();
-  
+
   // Use username instead of name/email
-  const displayName = userBasic?.username || userBasic?.name?.split(' ')[0] || "User";
+  const displayName = userBasic?.username || userBasic?.name || "User";
+  const profileImage = resolveProfileImage(userBasic?.image) ?? "/user.png";
+
   return (
     <div className={`relative w-full ${dashboardTheme.backgroundGradient.default} p-2`}>
       <div className="flex items-center justify-between p-2 space-x-3">
@@ -35,9 +45,11 @@ const MainCard = () => {
               whileHover={{ scale: 1.1 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
-              <img
-                src={userBasic?.image || "/user.png"}
+              <Image
+                src={profileImage}
                 alt="User Profile"
+                width={40}
+                height={40}
                 className="w-full h-full object-cover rounded-full shadow-lg"
               />
             </motion.div>
