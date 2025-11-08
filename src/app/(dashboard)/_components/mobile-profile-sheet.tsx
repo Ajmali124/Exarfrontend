@@ -53,22 +53,48 @@ const otherItems = [
 
 type OtherItem = (typeof otherItems)[number];
 
+const ensureString = (value: unknown): string | undefined => {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (trimmed.length > 0) {
+      return trimmed;
+    }
+  }
+  return undefined;
+};
+
+const resolveDisplayName = (
+  raw: unknown,
+  fallback: string = "User"
+): string => {
+  return ensureString(raw) ?? fallback;
+};
+
+const resolveProfileImage = (image: unknown): string | undefined =>
+  ensureString(image);
+
 const MobileProfileSheet = ({ children }: MobileProfileSheetProps) => {
   const [open, setOpen] = useState(false);
   const { data: basicInfo } = trpc.user.getBasicInfo.useQuery(undefined, {
     enabled: open,
   });
   const maskedUid = useMemo(() => {
-    if (!basicInfo?.id) return "******";
-    if (basicInfo.id.length <= 6) return basicInfo.id;
-    return `${basicInfo.id.slice(0, 3)}***${basicInfo.id.slice(-3)}`;
+    const id = ensureString(basicInfo?.id);
+    if (!id) return "******";
+    if (id.length <= 6) return id;
+    return `${id.slice(0, 3)}***${id.slice(-3)}`;
   }, [basicInfo?.id]);
 
-  const displayName =
-    basicInfo?.name || basicInfo?.username || basicInfo?.email || "User";
+  const displayName = resolveDisplayName(
+    basicInfo?.name ??
+      basicInfo?.username ??
+      basicInfo?.email,
+    "User"
+  );
+  const profileImage = resolveProfileImage(basicInfo?.image);
 
   const copyUid = () => {
-    if (!basicInfo?.id) return;
+    if (typeof basicInfo?.id !== "string") return;
     void navigator.clipboard?.writeText(basicInfo.id);
   };
 
@@ -85,16 +111,16 @@ const MobileProfileSheet = ({ children }: MobileProfileSheetProps) => {
             <div className="space-y-3 border-b border-border px-4 py-4">
               <div className="flex items-center gap-3">
                 <div className="relative h-10 w-10 overflow-hidden rounded-full border border-border">
-                {basicInfo?.image ? (
+                {profileImage ? (
                   <Image
-                    src={basicInfo.image}
+                    src={profileImage}
                     alt={displayName}
                     fill
                     className="object-cover"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-muted text-base font-semibold">
-                    {displayName.charAt(0).toUpperCase()}
+                    {displayName.slice(0, 1).toUpperCase()}
                   </div>
                 )}
                 </div>

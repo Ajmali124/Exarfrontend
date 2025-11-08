@@ -13,6 +13,16 @@ import MobileProfileSheet from "./mobile-profile-sheet";
 
 const poppins = Montserrat({ weight: "600", subsets: ["latin"] });
 
+const ensureString = (value: unknown): string | undefined => {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (trimmed.length > 0) {
+      return trimmed;
+    }
+  }
+  return undefined;
+};
+
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
   const { text, bg, border } = useThemeClasses();
@@ -39,12 +49,14 @@ const Navbar = () => {
             className="flex items-center"
           >
             <div className="relative h-8 w-8 overflow-hidden rounded-full ring-2 ring-green-500/20 dark:ring-purple-500/20">
-            <img
-              src={userBasic?.image || "/user.png"}
-              alt="User Profile"
+              <img
+                src={
+                  ensureString(userBasic?.image) ?? "/user.png"
+                }
+                alt={`${ensureString(userBasic?.username ?? userBasic?.name) ?? "User"} profile`}
                 className="h-full w-full object-cover"
-            />
-          </div>
+              />
+            </div>
           </button>
         </MobileProfileSheet>
         

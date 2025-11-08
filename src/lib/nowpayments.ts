@@ -218,6 +218,16 @@ const jwtCache: { token: string; expiresAt: number } = {
   expiresAt: 0,
 };
 
+function isNowPaymentsAuthResponse(
+  payload: unknown
+): payload is NowPaymentsAuthResponse {
+  return (
+    typeof payload === "object" &&
+    payload !== null &&
+    typeof (payload as { token?: unknown }).token === "string"
+  );
+}
+
 async function getNowPaymentsJwt(): Promise<string> {
   if (!NOWPAYMENTS_PAYOUT_EMAIL || !NOWPAYMENTS_PAYOUT_PASSWORD) {
     throw new NowPaymentsError(
@@ -256,7 +266,7 @@ async function getNowPaymentsJwt(): Promise<string> {
     throw new NowPaymentsError(message);
   }
 
-  if (!payload?.token) {
+  if (!isNowPaymentsAuthResponse(payload)) {
     throw new NowPaymentsError(
       "NOWPayments authentication did not return a token."
     );
