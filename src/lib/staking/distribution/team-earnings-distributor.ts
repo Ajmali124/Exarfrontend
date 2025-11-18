@@ -166,6 +166,7 @@ export async function distributeTeamEarnings(): Promise<TeamDistributionSummary>
       totalRewarded: 0,
       totalMissed: 0,
       totalEntriesUpdated: 0,
+      recordsLogged: 0,
     };
   }
 
