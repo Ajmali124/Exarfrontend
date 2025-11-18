@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/trpc/client";
 
 import PackageCard from "./PackageCard";
+import ActiveStakesSummary from "./ActiveStakesSummary";
 
 const StakePageContent = () => {
   const [carouselApi, setCarouselApi] = useState<any>();
@@ -73,6 +74,9 @@ const StakePageContent = () => {
             </div>
           </div>
         </Card>
+      </section>
+      <section className="relative z-10">
+        <ActiveStakesSummary />
       </section>
       <section className="relative z-10 space-y-5">
         {packagesLoading ? (
