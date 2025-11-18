@@ -1,9 +1,7 @@
-import { Button } from '@/components/ui/button';
 import { requireAuth } from '@/lib/auth-utils';
 import { LogoutButton } from './_components/logout-button';
 import { Suspense } from 'react';
 import Loading from '../../loading';
-import MainCard from './_components/maincard';
 import ArbitrageList from './_components/arbify';
 import TotalAssetsCard from './_components/TotalAssetsCard';
 import { dashboardTheme } from '@/lib/theme-utils';

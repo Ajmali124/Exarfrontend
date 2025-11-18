@@ -37,6 +37,8 @@ model User {
   inviteeRecords  InvitedMember[] @relation("Invitee")
   transactions    TransactionRecord[]
   stakingEntries  StakingEntry[]
+  teamRewardRecords TeamEarningRecord[] @relation("TeamEarningRecipient")
+  teamRewardSources TeamEarningRecord[] @relation("TeamEarningSource")
   
   @@unique([email])
   @@map("user")
@@ -155,6 +157,21 @@ model TransactionRecord {
   @@index([status])
   @@index([createdAt])
   @@map("transaction_record")
+}
+
+model TeamEarningRecord {
+  id           String   @id @default(uuid())
+  user         User     @relation("TeamEarningRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  sourceUser   User?    @relation("TeamEarningSource", fields: [sourceUserId], references: [id], onDelete: Cascade)
+  sourceUserId String?
+  level        Int
+  amount       Float
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@index([sourceUserId])
+  @@map("team_earning_record")
 }
 
 model StakingEntry {

@@ -3,10 +3,22 @@
 import { useTheme } from "@/context/ThemeContext";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 export function AuthBrandingSection() {
   const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const isDark = theme === "dark";
+
+  // Avoid hydration mismatches by rendering a predictable placeholder
+  if (!mounted) {
+    return <div className="hidden lg:flex flex-col px-4" aria-hidden />;
+  }
 
   // All 24 exchange logos
   const exchanges = [

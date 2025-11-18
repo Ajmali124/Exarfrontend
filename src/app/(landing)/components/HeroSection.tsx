@@ -281,7 +281,7 @@ const HeroSection = () => {
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 0.8, delay: 1.5 }}
                 >
-                  FROM CBA™
+                  FROM EXAR™
                 </motion.span>
               </h1>
               <motion.p

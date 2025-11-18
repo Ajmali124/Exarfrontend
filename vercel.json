@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/daily-roi",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/team-roi",
+      "schedule": "3 0 * * *"
+    }
+  ]
+}
