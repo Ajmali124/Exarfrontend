@@ -90,9 +90,9 @@ const WalletNav = () => {
         if (item.label === "Deposit") {
           return (
             <Link href="/deposit" prefetch key={item.label}>
-              {buttonContent}
+                  {buttonContent}
             </Link>
-          );
+        );
         }
 
         return (

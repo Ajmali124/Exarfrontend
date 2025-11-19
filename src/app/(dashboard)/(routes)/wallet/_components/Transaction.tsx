@@ -24,7 +24,7 @@ const WalletData = async () => {
     <div className="bg-gradient-to-b from-white/5 to-transparent shadow-lg rounded-2xl border border-white/10 mx-2 mt-4 w-full px-4 py-4">
       <div className="flex flex-row justify-between items-center mb-4">
         <div>
-          <h2 className="text-lg font-semibold text-white">Transactions</h2>
+        <h2 className="text-lg font-semibold text-white">Transactions</h2>
           <p className="text-xs text-gray-400">Latest activity across your wallet</p>
         </div>
       </div>

@@ -69,7 +69,7 @@ const TradingPairInfo: React.FC<TradingPairInfoProps> = ({
               >
                 <span
                   className={`text-xs font-medium ${
-                    stats.priceChangePercent < 0
+                stats.priceChangePercent < 0 
                       ? "text-red-600 dark:text-red-300"
                       : "text-green-600 dark:text-green-300"
                   }`}

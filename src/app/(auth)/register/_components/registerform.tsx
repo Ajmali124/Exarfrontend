@@ -96,6 +96,12 @@ export function RegisterForm() {
         callbackURL: "/verify-otp",
       });
 
+      // Step 1b: Manually send verification OTP once after signup
+      await authClient.emailOtp.sendVerificationOtp({
+        email: values.email,
+        type: "email-verification",
+      });
+
       // Step 2: Get the user ID and name from the database
       // Query by email since better-auth creates the user immediately
       const user = await getUserByEmail(values.email);

@@ -60,18 +60,18 @@ const TransactionDetailsDialog: React.FC<TransactionDetailsDialogProps> = ({
           transition={{ duration: 0.3 }}
         >
           <Card className={`rounded-xl border p-4 sm:p-5 ${card} shadow-2xl`}>
-            {selectedRow && (
+              {selectedRow && (
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col items-center gap-2">
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.1, duration: 0.3 }}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.1, duration: 0.3 }}
                     className={`flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-b ${renderIconGradient(
-                      selectedRow.type
+                    selectedRow.type
                     )}`}
-                  >
-                    {renderTransactionIcon(selectedRow.type)}
+                >
+                  {renderTransactionIcon(selectedRow.type)}
                   </motion.div>
                   <DialogHeader className="text-center mt-2 space-y-1">
                     <DialogTitle className={`text-lg font-semibold tracking-wide ${text.primary}`}>
@@ -116,8 +116,8 @@ const TransactionDetailsDialog: React.FC<TransactionDetailsDialogProps> = ({
                     delay={0.45}
                     isMonospace
                   />
-                )}
-              </div>
+              )}
+            </div>
             )}
           </Card>
         </motion.div>

@@ -81,24 +81,24 @@ export function DataTable<TData extends UserTransactionss>({
       </div>
 
       {table.getRowModel().rows.length > 0 && (
-        <div className="flex items-center justify-end space-x-2 py-4 mr-4">
-          <Button
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+      <div className="flex items-center justify-end space-x-2 py-4 mr-4">
+        <Button
+          size="sm"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
             className="text-dimWhite rounded-lg bg-white/10 hover:bg-white/20"
-          >
-            Previous
-          </Button>
-          <Button
+        >
+          Previous
+        </Button>
+        <Button
             className="bg-teal-500 text-white hover:bg-teal-400"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
+          size="sm"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Next
+        </Button>
+      </div>
       )}
 
       <TransactionDetailsDialog
