@@ -5,8 +5,10 @@ import { useThemeClasses } from "@/lib/theme-utils";
 import { caller } from "@/trpc/server";
 import { requireAuth } from "@/lib/auth-utils";
 
+export const dynamic = "force-dynamic";
+
 const InvitePage = async () => {
-await requireAuth();
+  await requireAuth();
   const { bg } = useThemeClasses();
   const basicInfo = (await caller.user.getBasicInfo()) as {
     inviteCode?: string | null;

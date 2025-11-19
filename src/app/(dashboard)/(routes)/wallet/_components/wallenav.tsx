@@ -89,78 +89,10 @@ const WalletNav = () => {
 
         if (item.label === "Deposit") {
           return (
-            <div key={item.label} style={{ zIndex: 60 }}>
-              <Drawer open={isDepositDrawerOpen} onOpenChange={setIsDepositDrawerOpen}>
-                <DrawerTrigger asChild>
-                  {buttonContent}
-                </DrawerTrigger>
-                <DrawerContent className="max-h-[80vh] !z-[60] !bottom-[60px]">
-                  <DrawerHeader className="pb-4">
-                    <DrawerTitle className="text-center text-lg font-semibold">Choose Deposit Method</DrawerTitle>
-                  </DrawerHeader>
-                <div className="px-6 pb-6">
-                  <div className="grid grid-cols-1 gap-4">
-                    {/* USDT Deposit */}
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => {
-                        setIsDepositDrawerOpen(false);
-                        window.location.href = "/deposit?currency=USDT";
-                      }}
-                      className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="relative flex items-center justify-center w-10 h-10">
-                          <Image
-                            src="https://s2.coinmarketcap.com/static/img/coins/32x32/825.png"
-                            alt="USDT"
-                            className="w-10 h-10 rounded-full"
-                            width={40}
-                            height={40}
-                          />
-                        </div>
-                        <div className="text-left">
-                          <div className="font-medium text-gray-900 dark:text-gray-100">USDT</div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">Tether USD</div>
-                        </div>
-                      </div>
-                      <ArrowUpCircleIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                    </motion.button>
-
-                    {/* SOL Deposit */}
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => {
-                        setIsDepositDrawerOpen(false);
-                        window.location.href = "/deposit?currency=SOL";
-                      }}
-                      className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="relative flex items-center justify-center w-10 h-10">
-                          <Image
-                            src="https://s2.coinmarketcap.com/static/img/coins/32x32/5426.png"
-                            alt="SOL"
-                            className="w-10 h-10 rounded-full"
-                            width={40}
-                            height={40}
-                          />
-                        </div>
-                        <div className="text-left">
-                          <div className="font-medium text-gray-900 dark:text-gray-100">SOL</div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">Solana</div>
-                        </div>
-                      </div>
-                      <ArrowUpCircleIcon className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                    </motion.button>
-                  </div>
-                </div>
-              </DrawerContent>
-            </Drawer>
-          </div>
-        );
+            <Link href="/deposit" prefetch key={item.label}>
+              {buttonContent}
+            </Link>
+          );
         }
 
         return (
