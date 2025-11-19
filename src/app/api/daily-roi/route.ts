@@ -1,5 +1,17 @@
 import { NextResponse } from "next/server";
-import { triggerDailyRoiDistribution } from "@/action/userData/distribute-daily-roi";
+import { distributeDailyStakingRewards } from "@/lib/staking/distribution/roi-distributor";
+import { distributeTeamEarnings } from "@/lib/staking/distribution/team-earnings-distributor";
+
+async function triggerDailyRoiDistribution() {
+  const stakingResult = await distributeDailyStakingRewards();
+  // const teamResult = await distributeTeamEarnings();
+
+  return {
+    staking: stakingResult,
+    // team: teamResult,
+    timestamp: new Date().toISOString(),
+  };
+}
 
 export async function GET(request: Request) {
   // Verify cron secret for authorization

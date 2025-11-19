@@ -7,8 +7,6 @@ import {
   calculateMaxEarning,
   STAKING_PACKAGES,
 } from "@/lib/staking-packages";
-import { distributeDailyStakingRewards } from "@/lib/staking/distribution/roi-distributor";
-import { distributeTeamEarnings } from "@/lib/staking/distribution/team-earnings-distributor";
 
 /**
  * Staking-related tRPC procedures
@@ -337,39 +335,6 @@ export const stakingRouter = {
           message: error.message || "Failed to complete unstake",
         });
       }
-    }),
-
-  distributeDailyEarnings: protectedProcedure
-    .input(
-      z
-        .object({
-          userId: z.string().optional(),
-        })
-        .optional()
-    )
-    .mutation(async ({ input }) => {
-      try {
-        const result = await distributeDailyStakingRewards({
-          userId: input?.userId,
-        });
-        return result;
-      } catch (error: any) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: error?.message || "Failed to distribute daily earnings",
-        });
-      }
-    }),
-
-  distributeTeamEarnings: protectedProcedure.mutation(async () => {
-    try {
-      return await distributeTeamEarnings();
-    } catch (error: any) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: error?.message || "Failed to distribute team earnings",
-      });
-    }
   }),
 };
 

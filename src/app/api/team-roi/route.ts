@@ -1,5 +1,15 @@
 import { NextResponse } from "next/server";
-import { triggerTeamEarningDistribution } from "@/action/userData/distribute-daily-roi";
+import { distributeTeamEarnings } from "@/lib/staking/distribution/team-earnings-distributor";
+
+
+async function triggerTeamRoiDistribution() {
+   const teamResult = await distributeTeamEarnings();
+  return {
+    team: teamResult,
+    timestamp: new Date().toISOString(),
+  };
+}
+
 
 export async function GET(request: Request) {
   // Verify cron secret for authorization
@@ -11,7 +21,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const result = await triggerTeamEarningDistribution();
+    const result = await triggerTeamRoiDistribution();
     return NextResponse.json({
       success: true,
       result,
