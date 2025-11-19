@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,6 +37,7 @@ const registerSchema = z.object({
 
 export function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const [showInviteCode, setShowInviteCode] = useState(false);
@@ -50,6 +51,39 @@ export function RegisterForm() {
       termsAccepted: true, // Always checked by default
     },
   });
+
+  const inviteCodeValue = form.watch("inviteCode");
+
+  useEffect(() => {
+    const paramCode = searchParams?.get("inviteCode");
+    const storedCode =
+      typeof window !== "undefined" ? window.localStorage.getItem("referralCode") : null;
+    const currentValue = form.getValues("inviteCode");
+
+    if (paramCode && paramCode !== currentValue) {
+      form.setValue("inviteCode", paramCode);
+      setShowInviteCode(true);
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("referralCode", paramCode);
+      }
+      return;
+    }
+
+    if (!paramCode && storedCode && storedCode !== currentValue) {
+      form.setValue("inviteCode", storedCode);
+      setShowInviteCode(true);
+    }
+  }, [searchParams, form]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    if (inviteCodeValue) {
+      window.localStorage.setItem("referralCode", inviteCodeValue);
+    } else {
+      window.localStorage.removeItem("referralCode");
+    }
+  }, [inviteCodeValue]);
 
 
   const onSubmit = async (values: z.infer<typeof registerSchema>) => {
