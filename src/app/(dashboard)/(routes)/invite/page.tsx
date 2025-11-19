@@ -3,8 +3,10 @@ import CommissionCard from "./_components/commission-card";
 import ReferralStats from "./_components/referral-stats";
 import { useThemeClasses } from "@/lib/theme-utils";
 import { caller } from "@/trpc/server";
+import { requireAuth } from "@/lib/auth-utils";
 
 const InvitePage = async () => {
+await requireAuth();
   const { bg } = useThemeClasses();
   const basicInfo = (await caller.user.getBasicInfo()) as {
     inviteCode?: string | null;

@@ -1,5 +1,6 @@
 // DataTable.tsx
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import {
@@ -13,26 +14,19 @@ import {
 } from "@tanstack/react-table";
 import * as React from "react";
 import { useState } from "react";
-import TransactionDetailsDialog from "./TransactionDetailsDialog"; // Import the new Dialog component
+import TransactionDetailsDialog from "./TransactionDetailsDialog";
+import { UserTransactionss } from "./columns";
 
-// Define the structure of a transaction (TData)
-type Transaction = {
-  type: string;
-  amount: number;
-  status: string;
-  date: string;
-  walletaddress: string;
-};
-
-interface DataTableProps<TData> {
+interface DataTableProps<TData extends UserTransactionss> {
   columns: ColumnDef<TData>[];
   data: TData[];
+  emptyMessage?: string;
 }
 
-// Ensure TData must conform to the Transaction structure
-export function DataTable<TData extends Transaction>({
+export function DataTable<TData extends UserTransactionss>({
   columns,
   data,
+  emptyMessage = "No transactions yet.",
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -65,26 +59,20 @@ export function DataTable<TData extends Transaction>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="bg-transparent border-none w-full  items-center justify-between my-2 cursor-pointer hover:bg-gray-700 rounded-lg transition"
-                  onClick={() => handleRowClick(row.original)} // Make row clickable
+                  className="bg-transparent border-none w-full items-center justify-between my-2 cursor-pointer hover:bg-white/5 rounded-lg transition"
+                  onClick={() => handleRowClick(row.original)}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center text-dimWhite"
-                >
-                  No results.
+                <TableCell colSpan={columns.length} className="h-24 text-center text-dimWhite">
+                  {emptyMessage}
                 </TableCell>
               </TableRow>
             )}
@@ -92,26 +80,27 @@ export function DataTable<TData extends Transaction>({
         </Table>
       </div>
 
-      <div className="flex items-center justify-end space-x-2 py-4 mr-4">
-        <Button
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-          className="text-dimWhite rounded-lg bg-black"
-        >
-          Previous
-        </Button>
-        <Button
-          className="bg-teal-300 text-white"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
-      </div>
+      {table.getRowModel().rows.length > 0 && (
+        <div className="flex items-center justify-end space-x-2 py-4 mr-4">
+          <Button
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+            className="text-dimWhite rounded-lg bg-white/10 hover:bg-white/20"
+          >
+            Previous
+          </Button>
+          <Button
+            className="bg-teal-500 text-white hover:bg-teal-400"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
+      )}
 
-      {/* Dialog/Pop-up to show row details */}
       <TransactionDetailsDialog
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}

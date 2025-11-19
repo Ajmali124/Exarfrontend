@@ -7,28 +7,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { motion } from "framer-motion"; // For adding animation
-import {
-  ArrowUpRight,
-  DollarSign,
-  Download,
-  Gift,
-  Send,
-  Star,
-} from "lucide-react"; // Icons to represent transaction types
-
-type Transaction = {
-  type: string;
-  amount: number;
-  status: string;
-  date: string;
-  walletaddress: string;
-};
+import { motion } from "framer-motion";
+import { ArrowUpRight, DollarSign, ArrowDownLeftSquare } from "lucide-react";
+import { UserTransactionss } from "./columns";
+import { format } from "date-fns";
+import { useThemeClasses } from "@/lib/theme-utils";
 
 interface TransactionDetailsDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedRow: Transaction | null;
+  selectedRow: UserTransactionss | null;
 }
 
 const TransactionDetailsDialog: React.FC<TransactionDetailsDialogProps> = ({
@@ -36,158 +24,132 @@ const TransactionDetailsDialog: React.FC<TransactionDetailsDialogProps> = ({
   onClose,
   selectedRow,
 }) => {
-  const walletTransactionTypes = [
-    "WITHDRAW",
-    "DEPOSIT",
-    "TRANSFEROUT",
-    "TRANSFERIN",
-  ];
-
-  // Function to determine which icon to display based on the transaction type
+  const { card, text } = useThemeClasses();
   const renderTransactionIcon = (type: string) => {
-    switch (type) {
+    switch (type.toUpperCase()) {
       case "WITHDRAW":
-        return <ArrowUpRight className="text-red-500 w-10 h-10" />;
+        return <ArrowUpRight className="text-red-400 w-10 h-10" />;
       case "DEPOSIT":
-        return <DollarSign className="text-green-500 w-10 h-10" />;
-      case "TRANSFEROUT":
-        return <Send className="text-yellow-500 w-10 h-10" />;
-      case "TRANSFERIN":
-        return <Download className="text-blue-500 w-10 h-10" />;
-      case "DirectReward":
-        return <Gift className="text-purple-500 w-10 h-10" />;
-      case "TeamEarning":
-        return <Star className="text-teal-500 w-10 h-10" />;
+        return <DollarSign className="text-green-400 w-10 h-10" />;
       default:
-        return <DollarSign className="text-gray-500 w-10 h-10" />;
+        return <ArrowDownLeftSquare className="text-cyan-400 w-10 h-10" />;
     }
   };
 
   const renderIconGradient = (type: string) => {
-    switch (type) {
+    switch (type.toUpperCase()) {
       case "WITHDRAW":
-        return "from-red-500/20 via-red-500/10 to-transparent";
+        return "from-red-500/30 via-transparent to-transparent";
       case "DEPOSIT":
-        return "from-green-500/20 via-green-500/10 to-transparent";
-      case "TRANSFEROUT":
-        return "from-yellow-500/20 via-yellow-500/10 to-transparent";
-      case "TRANSFERIN":
-        return "from-blue-500/20 via-blue-500/10 to-transparent";
-      case "DirectReward":
-        return "from-purple-500/20 via-purple-500/10 to-transparent";
-      case "TeamEarning":
-        return "from-teal-500/20 via-teal-500/10 to-transparent";
+        return "from-green-500/30 via-transparent to-transparent";
       default:
-        return "from-gray-500/20 via-gray-500/10 to-transparent";
+        return "from-cyan-500/30 via-transparent to-transparent";
     }
   };
 
+  const formattedDate = selectedRow
+    ? format(new Date(selectedRow.createdAt), "PPP • p")
+    : "";
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="p-6 bg-transparent text-white border-none rounded-lg">
+      <DialogContent className="bg-transparent border-none shadow-none p-0 sm:p-0">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <Card className="bg-gradient-to-b from-gray-900 to-gray-800 p-4 rounded-lg">
-            <div className="flex flex-col items-center">
-              {/* Animated Icon */}
-              {/* Circular Gradient behind Icon */}
-              {selectedRow && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.1, duration: 0.3 }}
-                  className={`relative flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-t ${renderIconGradient(
-                    selectedRow.type
-                  )} mb-2`}
-                >
-                  {renderTransactionIcon(selectedRow.type)}
-                </motion.div>
-              )}
-
-              <DialogHeader className="text-center mt-4">
-                <DialogTitle className="text-lg font-semibold tracking-wide text-gray-300">
-                  Transaction Details
-                </DialogTitle>
-              </DialogHeader>
-
-              {/* Transaction Information */}
-              {selectedRow && (
-                <div className="mt-4 w-full">
-                  {/* Info Block */}
+          <Card className={`rounded-xl border p-4 sm:p-5 ${card} shadow-2xl`}>
+            {selectedRow && (
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col items-center gap-2">
                   <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2, duration: 0.3 }}
-                    className=" bg-gray-800 p-2 rounded-lg mb-2"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.1, duration: 0.3 }}
+                    className={`flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-b ${renderIconGradient(
+                      selectedRow.type
+                    )}`}
                   >
-                    <p className="text-sm font-medium text-teal-400">Type</p>
-                    <p className="text-md font-semibold">{selectedRow.type}</p>
+                    {renderTransactionIcon(selectedRow.type)}
                   </motion.div>
-
-                  <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.25, duration: 0.3 }}
-                    className="bg-gray-800 p-2 rounded-lg mb-2"
-                  >
-                    <p className="text-sm font-medium text-teal-400">Amount</p>
-                    <p className="text-md font-semibold">
-                      {selectedRow.type === "WITHDRAW"
-                        ? `$${selectedRow.amount.toFixed(2)}` // Always show 2 decimal places
-                        : `${selectedRow.amount.toFixed(2)} ORA`}{" "}
-                      {/* Always show 2 decimal places */}
-                    </p>
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3, duration: 0.3 }}
-                    className="bg-gray-800 p-2 rounded-lg mb-2"
-                  >
-                    <p className="text-sm font-medium text-teal-400">Status</p>
-                    <p className="text-md font-semibold">
-                      {selectedRow.status}
-                    </p>
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.35, duration: 0.3 }}
-                    className="bg-gray-800 p-2 rounded-lg mb-2"
-                  >
-                    <p className="text-sm font-medium text-teal-400">Date</p>
-                    <p className="text-md font-semibold">{selectedRow.date}</p>
-                  </motion.div>
-
-                  {/* Conditionally show the wallet address */}
-                  {walletTransactionTypes.includes(selectedRow.type) && (
-                    <motion.div
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.4, duration: 0.3 }}
-                      className="bg-gray-800 p-2 rounded-lg mb-2"
-                    >
-                      <p className="text-sm font-medium text-teal-400">
-                        Wallet Address
-                      </p>
-                      <p className="text-sm font-semibold">
-                        {selectedRow.walletaddress}
-                      </p>
-                    </motion.div>
-                  )}
+                  <DialogHeader className="text-center mt-2 space-y-1">
+                    <DialogTitle className={`text-lg font-semibold tracking-wide ${text.primary}`}>
+                      {selectedRow.type.charAt(0).toUpperCase() +
+                        selectedRow.type.slice(1).toLowerCase()}{" "}
+                      Details
+                    </DialogTitle>
+                    <p className={`text-xs ${text.secondary}`}>{formattedDate}</p>
+                  </DialogHeader>
                 </div>
-              )}
-            </div>
+
+                <DetailBlock
+                  label="Amount"
+                  value={`${selectedRow.amount.toFixed(2)} ${selectedRow.currency}`}
+                  delay={0.15}
+                />
+                <DetailBlock label="Status" value={selectedRow.status ?? "Unknown"} delay={0.2} />
+                <DetailBlock label="Record ID" value={selectedRow.id} delay={0.25} isMonospace />
+                {selectedRow.description && (
+                  <DetailBlock label="Description" value={selectedRow.description} delay={0.3} />
+                )}
+                {selectedRow.transactionHash && (
+                  <DetailBlock
+                    label="Transaction Hash"
+                    value={selectedRow.transactionHash}
+                    delay={0.35}
+                    isMonospace
+                  />
+                )}
+                {selectedRow.fromAddress && (
+                  <DetailBlock
+                    label="From Address"
+                    value={selectedRow.fromAddress}
+                    delay={0.4}
+                    isMonospace
+                  />
+                )}
+                {selectedRow.toAddress && (
+                  <DetailBlock
+                    label="To Address"
+                    value={selectedRow.toAddress}
+                    delay={0.45}
+                    isMonospace
+                  />
+                )}
+              </div>
+            )}
           </Card>
         </motion.div>
       </DialogContent>
     </Dialog>
   );
 };
+
+interface DetailBlockProps {
+  label: string;
+  value: string;
+  delay?: number;
+  isMonospace?: boolean;
+}
+
+const DetailBlock: React.FC<DetailBlockProps> = ({
+  label,
+  value,
+  delay = 0.1,
+  isMonospace = false,
+}) => (
+  <motion.div
+    initial={{ opacity: 0, x: -10 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ delay, duration: 0.25 }}
+    className="bg-white/5 dark:bg-white/5 border border-white/10 dark:border-white/10 p-3 rounded-lg"
+  >
+    <p className="text-xs font-medium text-teal-300 tracking-wide uppercase">{label}</p>
+    <p className={`mt-1 text-sm font-semibold ${isMonospace ? "font-mono break-all" : "text-white"}`}>
+      {value}
+    </p>
+  </motion.div>
+);
 
 export default TransactionDetailsDialog;
