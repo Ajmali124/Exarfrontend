@@ -16,7 +16,6 @@ import { useEffect, useState } from "react";
 const CONTRACT_ADDRESS = "0x55d398326f99059ff775485246999027b3197955";
 const NETWORK_LABEL = "BNB Smart Chain (BEP20)";
 const CURRENCY_LABEL = "USDT";
-const MIN_AMOUNT_LABEL = "≥ 0.8 USDT";
 const ARRIVAL_TIME = "≈ 1 min";
 const WITHDRAWAL_TIME = "≈ 1 min";
 const CURRENCY_ICON = "/usdt.png";
@@ -40,6 +39,25 @@ const FormDeposit = () => {
   }, [requestDepositAddress]);
 
   const depositAddress = depositData?.address ?? "";
+  
+  // Get minimum amount from NOWPayments response, fallback to default
+  const minCryptoAmount = depositData?.minPayAmount?.crypto;
+  const minFiatAmount = depositData?.minPayAmount?.fiat;
+  
+  // Format minimum amount label
+  const getMinAmountLabel = () => {
+    if (minCryptoAmount !== undefined && minCryptoAmount > 0) {
+      // Format with 2-6 decimal places depending on amount
+      const formatted = minCryptoAmount >= 1
+        ? minCryptoAmount.toFixed(2)
+        : minCryptoAmount.toFixed(6);
+      return `≥ ${formatted} ${CURRENCY_LABEL}`;
+    }
+    // Fallback if NOWPayments didn't return minimum
+    return "≥ 0.8 USDT";
+  };
+
+  const MIN_AMOUNT_LABEL = getMinAmountLabel();
 
   useEffect(() => {
     let isMounted = true;
@@ -244,9 +262,20 @@ const FormDeposit = () => {
             Minimum Deposit
           </span>
           <span className="text-xs font-medium text-gray-900 dark:text-gray-100">
-            {MIN_AMOUNT_LABEL}
+            {isPending ? "Loading..." : MIN_AMOUNT_LABEL}
           </span>
         </div>
+        
+        {minFiatAmount !== undefined && minFiatAmount > 0 && (
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              Minimum (USD)
+            </span>
+            <span className="text-xs font-medium text-gray-900 dark:text-gray-100">
+              ${minFiatAmount.toFixed(2)} USD
+            </span>
+          </div>
+        )}
 
         <div className="flex items-center justify-between">
           <div className="flex items-center">
@@ -257,7 +286,7 @@ const FormDeposit = () => {
           </div>
           <div className="flex items-center">
             <span className="text-xs font-medium text-gray-900 dark:text-gray-100">
-              Solbit Account
+              Exar Account
             </span>
             <ArrowLeftRight className="ml-2 h-3 w-3 text-gray-400" />
           </div>

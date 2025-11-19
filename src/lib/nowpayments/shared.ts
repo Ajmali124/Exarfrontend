@@ -31,6 +31,7 @@ export interface NowPaymentsMinAmountResponse {
         amount?: number | string;
         currency?: string;
       };
+  fiat_equivalent?: number | string; // Alternative field name from API
 }
 
 export interface NowPaymentsPaymentResponse {
@@ -100,7 +101,10 @@ export interface CreateWithdrawalParams {
   requestId?: string;
 }
 
-export async function fetchUsdtBscMinimums(): Promise<{
+export async function fetchUsdtBscMinimums(options?: {
+  isFixedRate?: boolean;
+  isFeePaidByUser?: boolean;
+}): Promise<{
   fiatAmount?: number;
   cryptoAmount?: number;
 }> {
@@ -111,7 +115,12 @@ export async function fetchUsdtBscMinimums(): Promise<{
   const url = new URL(`${NOWPAYMENTS_BASE_URL}/min-amount`);
   url.searchParams.set("currency_to", "usdtbsc");
   url.searchParams.set("currency_from", "usd");
-  url.searchParams.set("is_fixed_rate", "false");
+  url.searchParams.set("is_fixed_rate", String(options?.isFixedRate ?? false));
+  
+  if (options?.isFeePaidByUser !== undefined) {
+    url.searchParams.set("is_fee_paid_by_user", String(options.isFeePaidByUser));
+  }
+  
   url.searchParams.set("fiat_equivalent", "usd");
 
   try {
@@ -137,22 +146,32 @@ export async function fetchUsdtBscMinimums(): Promise<{
     const cryptoAmount = Number(payload.min_amount);
 
     let fiatAmount: number | undefined;
-    const fiatField = payload.fiat_min_amount;
-
-    if (typeof fiatField === "number") {
-      fiatAmount = fiatField;
-    } else if (typeof fiatField === "string") {
-      fiatAmount = Number(fiatField);
-    } else if (
-      typeof fiatField === "object" &&
-      fiatField !== null &&
-      "amount" in fiatField &&
-      fiatField.amount !== undefined
-    ) {
+    
+    // Check fiat_equivalent first (what API actually returns)
+    if (payload.fiat_equivalent !== undefined) {
       fiatAmount =
-        typeof fiatField.amount === "number"
-          ? fiatField.amount
-          : Number(fiatField.amount);
+        typeof payload.fiat_equivalent === "number"
+          ? payload.fiat_equivalent
+          : Number(payload.fiat_equivalent);
+    } else {
+      // Fallback to fiat_min_amount if available
+      const fiatField = payload.fiat_min_amount;
+      
+      if (typeof fiatField === "number") {
+        fiatAmount = fiatField;
+      } else if (typeof fiatField === "string") {
+        fiatAmount = Number(fiatField);
+      } else if (
+        typeof fiatField === "object" &&
+        fiatField !== null &&
+        "amount" in fiatField &&
+        fiatField.amount !== undefined
+      ) {
+        fiatAmount =
+          typeof fiatField.amount === "number"
+            ? fiatField.amount
+            : Number(fiatField.amount);
+      }
     }
 
     return {

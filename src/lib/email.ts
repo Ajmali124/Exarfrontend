@@ -3,367 +3,317 @@ import { Resend } from 'resend';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const sendVerificationEmail = async (email: string, token: string) => {
-  // Use BETTER_AUTH_URL, fallback to VERCEL_URL, or localhost for development
-  const domain = process.env.BETTER_AUTH_URL || 
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-  
+  const domain =
+    process.env.BETTER_AUTH_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://exarpro.com');
+  const businessAddress = process.env.EXARPRO_BUSINESS_ADDRESS ?? 'Exarpro, 651 N Broad St, Suite 201, Middletown, DE 19709';
+
   const emailHTML = `
-    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    <html dir="ltr" lang="en">
+    <!DOCTYPE html>
+    <html lang="en">
       <head>
-        <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
-        <meta name="x-apple-disable-message-reformatting" />
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="color-scheme" content="light" />
+        <meta name="supported-color-schemes" content="light" />
         <style>
+          :root {
+            color-scheme: light;
+          }
           body {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            color: #1e293b;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            background-color: #f8fafc;
+            color: #1c1f2b;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
             margin: 0;
-            padding: 20px;
-            min-height: 100vh;
+            padding: 32px 12px;
           }
           .container {
-            max-width: 600px;
+            max-width: 520px;
             margin: 0 auto;
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            background-color: #ffffff;
+            border-radius: 18px;
+            border: 1px solid #e5e7eb;
             overflow: hidden;
           }
-          .header-section {
-            background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #c084fc 100%);
-            padding: 40px 30px;
+          .header {
+            padding: 32px 28px 12px;
             text-align: center;
-            color: white;
           }
-          .logo {
-            font-size: 32px;
+          .brand {
+            font-size: 22px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #7c3aed;
             font-weight: 700;
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
           }
-          .tagline {
-            font-size: 14px;
-            opacity: 0.9;
-            font-weight: 400;
-          }
-          .content-section {
-            padding: 40px 30px;
-          }
-          .title {
-            color: #1e293b;
+          .headline {
             font-size: 24px;
             font-weight: 600;
-            margin-bottom: 16px;
+            margin: 24px 0 8px;
+            color: #0f172a;
+          }
+          .subtitle {
+            color: #475569;
+            font-size: 15px;
+            margin: 0 auto 24px;
+            line-height: 1.5;
+            max-width: 360px;
+          }
+          .card {
+            background: #f5f3ff;
+            border-radius: 16px;
+            padding: 28px;
+            margin: 0 28px 24px;
+            border: 1px solid #e9d5ff;
             text-align: center;
           }
-          .description {
-            color: #64748b;
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 32px;
-            text-align: center;
-          }
-          .otp-container {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 24px;
-            text-align: center;
-            margin: 32px 0;
-          }
-          .otp-code {
-            font-size: 42px;
+          .otp {
+            font-size: 44px;
             font-weight: 700;
-            color: #8b5cf6;
-            letter-spacing: 12px;
+            letter-spacing: 0.35em;
+            color: #5b21b6;
             margin: 0;
             font-family: 'Courier New', monospace;
           }
           .otp-label {
-            color: #64748b;
+            margin-top: 12px;
+            color: #4c1d95;
             font-size: 14px;
-            margin-top: 8px;
-            font-weight: 500;
+            letter-spacing: 0.04em;
           }
-          .expiry-note {
-            background: #fef3c7;
-            border: 1px solid #f59e0b;
-            border-radius: 8px;
-            padding: 12px 16px;
-            margin: 24px 0;
-            text-align: center;
-          }
-          .expiry-text {
-            color: #92400e;
+          .info {
+            padding: 0 28px 28px;
+            color: #475569;
             font-size: 14px;
-            font-weight: 500;
-            margin: 0;
+            line-height: 1.6;
           }
-          .security-note {
-            background: #f0fdf4;
-            border: 1px solid #22c55e;
+          .note {
+            background: #eef2ff;
+            border-left: 4px solid #7c3aed;
             border-radius: 8px;
             padding: 16px;
-            margin: 24px 0;
-          }
-          .security-text {
-            color: #166534;
-            font-size: 14px;
-            line-height: 1.5;
-            margin: 0;
+            margin: 20px 0 0;
+            color: #312e81;
           }
           .footer {
-            background: #f8fafc;
-            padding: 24px 30px;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid #e5e7eb;
+            padding: 24px 28px 32px;
             text-align: center;
-          }
-          .footer-text {
-            color: #64748b;
             font-size: 12px;
-            line-height: 1.5;
-            margin: 0;
+            color: #94a3b8;
           }
-          .footer-link {
-            color: #8b5cf6;
+          .footer a {
+            color: #7c3aed;
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
           }
-          .footer-link:hover {
+          .footer a:hover {
             text-decoration: underline;
           }
         </style>
       </head>
       <body>
-        <div class="container">
-          <div class="header-section">
-            <div class="logo">RoohX</div>
-            <div class="tagline">Crypto Trading Made Simple</div>
-          </div>
-          
-          <div class="content-section">
-            <h1 class="title">🔐 Verify Your Account</h1>
-            <p class="description">
-              Welcome to RoohX! To complete your registration and start trading, please enter the verification code below.
-            </p>
-            
-            <div class="otp-container">
-              <div class="otp-code">${token}</div>
-              <div class="otp-label">Your 4-digit verification code</div>
-            </div>
-            
-            <div class="expiry-note">
-              <p class="expiry-text">⏰ This code expires in 5 minutes for your security</p>
-            </div>
-            
-            <div class="security-note">
-              <p class="security-text">
-                <strong>Security Notice:</strong> RoohX will never ask you to share your password, credit card, or banking information via email. 
-                If you didn't request this code, please ignore this email.
-              </p>
-            </div>
-          </div>
-          
-          <div class="footer">
-            <p class="footer-text">
-              © 2024 RoohX. All rights reserved. | 
-              <a href="${domain}/privacy" class="footer-link">Privacy Policy</a> | 
-              <a href="${domain}/support" class="footer-link">Support</a>
-            </p>
-          </div>
-        </div>
+        <table role="presentation" aria-hidden="true" cellpadding="0" cellspacing="0" width="100%">
+          <tr>
+            <td align="center">
+              <div class="container">
+                <div class="header">
+                  <div class="brand">Exarpro</div>
+                  <h1 class="headline">Verify your account</h1>
+                  <p class="subtitle">
+                    Use the secure code below to complete your Exarpro sign up. The code expires in five minutes.
+                  </p>
+                </div>
+                <div class="card">
+                  <p class="otp">${token}</p>
+                  <div class="otp-label">One-time verification code</div>
+                </div>
+                <div class="info">
+                  Keep this code confidential. If you didn’t initiate this request, you can safely ignore this email—your account stays protected.
+                  <div class="note">
+                    Need help? Visit <a href="${domain}/support" target="_blank" rel="noopener noreferrer">${domain}/support</a> or reply to this message.
+                  </div>
+                </div>
+                <div class="footer">
+                  <div>Sending IP: ${process.env.NEXT_PUBLIC_SENDING_IP ?? 'Transactional channel'}</div>
+                  <div style="margin-top: 8px;">
+                    ${businessAddress}
+                  </div>
+                  <div style="margin-top: 8px;">
+                    View our <a href="${domain}/privacy">privacy policy</a>.
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </table>
       </body>
     </html>
   `;
 
   await resend.emails.send({
-    from: "RoohX <noreply@exar.online>",
+    from: 'Exarpro Security <noreply@exarpro.com>',
     to: email,
-    subject: "🔐 Verify your RoohX account",
+    subject: 'Verify your Exarpro account',
     html: emailHTML,
+    text: `Your Exarpro verification code is ${token}. It expires in five minutes. If you did not request this code, simply ignore the message.`,
   });
 };
 
 export const sendPasswordResetEmail = async (email: string, token: string) => {
-  // Use BETTER_AUTH_URL, fallback to VERCEL_URL, or localhost for development
-  const domain = process.env.BETTER_AUTH_URL || 
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-  
+  const domain =
+    process.env.BETTER_AUTH_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+  const businessAddress = process.env.EXARPRO_BUSINESS_ADDRESS ?? 'Exarpro, 651 N Broad St, Suite 201, Middletown, DE 19709';
+
   const emailHTML = `
-    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    <html dir="ltr" lang="en">
+    <!DOCTYPE html>
+    <html lang="en">
       <head>
-        <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
-        <meta name="x-apple-disable-message-reformatting" />
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="color-scheme" content="light" />
+        <meta name="supported-color-schemes" content="light" />
         <style>
+          :root {
+            color-scheme: light;
+          }
           body {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            color: #1e293b;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            background-color: #f8fafc;
+            color: #1c1f2b;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
             margin: 0;
-            padding: 20px;
-            min-height: 100vh;
+            padding: 32px 12px;
           }
           .container {
-            max-width: 600px;
+            max-width: 520px;
             margin: 0 auto;
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            background-color: #ffffff;
+            border-radius: 18px;
+            border: 1px solid #e5e7eb;
             overflow: hidden;
           }
-          .header-section {
-            background: linear-gradient(135deg, #ef4444 0%, #f97316 50%, #eab308 100%);
-            padding: 40px 30px;
+          .header {
+            padding: 32px 28px 12px;
             text-align: center;
-            color: white;
           }
-          .logo {
-            font-size: 32px;
+          .brand {
+            font-size: 22px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #7c3aed;
             font-weight: 700;
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
           }
-          .tagline {
-            font-size: 14px;
-            opacity: 0.9;
-            font-weight: 400;
-          }
-          .content-section {
-            padding: 40px 30px;
-          }
-          .title {
-            color: #1e293b;
+          .headline {
             font-size: 24px;
             font-weight: 600;
-            margin-bottom: 16px;
+            margin: 24px 0 8px;
+            color: #0f172a;
+          }
+          .subtitle {
+            color: #475569;
+            font-size: 15px;
+            margin: 0 auto 24px;
+            line-height: 1.5;
+            max-width: 360px;
+          }
+          .card {
+            background: #f5f3ff;
+            border-radius: 16px;
+            padding: 28px;
+            margin: 0 28px 24px;
+            border: 1px solid #e9d5ff;
             text-align: center;
           }
-          .description {
-            color: #64748b;
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 32px;
-            text-align: center;
-          }
-          .otp-container {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 24px;
-            text-align: center;
-            margin: 32px 0;
-          }
-          .otp-code {
-            font-size: 42px;
+          .otp {
+            font-size: 44px;
             font-weight: 700;
-            color: #ef4444;
-            letter-spacing: 12px;
+            letter-spacing: 0.35em;
+            color: #5b21b6;
             margin: 0;
             font-family: 'Courier New', monospace;
           }
           .otp-label {
-            color: #64748b;
+            margin-top: 12px;
+            color: #4c1d95;
             font-size: 14px;
-            margin-top: 8px;
-            font-weight: 500;
+            letter-spacing: 0.04em;
           }
-          .expiry-note {
-            background: #fef3c7;
-            border: 1px solid #f59e0b;
-            border-radius: 8px;
-            padding: 12px 16px;
-            margin: 24px 0;
-            text-align: center;
-          }
-          .expiry-text {
-            color: #92400e;
+          .info {
+            padding: 0 28px 28px;
+            color: #475569;
             font-size: 14px;
-            font-weight: 500;
-            margin: 0;
+            line-height: 1.6;
           }
-          .security-note {
-            background: #fef2f2;
-            border: 1px solid #fca5a5;
+          .note {
+            background: #eef2ff;
+            border-left: 4px solid #7c3aed;
             border-radius: 8px;
             padding: 16px;
-            margin: 24px 0;
-          }
-          .security-text {
-            color: #991b1b;
-            font-size: 14px;
-            line-height: 1.5;
-            margin: 0;
+            margin: 20px 0 0;
+            color: #312e81;
           }
           .footer {
-            background: #f8fafc;
-            padding: 24px 30px;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid #e5e7eb;
+            padding: 24px 28px 32px;
             text-align: center;
-          }
-          .footer-text {
-            color: #64748b;
             font-size: 12px;
-            line-height: 1.5;
-            margin: 0;
+            color: #94a3b8;
           }
-          .footer-link {
-            color: #ef4444;
+          .footer a {
+            color: #7c3aed;
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
           }
-          .footer-link:hover {
+          .footer a:hover {
             text-decoration: underline;
           }
         </style>
       </head>
       <body>
-        <div class="container">
-          <div class="header-section">
-            <div class="logo">RoohX</div>
-            <div class="tagline">Crypto Trading Made Simple</div>
-          </div>
-          
-          <div class="content-section">
-            <h1 class="title">🔑 Reset Your Password</h1>
-            <p class="description">
-              We received a request to reset your password. Use the code below to create a new password for your account.
-            </p>
-            
-            <div class="otp-container">
-              <div class="otp-code">${token}</div>
-              <div class="otp-label">Your 4-digit reset code</div>
-            </div>
-            
-            <div class="expiry-note">
-              <p class="expiry-text">⏰ This code expires in 5 minutes for your security</p>
-            </div>
-            
-            <div class="security-note">
-              <p class="security-text">
-                <strong>Security Notice:</strong> If you didn't request this password reset, please ignore this email. 
-                Your password will remain unchanged.
-              </p>
-            </div>
-          </div>
-          
-          <div class="footer">
-            <p class="footer-text">
-              © 2024 RoohX. All rights reserved. | 
-              <a href="${domain}/privacy" class="footer-link">Privacy Policy</a> | 
-              <a href="${domain}/support" class="footer-link">Support</a>
-            </p>
-          </div>
-        </div>
+        <table role="presentation" aria-hidden="true" cellpadding="0" cellspacing="0" width="100%">
+          <tr>
+            <td align="center">
+              <div class="container">
+                <div class="header">
+                  <div class="brand">Exarpro</div>
+                  <h1 class="headline">Password reset code</h1>
+                  <p class="subtitle">
+                    We received a request to reset your Exarpro password. Use the secure code below within five minutes to continue.
+                  </p>
+                </div>
+                <div class="card">
+                  <p class="otp">${token}</p>
+                  <div class="otp-label">Temporary reset code</div>
+                </div>
+                <div class="info">
+                  If you didn’t request this reset, you can ignore this email and your password will stay the same.
+                  <div class="note">
+                    Need help? Visit <a href="${domain}/support" target="_blank" rel="noopener noreferrer">${domain}/support</a> or reply to this message.
+                  </div>
+                </div>
+                <div class="footer">
+                  <div>Sending IP: ${process.env.NEXT_PUBLIC_SENDING_IP ?? 'Transactional channel'}</div>
+                  <div style="margin-top: 8px;">
+                    ${businessAddress}
+                  </div>
+                  <div style="margin-top: 8px;">
+                    View our <a href="${domain}/privacy">privacy policy</a>.
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </table>
       </body>
     </html>
   `;
 
   await resend.emails.send({
-    from: "RoohX <noreply@exar.online>",
+    from: 'Exarpro Security <noreply@exar.online>',
     to: email,
-    subject: "🔑 Reset your RoohX password",
+    subject: 'Reset your Exarpro password',
     html: emailHTML,
+    text: `We received a request to reset your Exarpro password. Your temporary code is ${token}. It expires in five minutes. Ignore this email if you did not request a reset.`,
   });
 };
