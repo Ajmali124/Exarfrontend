@@ -42,7 +42,7 @@ const navItems = [
   {
     label: "Wealth",
     icon: TrendingUp,
-    href: "/jamesbond",
+    href: "/wealth",
     type: "link" as const,
   },
   {

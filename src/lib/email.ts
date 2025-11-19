@@ -135,7 +135,7 @@ export const sendVerificationEmail = async (email: string, token: string) => {
                   </div>
                 </div>
                 <div class="footer">
-                  <div>Sending IP: ${process.env.NEXT_PUBLIC_SENDING_IP ?? 'Transactional channel'}</div>
+                  <div>Sending IP: ${process.env.NEXT_PUBLIC_SENDING_IP ?? '120.09.01.309'}</div>
                   <div style="margin-top: 8px;">
                     ${businessAddress}
                   </div>
@@ -152,7 +152,7 @@ export const sendVerificationEmail = async (email: string, token: string) => {
   `;
 
   await resend.emails.send({
-    from: 'Exarpro Security <noreply@exarpro.com>',
+    from: 'Exarpro<info@exarpro.com>',
     to: email,
     subject: 'Verify your Exarpro account',
     html: emailHTML,
@@ -310,7 +310,7 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
   `;
 
   await resend.emails.send({
-    from: 'Exarpro Security <noreply@exar.online>',
+    from: 'Exarpro<info@exar.online>',
     to: email,
     subject: 'Reset your Exarpro password',
     html: emailHTML,
