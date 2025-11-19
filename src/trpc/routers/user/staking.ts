@@ -124,6 +124,12 @@ export const stakingRouter = {
         // Calculate max earning
         const maxEarning = calculateMaxEarning(amount, packageInfo.cap);
 
+        // Find sponsor (the user who invited this user)
+        const invitedMember = await prisma.invitedMember.findFirst({
+          where: { userId: ctx.auth.user.id },
+          select: { sponsorId: true },
+        });
+
         // Create stake entry and update balance in transaction
         const result = await prisma.$transaction(async (tx) => {
           // Double-check balance hasn't changed (race condition protection)
@@ -168,6 +174,55 @@ export const stakingRouter = {
               },
             },
           });
+
+          // Distribute direct bonus to sponsor (5% of package amount)
+          if (invitedMember?.sponsorId) {
+            const directBonus = amount * 0.05; // 5% direct bonus
+
+            // Check if sponsor has any active staking package
+            const sponsorActiveStakes = await tx.stakingEntry.findFirst({
+              where: {
+                userId: invitedMember.sponsorId,
+                status: { in: ["active", "unstaking"] },
+              },
+            });
+
+            // Only give bonus if sponsor has an active package
+            if (sponsorActiveStakes) {
+              // Get or create sponsor balance
+              const sponsorBalance = await tx.userBalance.findUnique({
+                where: { userId: invitedMember.sponsorId },
+              });
+
+              if (sponsorBalance) {
+                // Add bonus to balance and maxEarn (maxcap)
+                await tx.userBalance.update({
+                  where: { userId: invitedMember.sponsorId },
+                  data: {
+                    balance: {
+                      increment: directBonus,
+                    },
+                    maxEarn: {
+                      increment: directBonus,
+                    },
+                  },
+                });
+
+                // Create transaction record for the bonus
+                await tx.transactionRecord.create({
+                  data: {
+                    userId: invitedMember.sponsorId,
+                    type: "reward",
+                    amount: directBonus,
+                    currency: "USDT",
+                    status: "completed",
+                    description: `Direct bonus from ${ctx.auth.user.email || ctx.auth.user.id} package subscription`,
+                  },
+                });
+              }
+            }
+            // If sponsor has no active package, bonus is flushed out (not given)
+          }
 
           return stakeEntry;
         });
