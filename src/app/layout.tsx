@@ -1,5 +1,5 @@
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "@/app/globals.css";
 import { ThemeProvider } from "../context/ThemeContext";
@@ -19,7 +19,6 @@ export const metadata: Metadata = {
   keywords:
     "crypto arbitrage, trading bots, cryptocurrency, algorithmic trading, DeFi, institutional trading",
   authors: [{ name: "CBA Exchange" }],
-  viewport: "width=device-width, initial-scale=1",
   robots: "index, follow",
   openGraph: {
     title: "Arbify AI - Institutional-Grade Crypto Arbitrage Platform",
@@ -43,6 +42,11 @@ export const metadata: Metadata = {
       "Deploy arbitrage bots across top exchanges with zero fees and institutional precision.",
     images: ["/og-image.jpg"],
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

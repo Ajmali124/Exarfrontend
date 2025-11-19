@@ -60,7 +60,7 @@ export const sendVerificationEmail = async (email: string, token: string) => {
             max-width: 360px;
           }
           .card {
-            background: #f5f3ff;
+            background: linear-gradient(180deg, #faf5ff 0%, #ffffff 100%);
             border-radius: 16px;
             padding: 28px;
             margin: 0 28px 24px;
@@ -135,7 +135,9 @@ export const sendVerificationEmail = async (email: string, token: string) => {
                   </div>
                 </div>
                 <div class="footer">
-                  <div>Sending IP: ${process.env.NEXT_PUBLIC_SENDING_IP ?? '120.09.01.309'}</div>
+                  ${(process.env.NEXT_PUBLIC_SENDING_IP
+                    ? `<div>Sending IP: ${process.env.NEXT_PUBLIC_SENDING_IP}</div>`
+                    : "")}
                   <div style="margin-top: 8px;">
                     ${businessAddress}
                   </div>
@@ -151,6 +153,8 @@ export const sendVerificationEmail = async (email: string, token: string) => {
     </html>
   `;
 
+  console.log("[sendVerificationEmail] Sending verification OTP to", email);
+
   await resend.emails.send({
     from: 'Exarpro<info@exarpro.com>',
     to: email,
@@ -158,6 +162,8 @@ export const sendVerificationEmail = async (email: string, token: string) => {
     html: emailHTML,
     text: `Your Exarpro verification code is ${token}. It expires in five minutes. If you did not request this code, simply ignore the message.`,
   });
+
+  console.log("[sendVerificationEmail] Email dispatched to", email);
 };
 
 export const sendPasswordResetEmail = async (email: string, token: string) => {
@@ -218,7 +224,7 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
             max-width: 360px;
           }
           .card {
-            background: #f5f3ff;
+            background: linear-gradient(180deg, #faf5ff 0%, #ffffff 100%);
             border-radius: 16px;
             padding: 28px;
             margin: 0 28px 24px;
@@ -293,7 +299,9 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
                   </div>
                 </div>
                 <div class="footer">
-                  <div>Sending IP: ${process.env.NEXT_PUBLIC_SENDING_IP ?? 'Transactional channel'}</div>
+                  ${(process.env.NEXT_PUBLIC_SENDING_IP
+                    ? `<div>Sending IP: ${process.env.NEXT_PUBLIC_SENDING_IP}</div>`
+                    : "")}
                   <div style="margin-top: 8px;">
                     ${businessAddress}
                   </div>
@@ -309,6 +317,8 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
     </html>
   `;
 
+  console.log("[sendPasswordResetEmail] Sending reset OTP to", email);
+
   await resend.emails.send({
     from: 'Exarpro<info@exar.online>',
     to: email,
@@ -316,4 +326,6 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
     html: emailHTML,
     text: `We received a request to reset your Exarpro password. Your temporary code is ${token}. It expires in five minutes. Ignore this email if you did not request a reset.`,
   });
+
+  console.log("[sendPasswordResetEmail] Email dispatched to", email);
 };

@@ -18,7 +18,7 @@ export const auth = betterAuth({
       overrideDefaultEmailVerification: true, // Use OTP instead of link verification
       otpLength: 4, // Generate 4-digit OTP codes
       expiresIn: 300, // OTP expires in 5 minutes (300 seconds)
-      sendVerificationOnSignUp: false, // We send manually after signup
+      sendVerificationOnSignUp: true, // Better Auth handles initial send
       async sendVerificationOTP({ email, otp, type }) {
         if (type === "email-verification") {
           await sendVerificationEmail(email, otp);

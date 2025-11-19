@@ -96,12 +96,6 @@ export function RegisterForm() {
         callbackURL: "/verify-otp",
       });
 
-      // Step 1b: Manually send verification OTP once after signup
-      await authClient.emailOtp.sendVerificationOtp({
-        email: values.email,
-        type: "email-verification",
-      });
-
       // Step 2: Get the user ID and name from the database
       // Query by email since better-auth creates the user immediately
       const user = await getUserByEmail(values.email);
@@ -131,7 +125,19 @@ export function RegisterForm() {
       toast.success("Account created! Please check your email for verification code.");
       router.push(`/verify-otp?email=${encodeURIComponent(values.email)}`);
     } catch (error: any) {
-      toast.error(error.message || "Failed to create account");
+    if (
+      error?.error === "USER_ALREADY_EXISTS" ||
+      error?.code === "USER_ALREADY_EXISTS" ||
+      error?.message?.toLowerCase().includes("already use") ||
+      error?.message?.toLowerCase().includes("existing")
+    ) {
+      toast.error("An account with this email already exists. Redirecting you to login…");
+      setTimeout(() => {
+        router.push(`/login?email=${encodeURIComponent(values.email)}`);
+      }, 1500);
+      return;
+    }
+    toast.error(error.message || "Failed to create account");
     }
   };
 
