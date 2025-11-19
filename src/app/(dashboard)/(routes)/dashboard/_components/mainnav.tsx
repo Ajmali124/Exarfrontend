@@ -65,8 +65,10 @@ const navItems = [
   },
 ];
 
+const comingSoonItems = new Set(["Rank", "Wealth", "AI Master", "More"]);
+
 const MainNav = () => {
-  const { text, bg, border } = useThemeClasses();
+  const { text, border } = useThemeClasses();
 
   const NavItem = ({
     item,
@@ -76,11 +78,21 @@ const MainNav = () => {
     index: number;
   }) => {
     const Icon = item.icon;
+    const isComingSoon = comingSoonItems.has(item.label);
+
+    const hoverProps = isComingSoon
+      ? {}
+      : {
+          whileHover: { scale: 1.05 },
+          whileTap: { scale: 0.95 },
+        };
+
     const content = (
       <motion.div
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="group flex flex-col items-center justify-center gap-1.5 cursor-pointer"
+        {...hoverProps}
+        className={`group flex flex-col items-center justify-center gap-1.5 ${
+          isComingSoon ? "cursor-not-allowed opacity-70" : "cursor-pointer"
+        }`}
       >
         <div
           className={`
@@ -88,8 +100,11 @@ const MainNav = () => {
             border-[0.5px]
             ${border.primary}
             transition-all duration-200
-            group-hover:border-green-500 dark:group-hover:border-purple-500
-            group-hover:bg-green-50/50 dark:group-hover:bg-purple-500/10
+            ${
+              isComingSoon
+                ? "bg-muted/40 border-dashed"
+                : "group-hover:border-green-500 dark:group-hover:border-purple-500 group-hover:bg-green-50/50 dark:group-hover:bg-purple-500/10"
+            }
             flex items-center justify-center
             backdrop-blur-sm
           `}
@@ -97,9 +112,13 @@ const MainNav = () => {
           <Icon
             className={`
               h-5 w-5
-              ${text.secondary}
+              ${isComingSoon ? "text-muted-foreground" : text.secondary}
               transition-colors duration-200
-              group-hover:text-green-600 dark:group-hover:text-purple-400
+              ${
+                isComingSoon
+                  ? ""
+                  : "group-hover:text-green-600 dark:group-hover:text-purple-400"
+              }
             `}
           />
         </div>
@@ -109,13 +128,30 @@ const MainNav = () => {
             ${text.secondary}
             transition-colors duration-200
             text-center
-            group-hover:text-green-600 dark:group-hover:text-purple-400
+            ${
+              isComingSoon
+                ? "text-muted-foreground"
+                : "group-hover:text-green-600 dark:group-hover:text-purple-400"
+            }
           `}
         >
           {item.label}
         </p>
+        {/* {isComingSoon && (
+          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+            Coming soon
+          </span>
+        )} */}
       </motion.div>
     );
+
+    if (isComingSoon) {
+      return (
+        <div key={item.label} className="w-full" title="Coming soon">
+          {content}
+        </div>
+      );
+    }
 
     return (
       <Link key={item.label} href={item.href} prefetch className="w-full">

@@ -4,8 +4,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useTheme } from "@/context/ThemeContext";
 
-const lightImages = ["/1light.png", "/2.png"];
-const darkImages = ["/1dark.png", "/3.png"];
+const lightImages = ["/10promolight.png", "/shardlight1.png"];
+const darkImages = ["/10promodark.png", "/sharddark.png"];
 
 export default function ImageSlider() {
   const { theme } = useTheme();

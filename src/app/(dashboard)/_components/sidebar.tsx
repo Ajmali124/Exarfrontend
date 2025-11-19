@@ -62,12 +62,6 @@ const routes = [
     href: "/rank",
     color: "text-secondary",
   },
-  {
-    label: "JamesBond007",
-    icon: Award,
-    href: "/jamesbond",
-    color: "text-secondary",
-  },
 ];
 
 // Desktop Sidebar Component
