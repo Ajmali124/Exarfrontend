@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { useCCXT } from "@/hooks/useCCXT";
 import { motion } from "framer-motion";
+import { useThemeClasses } from "@/lib/theme-utils";
 
 interface OrderbookProps {
   selectedCrypto: string;
@@ -10,6 +11,7 @@ interface OrderbookProps {
 
 const Orderbook = ({ selectedCrypto }: OrderbookProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { card, text, border } = useThemeClasses();
 
   // Use WebSocket hook to get real-time data
   const { data: tickerData, status, exchanges } = useCCXT(selectedCrypto);
@@ -105,7 +107,7 @@ const Orderbook = ({ selectedCrypto }: OrderbookProps) => {
     }, [exchange, index]);
 
     return (
-      <div className="flex items-center py-2 px-3 text-sm hover:bg-purple-50 transition-colors relative">
+      <div className="flex items-center py-2 px-3 text-sm transition-colors relative hover:bg-purple-50 dark:hover:bg-white/5">
         {/* Exchange Logo */}
         <div className="flex items-center gap-2 flex-1 min-w-[100px] relative">
           {/* Animated green bar - stable width */}
@@ -123,19 +125,19 @@ const Orderbook = ({ selectedCrypto }: OrderbookProps) => {
                 className="w-full h-full object-cover"
               />
             </div>
-            <span className="text-gray-900 text-xs font-medium capitalize">
+            <span className={`${text.primary} text-xs font-medium capitalize`}>
               {exchange}
             </span>
           </div>
         </div>
 
         {/* Size */}
-        <div className="text-gray-900 text-xs min-w-[80px] text-center">
+        <div className={`${text.primary} text-xs min-w-[80px] text-center`}>
           {bidSize ? bidSize.toFixed(4) : "--"}
         </div>
 
         {/* Bid */}
-        <div className="text-green-600 text-xs font-medium min-w-[100px] text-right">
+        <div className="text-green-600 dark:text-green-300 text-xs font-medium min-w-[100px] text-right">
           {formatNumber(bid)}
         </div>
       </div>
@@ -172,7 +174,7 @@ const Orderbook = ({ selectedCrypto }: OrderbookProps) => {
     }, [exchange, index]);
 
     return (
-      <div className="flex items-center py-2 px-3 text-sm hover:bg-purple-50 transition-colors relative">
+      <div className="flex items-center py-2 px-3 text-sm transition-colors relative hover:bg-purple-50 dark:hover:bg-white/5">
         {/* Exchange Logo */}
         <div className="flex items-center gap-2 flex-1 min-w-[100px] relative">
           {/* Animated red bar - stable width */}
@@ -190,19 +192,19 @@ const Orderbook = ({ selectedCrypto }: OrderbookProps) => {
                 className="w-full h-full object-cover"
               />
             </div>
-            <span className="text-gray-900 text-xs font-medium capitalize">
+            <span className={`${text.primary} text-xs font-medium capitalize`}>
               {exchange}
             </span>
           </div>
         </div>
 
         {/* Size */}
-        <div className="text-gray-900 text-xs min-w-[80px] text-center">
+        <div className={`${text.primary} text-xs min-w-[80px] text-center`}>
           {askSize ? askSize.toFixed(4) : "--"}
         </div>
 
         {/* Ask */}
-        <div className="text-red-600 text-xs font-medium min-w-[100px] text-right">
+        <div className="text-red-600 dark:text-red-300 text-xs font-medium min-w-[100px] text-right">
           {formatNumber(ask)}
         </div>
       </div>
@@ -211,12 +213,12 @@ const Orderbook = ({ selectedCrypto }: OrderbookProps) => {
 
   if (isCollapsed) {
     return (
-      <div className="bg-white rounded-lg border border-purple-200 p-4 shadow-sm">
+      <div className={`rounded-lg border p-4 shadow-sm ${card}`}>
         <div className="flex items-center justify-between">
-          <h3 className="text-gray-900 font-bold text-sm">Orderbook</h3>
+          <h3 className={`${text.primary} font-bold text-sm`}>Orderbook</h3>
           <button
             onClick={() => setIsCollapsed(false)}
-            className="text-gray-900 hover:text-purple-600 transition"
+            className={`${text.primary} hover:text-purple-600 dark:hover:text-purple-300 transition`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -239,15 +241,15 @@ const Orderbook = ({ selectedCrypto }: OrderbookProps) => {
   }
 
   return (
-    <div className="bg-white rounded-lg border border-purple-200 p-4 shadow-sm">
+    <div className={`rounded-lg border p-4 shadow-sm ${card}`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <h3 className="text-gray-900 font-bold text-base">Orderbook</h3>
+          <h3 className={`${text.primary} font-bold text-base`}>Orderbook</h3>
         </div>
         <button
           onClick={() => setIsCollapsed(true)}
-          className="text-gray-900 hover:text-purple-600 transition"
+          className={`${text.primary} hover:text-purple-600 dark:hover:text-purple-300 transition`}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -270,15 +272,15 @@ const Orderbook = ({ selectedCrypto }: OrderbookProps) => {
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Buy Exchange Section */}
         <div className="flex-1">
-          <div className="bg-purple-50/30 rounded-lg overflow-hidden border border-purple-100">
+          <div className={`rounded-lg overflow-hidden border ${border.primary} bg-purple-50/30 dark:bg-white/5`}>
             {/* Header */}
-            <div className="bg-purple-100/50 px-3 py-2 border-b border-purple-200">
+            <div className="bg-purple-100/50 dark:bg-white/5 px-3 py-2 border-b border-purple-200 dark:border-white/10">
               <div className="flex items-center text-xs font-bold">
                 <div className="flex-1 min-w-[100px]">
-                  <span className="text-gray-900">Buy Exchange</span>
+                  <span className={text.primary}>Buy Exchange</span>
                 </div>
-                <div className="text-gray-900 min-w-[80px] text-center">Size</div>
-                <div className="text-gray-900 min-w-[100px] text-right">Bid</div>
+                <div className={`${text.primary} min-w-[80px] text-center`}>Size</div>
+                <div className={`${text.primary} min-w-[100px] text-right`}>Bid</div>
               </div>
             </div>
 
@@ -303,13 +305,13 @@ const Orderbook = ({ selectedCrypto }: OrderbookProps) => {
                         className="flex items-center py-2 px-3 text-sm"
                       >
                         <div className="flex items-center gap-2 flex-1 min-w-[100px]">
-                          <div className="w-6 h-6 rounded-full bg-gray-100" />
-                          <span className="text-gray-400 text-xs">--</span>
+                        <div className="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700" />
+                        <span className="text-gray-400 dark:text-gray-500 text-xs">--</span>
                         </div>
-                        <div className="text-gray-400 text-xs min-w-[80px] text-center">
+                      <div className="text-gray-400 dark:text-gray-500 text-xs min-w-[80px] text-center">
                           --
                         </div>
-                        <div className="text-gray-400 text-xs font-medium min-w-[100px] text-right">
+                      <div className="text-gray-400 dark:text-gray-500 text-xs font-medium min-w-[100px] text-right">
                           --
                         </div>
                       </div>
@@ -324,11 +326,11 @@ const Orderbook = ({ selectedCrypto }: OrderbookProps) => {
                       className="flex items-center py-2 px-3 text-sm"
                     >
                       <div className="flex items-center gap-2 flex-1 min-w-[100px]">
-                        <div className="w-6 h-6 rounded-full bg-purple-100 animate-pulse" />
-                        <div className="h-3 w-16 bg-gray-200 rounded animate-pulse" />
+                        <div className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-500/30 animate-pulse" />
+                        <div className="h-3 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
                       </div>
-                      <div className="h-3 w-12 bg-gray-200 rounded animate-pulse mx-auto" />
-                      <div className="h-3 w-20 bg-gray-200 rounded animate-pulse ml-auto" />
+                      <div className="h-3 w-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mx-auto" />
+                      <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse ml-auto" />
                     </div>
                   ))}
                 </>
@@ -339,15 +341,15 @@ const Orderbook = ({ selectedCrypto }: OrderbookProps) => {
 
         {/* Sell Exchange Section */}
         <div className="flex-1">
-          <div className="bg-purple-50/30 rounded-lg overflow-hidden border border-purple-100">
+          <div className={`rounded-lg overflow-hidden border ${border.primary} bg-purple-50/30 dark:bg-white/5`}>
             {/* Header */}
-            <div className="bg-purple-100/50 px-3 py-2 border-b border-purple-200">
+            <div className="bg-purple-100/50 dark:bg-white/5 px-3 py-2 border-b border-purple-200 dark:border-white/10">
               <div className="flex items-center text-xs font-bold">
                 <div className="flex-1 min-w-[100px]">
-                  <span className="text-gray-900">Sell Exchange</span>
+                  <span className={text.primary}>Sell Exchange</span>
                 </div>
-                <div className="text-gray-900 min-w-[80px] text-center">Size</div>
-                <div className="text-gray-900 min-w-[100px] text-right">Ask</div>
+                <div className={`${text.primary} min-w-[80px] text-center`}>Size</div>
+                <div className={`${text.primary} min-w-[100px] text-right`}>Ask</div>
               </div>
             </div>
 
@@ -372,13 +374,13 @@ const Orderbook = ({ selectedCrypto }: OrderbookProps) => {
                         className="flex items-center py-2 px-3 text-sm"
                       >
                         <div className="flex items-center gap-2 flex-1 min-w-[100px]">
-                          <div className="w-6 h-6 rounded-full bg-gray-100" />
-                          <span className="text-gray-400 text-xs">--</span>
+                          <div className="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700" />
+                          <span className="text-gray-400 dark:text-gray-500 text-xs">--</span>
                         </div>
-                        <div className="text-gray-400 text-xs min-w-[80px] text-center">
+                        <div className="text-gray-400 dark:text-gray-500 text-xs min-w-[80px] text-center">
                           --
                         </div>
-                        <div className="text-gray-400 text-xs font-medium min-w-[100px] text-right">
+                        <div className="text-gray-400 dark:text-gray-500 text-xs font-medium min-w-[100px] text-right">
                           --
                         </div>
                       </div>
@@ -393,11 +395,11 @@ const Orderbook = ({ selectedCrypto }: OrderbookProps) => {
                       className="flex items-center py-2 px-3 text-sm"
                     >
                       <div className="flex items-center gap-2 flex-1 min-w-[100px]">
-                        <div className="w-6 h-6 rounded-full bg-purple-100 animate-pulse" />
-                        <div className="h-3 w-16 bg-gray-200 rounded animate-pulse" />
+                        <div className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-500/30 animate-pulse" />
+                        <div className="h-3 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
                       </div>
-                      <div className="h-3 w-12 bg-gray-200 rounded animate-pulse mx-auto" />
-                      <div className="h-3 w-20 bg-gray-200 rounded animate-pulse ml-auto" />
+                      <div className="h-3 w-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mx-auto" />
+                      <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse ml-auto" />
                     </div>
                   ))}
                 </>

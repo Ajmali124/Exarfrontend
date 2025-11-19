@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useBinanceWebSocket } from "@/hooks/useBinanceWebSocket";
+import { useThemeClasses } from "@/lib/theme-utils";
 
 interface TradingPairInfoProps {
   selectedCrypto: string;
@@ -13,6 +14,7 @@ const TradingPairInfo: React.FC<TradingPairInfoProps> = ({
   onCryptoSelect,
 }) => {
   const [isCryptoDrawerOpen, setIsCryptoDrawerOpen] = useState(false);
+  const { bg, text, border, card } = useThemeClasses();
   
   // Get real-time data from Binance WebSocket
   const { stats } = useBinanceWebSocket(selectedCrypto);
@@ -32,14 +34,14 @@ const TradingPairInfo: React.FC<TradingPairInfoProps> = ({
 
   return (
     <>
-      <div className="bg-white rounded-lg border border-purple-200 p-4 shadow-sm">
+      <div className={`rounded-lg border p-4 shadow-sm ${card}`}>
         {/* Top Section */}
         <div className="flex items-center mb-4">
           {/* Left: Crypto name and change */}
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsCryptoDrawerOpen(true)}
-              className="flex items-center gap-1 text-gray-900 hover:text-purple-600 transition"
+              className={`flex items-center gap-1 transition ${text.primary} hover:text-purple-600 dark:hover:text-purple-300`}
             >
               <span className="text-xl font-bold">{selectedCrypto}</span>
               <svg
@@ -58,20 +60,26 @@ const TradingPairInfo: React.FC<TradingPairInfoProps> = ({
               </svg>
             </button>
             {stats ? (
-              <div className={`border rounded-full px-2 py-0.5 ${
-                stats.priceChangePercent < 0 
-                  ? 'bg-red-50 border-red-200' 
-                  : 'bg-green-50 border-green-200'
-              }`}>
-                <span className={`text-xs font-medium ${
-                  stats.priceChangePercent < 0 ? 'text-red-600' : 'text-green-600'
-                }`}>
+              <div
+                className={`border rounded-full px-2 py-0.5 ${
+                  stats.priceChangePercent < 0
+                    ? "bg-red-50 border-red-200 dark:bg-red-500/10 dark:border-red-500/40"
+                    : "bg-green-50 border-green-200 dark:bg-green-500/10 dark:border-green-500/40"
+                }`}
+              >
+                <span
+                  className={`text-xs font-medium ${
+                    stats.priceChangePercent < 0
+                      ? "text-red-600 dark:text-red-300"
+                      : "text-green-600 dark:text-green-300"
+                  }`}
+                >
                   {stats.priceChangePercent > 0 ? '+' : ''}{stats.priceChangePercent.toFixed(2)}%
                 </span>
               </div>
             ) : (
-              <div className="bg-gray-50 border border-gray-200 rounded-full px-2 py-0.5">
-                <span className="text-gray-600 text-xs font-medium">--</span>
+              <div className={`border rounded-full px-2 py-0.5 ${bg.secondary} ${border.primary}`}>
+                <span className={`text-xs font-medium ${text.secondary}`}>--</span>
               </div>
             )}
           </div>
@@ -81,10 +89,10 @@ const TradingPairInfo: React.FC<TradingPairInfoProps> = ({
         <div className="grid grid-cols-2 gap-4">
           {/* Left: Index Price */}
           <div>
-            <p className="text-gray-600 text-xs mb-1">Index Price</p>
+            <p className={`${text.secondary} text-xs mb-1`}>Index Price</p>
             {stats ? (
               <>
-                <p className={`text-green-600 text-2xl font-bold mb-1 transition-all duration-300`}>
+                <p className="text-green-600 dark:text-green-300 text-2xl font-bold mb-1 transition-all duration-300">
                   {selectedCrypto.includes("BTC") 
                     ? Math.floor(stats.lastPrice).toLocaleString()
                     : selectedCrypto.includes("ETH")
@@ -97,7 +105,7 @@ const TradingPairInfo: React.FC<TradingPairInfoProps> = ({
                     ? stats.lastPrice.toFixed(5)
                     : stats.lastPrice.toFixed(2)}
                 </p>
-                <p className="text-gray-500 text-sm">
+                <p className={`${text.muted} text-sm`}>
                   ${selectedCrypto.includes("BTC") 
                     ? Math.floor(stats.lastPrice).toLocaleString()
                     : selectedCrypto.includes("ETH")
@@ -113,8 +121,8 @@ const TradingPairInfo: React.FC<TradingPairInfoProps> = ({
               </>
             ) : (
               <>
-                <p className="text-gray-400 text-2xl font-bold mb-1">--</p>
-                <p className="text-gray-400 text-sm">$--</p>
+                <p className="text-gray-400 dark:text-gray-500 text-2xl font-bold mb-1">--</p>
+                <p className="text-gray-400 dark:text-gray-500 text-sm">$--</p>
               </>
             )}
           </div>
@@ -122,28 +130,28 @@ const TradingPairInfo: React.FC<TradingPairInfoProps> = ({
           {/* Right: 24h Stats */}
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <span className="text-gray-600 text-xs">24h High</span>
-              <span className="text-gray-900 text-xs font-medium">
+              <span className={`${text.secondary} text-xs`}>24h High</span>
+              <span className={`${text.primary} text-xs font-medium`}>
                 {stats ? stats.highPrice.toFixed(2) : "--"}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-gray-600 text-xs">24h Low</span>
-              <span className="text-gray-900 text-xs font-medium">
+              <span className={`${text.secondary} text-xs`}>24h Low</span>
+              <span className={`${text.primary} text-xs font-medium`}>
                 {stats ? stats.lowPrice.toFixed(2) : "--"}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-gray-600 text-xs">24h Vol. (USDT)</span>
-              <span className="text-gray-900 text-xs font-medium">
+              <span className={`${text.secondary} text-xs`}>24h Vol. (USDT)</span>
+              <span className={`${text.primary} text-xs font-medium`}>
                 {stats ? (stats.volume / 1000000).toFixed(2) + "M" : "--"}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-gray-600 text-xs border-b border-dotted border-gray-400">
+              <span className={`${text.secondary} text-xs border-b border-dotted border-gray-400 dark:border-gray-600`}>
                 Funding
               </span>
-              <span className="text-gray-900 text-xs font-medium">--</span>
+              <span className={`${text.primary} text-xs font-medium`}>--</span>
             </div>
           </div>
         </div>
@@ -160,17 +168,17 @@ const TradingPairInfo: React.FC<TradingPairInfoProps> = ({
 
           {/* Drawer */}
           <div
-            className="relative w-full max-w-md bg-white rounded-t-3xl shadow-2xl h-[80vh] max-h-[80vh] flex flex-col"
+            className={`relative w-full max-w-md rounded-t-3xl shadow-2xl h-[80vh] max-h-[80vh] flex flex-col border ${card}`}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Handle */}
             <div className="flex justify-center pt-3 pb-2">
-              <div className="w-12 h-1 bg-gray-300 rounded-full" />
+              <div className="w-12 h-1 bg-gray-300 dark:bg-gray-600 rounded-full" />
             </div>
 
             {/* Header */}
-            <div className="px-6 pb-4 border-b border-purple-200">
-              <h3 className="text-lg font-bold text-gray-900">Select Trading Pair</h3>
+            <div className={`px-6 pb-4 border-b ${border.primary}`}>
+              <h3 className={`text-lg font-bold ${text.primary}`}>Select Trading Pair</h3>
             </div>
 
             {/* Crypto List */}
@@ -184,8 +192,8 @@ const TradingPairInfo: React.FC<TradingPairInfoProps> = ({
                   }}
                   className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-colors ${
                     selectedCrypto === crypto
-                      ? "bg-purple-50 text-purple-600"
-                      : "text-gray-900 hover:bg-purple-50"
+                      ? "bg-purple-50 text-purple-600 dark:bg-purple-500/20 dark:text-purple-200"
+                      : `${text.primary} hover:bg-purple-50 dark:hover:bg-white/5`
                   }`}
                 >
                   <span className="font-medium">{crypto}</span>

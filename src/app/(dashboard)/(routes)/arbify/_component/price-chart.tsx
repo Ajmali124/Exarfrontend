@@ -3,6 +3,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createChart, ColorType, IChartApi, ISeriesApi } from "lightweight-charts";
 import { CandlestickSeries } from "lightweight-charts";
+import { useTheme } from "@/context/ThemeContext";
+import { useThemeClasses } from "@/lib/theme-utils";
 
 interface PriceChartProps {
   symbol: string;
@@ -23,6 +25,9 @@ const PriceChart: React.FC<PriceChartProps> = ({ symbol }) => {
   const [loading, setLoading] = useState(true);
   const [timeframe, setTimeframe] = useState("1h");
   const [showMoreTimeframes, setShowMoreTimeframes] = useState(false);
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  const { card, text, border, bg } = useThemeClasses();
 
   // Binance API interval mapping
   const timeframeMap: { [key: string]: string } = {
@@ -45,26 +50,30 @@ const PriceChart: React.FC<PriceChartProps> = ({ symbol }) => {
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
+    const chartTextColor = isDark ? "#F5F5F5" : "#111827";
+    const chartBgColor = isDark ? "#05070F" : "#FFFFFF";
+    const gridColor = isDark ? "#1F2937" : "#E5E7EB";
+    const axisBorderColor = isDark ? "#1F2937" : "#E5E7EB";
 
     // Create chart
     const chart = createChart(chartContainerRef.current, {
       layout: {
-        textColor: "#333",
-        background: { type: ColorType.Solid, color: "#FFFFFF" },
+        textColor: chartTextColor,
+        background: { type: ColorType.Solid, color: chartBgColor },
       },
       width: chartContainerRef.current.clientWidth,
       height: 400,
       grid: {
-        vertLines: { color: "#E5E7EB" },
-        horzLines: { color: "#E5E7EB" },
+        vertLines: { color: gridColor },
+        horzLines: { color: gridColor },
       },
       timeScale: {
-        borderColor: "#E5E7EB",
+        borderColor: axisBorderColor,
         timeVisible: true,
         secondsVisible: false,
       },
       rightPriceScale: {
-        borderColor: "#E5E7EB",
+        borderColor: axisBorderColor,
         scaleMargins: {
           top: 0.1,
           bottom: 0.1,
@@ -116,14 +125,22 @@ const PriceChart: React.FC<PriceChartProps> = ({ symbol }) => {
         // Add breathing room for price axis
         chart.applyOptions({
           layout: {
-            textColor: "#333",
-            background: { type: ColorType.Solid, color: "#FFFFFF" },
+            textColor: chartTextColor,
+            background: { type: ColorType.Solid, color: chartBgColor },
           },
           rightPriceScale: {
+            borderColor: axisBorderColor,
             scaleMargins: {
               top: 0.1,
               bottom: 0.1,
             },
+          },
+          timeScale: {
+            borderColor: axisBorderColor,
+          },
+          grid: {
+            vertLines: { color: gridColor },
+            horzLines: { color: gridColor },
           },
         });
         
@@ -151,18 +168,18 @@ const PriceChart: React.FC<PriceChartProps> = ({ symbol }) => {
         chart.remove();
       }
     };
-  }, [symbol, timeframe]);
+  }, [symbol, timeframe, isDark]);
 
   const primaryTimeframes = ["1m", "15m", "1h", "1d"];
   const allTimeframes = ["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "1d", "1M"];
 
   return (
-    <div className="bg-white rounded-lg md:border md:border-purple-200 md:p-3 md:shadow-sm">
+    <div className={`rounded-lg md:border md:p-3 md:shadow-sm border ${card}`}>
       {/* Header with timeframe selector */}
       <div className="flex flex-col gap-3 mb-2 md:mb-4 px-2 md:px-0">
         {/* Title and primary timeframes */}
         <div className="flex items-center justify-between gap-2">
-          <h3 className="text-gray-900 font-bold text-sm md:text-base">{symbol} Chart</h3>
+          <h3 className={`${text.primary} font-bold text-sm md:text-base`}>{symbol} Chart</h3>
           {/* Mobile: Show first 4 timeframes, Desktop: Show all */}
           <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
             {primaryTimeframes.map((tf) => (
@@ -171,8 +188,8 @@ const PriceChart: React.FC<PriceChartProps> = ({ symbol }) => {
                 onClick={() => setTimeframe(tf)}
                 className={`px-2 md:px-3 py-1 text-xs rounded border transition-colors ${
                   timeframe === tf
-                    ? "bg-purple-100 border-purple-400 text-purple-600 font-medium"
-                    : "bg-white border-purple-200 text-gray-700 hover:bg-purple-50"
+                    ? "bg-purple-100 border-purple-400 text-purple-600 dark:bg-purple-500/20 dark:border-purple-400/60 dark:text-purple-100 font-medium"
+                    : `${bg.primary} ${border.primary} ${text.secondary} hover:bg-purple-50 dark:hover:bg-white/10`
                 }`}
               >
                 {tf}
@@ -183,8 +200,8 @@ const PriceChart: React.FC<PriceChartProps> = ({ symbol }) => {
               onClick={() => setShowMoreTimeframes(!showMoreTimeframes)}
               className={`px-2 md:px-3 py-1 text-xs rounded border transition-colors md:hidden ${
                 showMoreTimeframes
-                  ? "bg-purple-100 border-purple-400 text-purple-600 font-medium"
-                  : "bg-white border-purple-200 text-gray-700 hover:bg-purple-50"
+                  ? "bg-purple-100 border-purple-400 text-purple-600 dark:bg-purple-500/20 dark:border-purple-400/60 dark:text-purple-100 font-medium"
+                  : `${bg.primary} ${border.primary} ${text.secondary} hover:bg-purple-50 dark:hover:bg-white/10`
               }`}
             >
               More
@@ -193,7 +210,7 @@ const PriceChart: React.FC<PriceChartProps> = ({ symbol }) => {
         </div>
 
         {/* Additional timeframes row - hidden on desktop, shown on mobile when "More" is clicked */}
-        <div className={`flex items-center gap-2 flex-wrap md:hidden ${showMoreTimeframes ? 'block' : 'hidden'}`}>
+        <div className={`flex items-center gap-2 flex-wrap md:hidden ${showMoreTimeframes ? "block" : "hidden"}`}>
           {allTimeframes.filter(tf => !primaryTimeframes.includes(tf)).map((tf) => (
             <button
               key={tf}
@@ -203,8 +220,8 @@ const PriceChart: React.FC<PriceChartProps> = ({ symbol }) => {
               }}
               className={`px-3 py-1 text-xs rounded border transition-colors ${
                 timeframe === tf
-                  ? "bg-purple-100 border-purple-400 text-purple-600 font-medium"
-                  : "bg-white border-purple-200 text-gray-700 hover:bg-purple-50"
+                  ? "bg-purple-100 border-purple-400 text-purple-600 dark:bg-purple-500/20 dark:border-purple-400/60 dark:text-purple-100 font-medium"
+                  : `${bg.primary} ${border.primary} ${text.secondary} hover:bg-purple-50 dark:hover:bg-white/10`
               }`}
             >
               {tf}
@@ -220,8 +237,8 @@ const PriceChart: React.FC<PriceChartProps> = ({ symbol }) => {
               onClick={() => setTimeframe(tf)}
               className={`px-3 py-1 text-xs rounded border transition-colors ${
                 timeframe === tf
-                  ? "bg-purple-100 border-purple-400 text-purple-600 font-medium"
-                  : "bg-white border-purple-200 text-gray-700 hover:bg-purple-50"
+                  ? "bg-purple-100 border-purple-400 text-purple-600 dark:bg-purple-500/20 dark:border-purple-400/60 dark:text-purple-100 font-medium"
+                  : `${bg.primary} ${border.primary} ${text.secondary} hover:bg-purple-50 dark:hover:bg-white/10`
               }`}
             >
               {tf}
@@ -232,7 +249,7 @@ const PriceChart: React.FC<PriceChartProps> = ({ symbol }) => {
       
       {loading && (
         <div className="flex items-center justify-center h-[400px]">
-          <div className="text-gray-500 text-sm">Loading chart data...</div>
+          <div className={`${text.muted} text-sm`}>Loading chart data...</div>
         </div>
       )}
       <div ref={chartContainerRef} className="w-full px-0 md:px-0" style={{ height: "400px" }} />
