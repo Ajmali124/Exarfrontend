@@ -40,7 +40,7 @@ const FormDeposit = () => {
 
   const depositAddress = depositData?.address ?? "";
   
-  // Get minimum amount from NOWPayments response, fallback to default
+  // Get minimum amount from CoinPayments response, fallback to default
   const minCryptoAmount = depositData?.minPayAmount?.crypto;
   const minFiatAmount = depositData?.minPayAmount?.fiat;
   
@@ -53,8 +53,8 @@ const FormDeposit = () => {
         : minCryptoAmount.toFixed(6);
       return `≥ ${formatted} ${CURRENCY_LABEL}`;
     }
-    // Fallback if NOWPayments didn't return minimum
-    return "≥ 0.8 USDT";
+    // Fallback if CoinPayments didn't return minimum
+    return "≥ 0.6 USDT";
   };
 
   const MIN_AMOUNT_LABEL = getMinAmountLabel();

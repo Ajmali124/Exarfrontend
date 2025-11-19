@@ -78,19 +78,6 @@ const WithdrawForm = () => {
 
   return (
     <div className="w-full max-w-md mx-auto px-4 pb-24 mt-6 space-y-4">
-      <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
-        <div className="flex items-start gap-2">
-          <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
-          <p>
-            Withdrawals use NOWPayments custody. Configure{" "}
-            <code>NOWPAYMENTS_PAYOUT_EMAIL</code>,{" "}
-            <code>NOWPAYMENTS_PAYOUT_PASSWORD</code>, and{" "}
-            <code>NOWPAYMENTS_IPN_URL</code> in your environment before using
-            this form.
-          </p>
-        </div>
-      </div>
-
       <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
         <p className="font-medium">Available balance</p>
         <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -150,14 +137,10 @@ const WithdrawForm = () => {
           </p>
           <ul className="mt-2 space-y-1 list-disc pl-5">
             <li>Asset: USDT (BNB Smart Chain, BEP-20)</li>
-            {minAmountDisplay ? (
-              <li>Provider minimum: ≥ {minAmountDisplay} USDT</li>
-            ) : (
-              <li>
-                Minimum unavailable. Ensure NOWPAYMENTS_API_KEY is configured.
-              </li>
+            {minAmountDisplay && (
+              <li>Provider minimum (CoinPayments): ≥ {minAmountDisplay} USDT</li>
             )}
-            <li>Network fees are handled by NOWPayments.</li>
+            <li>Network fees are handled by CoinPayments.</li>
           </ul>
         </div>
 

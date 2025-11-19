@@ -39,6 +39,7 @@ model User {
   stakingEntries  StakingEntry[]
   teamRewardRecords TeamEarningRecord[] @relation("TeamEarningRecipient")
   teamRewardSources TeamEarningRecord[] @relation("TeamEarningSource")
+  coinpaymentsDepositAddress CoinpaymentsDepositAddress?
   
   @@unique([email])
   @@map("user")
@@ -209,5 +210,20 @@ model StakingEntry {
   @@index([startDate])
   @@index([packageId])
   @@map("staking_entry")
+}
+
+model CoinpaymentsDepositAddress {
+  id         String   @id @default(uuid())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String   @unique
+  label      String   @unique
+  address    String   @db.Text
+  payCurrency String  @default("usdtbep20")
+  paymentId  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId])
+  @@map("coinpayments_deposit_address")
 }
 

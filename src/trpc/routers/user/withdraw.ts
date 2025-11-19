@@ -1,4 +1,8 @@
-import { createUsdtBscWithdrawal, getUsdtBscMinimums, NowPaymentsError } from "@/lib/nowpayments";
+import {
+  createUsdtBscWithdrawal,
+  fetchUsdtBscMinimums,
+  CoinpaymentsError,
+} from "@/lib/coinpayment";
 import { protectedProcedure } from "../../init";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -11,7 +15,7 @@ const withdrawInputSchema = z.object({
 
 export const withdrawRouter = {
   getWithdrawalSettings: protectedProcedure.query(async () => {
-    const minimums = await getUsdtBscMinimums();
+    const minimums = await fetchUsdtBscMinimums();
 
     return {
       minAmount: minimums.cryptoAmount ?? null,
@@ -76,7 +80,7 @@ export const withdrawRouter = {
               amount,
               currency: "USDT",
               status: withdrawal.status ?? "pending",
-              description: "NOWPayments USDT-BSC withdrawal",
+              description: "CoinPayments USDT-BSC withdrawal",
               transactionHash: null,
               fromAddress: null,
               toAddress: withdrawal.address,
@@ -89,7 +93,7 @@ export const withdrawRouter = {
           status: withdrawal.status,
         };
       } catch (error) {
-        if (error instanceof NowPaymentsError) {
+        if (error instanceof CoinpaymentsError) {
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: error.message,
