@@ -1,6 +1,7 @@
-import { Resend } from 'resend';
+import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+
 
 export const sendVerificationEmail = async (email: string, token: string) => {
   const domain =
@@ -329,3 +330,5 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
 
   console.log("[sendPasswordResetEmail] Email dispatched to", email);
 };
+
+

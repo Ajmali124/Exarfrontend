@@ -86,9 +86,34 @@ export function RegisterForm() {
   }, [inviteCodeValue]);
 
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const storedEmail = sessionStorage.getItem("pendingSignupEmail");
+    const storedPassword = sessionStorage.getItem("pendingSignupPassword");
+    if (storedEmail) {
+      form.setValue("email", storedEmail);
+    }
+    if (storedPassword) {
+      form.setValue("password", storedPassword);
+    }
+  }, [form]);
+
   const onSubmit = async (values: z.infer<typeof registerSchema>) => {
     try {
-      // Step 1: Create user account with better-auth
+      const existingUser = await getUserByEmail(values.email);
+      if (existingUser) {
+        toast.error("An account with this email already exists. Redirecting you to login…");
+        setTimeout(() => {
+          router.push(`/login?email=${encodeURIComponent(values.email)}`);
+        }, 1500);
+        return;
+      }
+
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("pendingSignupEmail", values.email);
+        sessionStorage.setItem("pendingSignupPassword", values.password);
+      }
+
       await authClient.signUp.email({
         name: values.email,
         email: values.email,
@@ -96,8 +121,6 @@ export function RegisterForm() {
         callbackURL: "/verify-otp",
       });
 
-      // Step 2: Get the user ID and name from the database
-      // Query by email since better-auth creates the user immediately
       const user = await getUserByEmail(values.email);
       const userId = user?.id;
 
@@ -105,39 +128,25 @@ export function RegisterForm() {
         throw new Error("Failed to retrieve user ID after registration");
       }
 
-      // Step 3: Handle post-registration logic
-      // - Generate invite code for the new user
-      // - Generate username for the new user
-      // - Create user balance
-      // - Create InvitedMember record if invite code was provided
       const postRegResult = await handlePostRegistration({
         userId,
         userEmail: values.email,
-        userName: user?.name || values.email, // Use name from better-auth if available, fallback to email
+        userName: user?.name || values.email,
         inviteCode: values.inviteCode?.trim() || undefined,
       });
 
       if (!postRegResult.success) {
-        // Show error but don't block the flow
         toast.error(postRegResult.error || "Failed to complete registration setup");
       }
-      
+
       toast.success("Account created! Please check your email for verification code.");
       router.push(`/verify-otp?email=${encodeURIComponent(values.email)}`);
     } catch (error: any) {
-    if (
-      error?.error === "USER_ALREADY_EXISTS" ||
-      error?.code === "USER_ALREADY_EXISTS" ||
-      error?.message?.toLowerCase().includes("already use") ||
-      error?.message?.toLowerCase().includes("existing")
-    ) {
-      toast.error("An account with this email already exists. Redirecting you to login…");
-      setTimeout(() => {
-        router.push(`/login?email=${encodeURIComponent(values.email)}`);
-      }, 1500);
-      return;
-    }
-    toast.error(error.message || "Failed to create account");
+      if (typeof window !== "undefined") {
+        sessionStorage.removeItem("pendingSignupEmail");
+        sessionStorage.removeItem("pendingSignupPassword");
+      }
+      toast.error(error.message || "Failed to create account");
     }
   };
 

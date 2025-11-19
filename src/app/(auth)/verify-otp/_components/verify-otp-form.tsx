@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -37,6 +38,7 @@ export function VerifyOTPForm() {
   const email = searchParams.get("email");
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const [pendingPassword, setPendingPassword] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof otpSchema>>({
     resolver: zodResolver(otpSchema),
@@ -45,6 +47,18 @@ export function VerifyOTPForm() {
     },
   });
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const storedPassword = sessionStorage.getItem("pendingSignupPassword");
+    setPendingPassword(storedPassword);
+  }, []);
+
+  const clearPendingCredentials = () => {
+    if (typeof window === "undefined") return;
+    sessionStorage.removeItem("pendingSignupEmail");
+    sessionStorage.removeItem("pendingSignupPassword");
+  };
+
   const onSubmit = async (values: z.infer<typeof otpSchema>) => {
     try {
       if (!email) {
@@ -52,20 +66,31 @@ export function VerifyOTPForm() {
         return;
       }
 
-      // First verify the email with OTP
       await authClient.emailOtp.verifyEmail({
         email: email,
         otp: values.otp,
       });
 
-      // Then sign in the user automatically
-      await authClient.signIn.emailOtp({
-        email: email,
-        otp: values.otp,
-      });
+      if (pendingPassword) {
+        try {
+          await authClient.signIn.email({
+            email,
+            password: pendingPassword,
+          });
+          clearPendingCredentials();
+          toast.success("Email verified and you are now signed in!");
+          router.push("/dashboard");
+          return;
+        } catch (signinError: any) {
+          console.error("Auto sign-in after verification failed:", signinError);
+          toast.info("Email verified! Please sign in to continue.");
+        }
+      } else {
+        toast.success("Email verified! Please sign in to continue.");
+      }
 
-      toast.success("Email verified and signed in successfully!");
-      router.push("/dashboard");
+      clearPendingCredentials();
+      router.push(`/login?email=${encodeURIComponent(email)}`);
     } catch (error: any) {
       toast.error(error.message || "Invalid verification code");
     }

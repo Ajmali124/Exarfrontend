@@ -19,6 +19,7 @@ export const metadata: Metadata = {
   keywords:
     "crypto arbitrage, trading bots, cryptocurrency, algorithmic trading, DeFi, institutional trading",
   authors: [{ name: "CBA Exchange" }],
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://www.exarpro.com"),
   robots: "index, follow",
   openGraph: {
     title: "Arbify AI - Institutional-Grade Crypto Arbitrage Platform",
