@@ -202,7 +202,7 @@ const TeamPageContent = () => {
           
         </h2>
         <div className="space-y-2">
-          {Array.from({ length: 10 }, (_, i) => i + 1).map((level) => (
+          {Array.from({ length: 6 }, (_, i) => i + 1).map((level) => (
             <TeamLevelAccordion key={level} level={level} />
           ))}
         </div>
