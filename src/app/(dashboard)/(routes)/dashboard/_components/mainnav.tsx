@@ -28,9 +28,9 @@ const navItems = [
     type: "link" as const,
   },
   {
-    label: "Rank",
+    label: "Promotions",
     icon: Trophy,
-    href: "/rank",
+    href: "/promotions/promo",
     type: "link" as const,
   },
   {
@@ -65,7 +65,7 @@ const navItems = [
   },
 ];
 
-const comingSoonItems = new Set(["Rank", "Wealth", "AI Master", "More"]);
+const comingSoonItems = new Set(["Wealth", "AI Master", "More"]);
 
 const MainNav = () => {
   const { text, border } = useThemeClasses();

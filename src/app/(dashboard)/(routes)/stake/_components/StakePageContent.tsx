@@ -2,9 +2,12 @@
 
 import * as React from "react";
 import { useState } from "react";
-import { SquareStack, Wallet2 } from "lucide-react";
+import { SquareStack, Wallet2, Ticket } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Carousel,
   CarouselContent,
@@ -17,11 +20,18 @@ import PackageCard from "./PackageCard";
 import ActiveStakesSummary from "./ActiveStakesSummary";
 
 const StakePageContent = () => {
+  const router = useRouter();
   const [carouselApi, setCarouselApi] = useState<any>();
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const { data: packages, isLoading: packagesLoading } = trpc.user.getStakingPackages.useQuery();
   const { data: walletBalance } = trpc.user.getWalletBalance.useQuery();
+  
+  // Check for active package vouchers
+  const { data: activePackageVouchers = [] } = trpc.user.getVouchers.useQuery({
+    status: "active",
+    type: "package",
+  });
 
   const maxRoi = React.useMemo(() => {
     if (!packages || packages.length === 0) return 1;
@@ -77,6 +87,56 @@ const StakePageContent = () => {
       </section>
       <section className="relative z-10">
         <ActiveStakesSummary />
+      </section>
+
+      {/* Use Voucher Button Section */}
+      <section className="relative z-10">
+        <Card 
+          className={cn(
+            "relative overflow-hidden rounded-xl border border-emerald-400/20 dark:border-purple-500/25 bg-white/80 dark:bg-neutral-950/70 shadow-sm transition-all",
+            activePackageVouchers.length > 0 
+              ? "hover:shadow-md cursor-pointer hover:border-emerald-400/30 dark:hover:border-purple-500/30"
+              : "opacity-75"
+          )}
+          onClick={() => {
+            if (activePackageVouchers.length > 0) {
+              router.push("/voucher");
+            }
+          }}
+        >
+          <div className="p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-lg bg-green-400/20 dark:bg-purple-500/20 flex items-center justify-center">
+                <Ticket className="h-5 w-5 text-green-500 dark:text-purple-400" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                  Use Voucher
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {activePackageVouchers.length > 0
+                    ? `${activePackageVouchers.length} active voucher${activePackageVouchers.length > 1 ? "s" : ""} available`
+                    : "No available voucher"}
+                </p>
+              </div>
+            </div>
+            <Button
+              className={cn(
+                "bg-green-400 dark:bg-purple-500 hover:bg-green-500 dark:hover:bg-purple-600 text-white",
+                activePackageVouchers.length === 0 && "opacity-50 cursor-not-allowed"
+              )}
+              disabled={activePackageVouchers.length === 0}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (activePackageVouchers.length > 0) {
+                  router.push("/voucher");
+                }
+              }}
+            >
+              View Vouchers
+            </Button>
+          </div>
+        </Card>
       </section>
       <section className="relative z-10 space-y-5">
         {packagesLoading ? (

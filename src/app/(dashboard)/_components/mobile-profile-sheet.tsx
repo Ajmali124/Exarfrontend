@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -29,12 +30,16 @@ interface MobileProfileSheetProps {
 }
 
 const quickActions = [
-  { label: "Refer", icon: UserPlus, badge: undefined },
-  { label: "Vouchers", icon: Gift, badge: "4" as string | undefined },
-  { label: "Events", icon: Sparkles, badge: undefined },
+  { label: "Refer", icon: UserPlus, href: "/invite" },
+  { label: "Vouchers", icon: Gift, href: "/voucher" },
+  { label: "Events", icon: Sparkles, href: undefined },
 ] as const;
 
-type QuickAction = (typeof quickActions)[number];
+type QuickAction = {
+  label: string;
+  icon: typeof UserPlus | typeof Gift | typeof Sparkles;
+  href?: string;
+};
 
 const settingsItems = [
   { label: "Verification", value: "Verified" as string | undefined, icon: ShieldCheck },
@@ -78,6 +83,10 @@ const MobileProfileSheet = ({ children }: MobileProfileSheetProps) => {
   const { data: basicInfo } = trpc.user.getBasicInfo.useQuery(undefined, {
     enabled: open,
   });
+  const { data: vouchers } = trpc.user.getVouchers.useQuery(undefined, {
+    enabled: open,
+  });
+  
   const maskedUid = useMemo(() => {
     const id = ensureString(basicInfo?.id);
     if (!id) return "******";
@@ -92,6 +101,15 @@ const MobileProfileSheet = ({ children }: MobileProfileSheetProps) => {
     "User"
   );
   const profileImage = resolveProfileImage(basicInfo?.image);
+
+  // Count unused vouchers
+  const unusedVoucherCount = useMemo(() => {
+    if (!vouchers) return undefined;
+    const unused = vouchers.filter(
+      (v) => v.status === "active" && new Date(v.expiresAt) > new Date()
+    );
+    return unused.length > 0 ? unused.length.toString() : undefined;
+  }, [vouchers]);
 
   const copyUid = () => {
     if (typeof basicInfo?.id !== "string") return;
@@ -146,7 +164,12 @@ const MobileProfileSheet = ({ children }: MobileProfileSheetProps) => {
 
             <div className="grid grid-cols-3 gap-3 px-5 py-4 text-center text-xs">
               {quickActions.map((item) => (
-                <QuickActionTile key={item.label} action={item} />
+                <QuickActionTile 
+                  key={item.label} 
+                  action={item} 
+                  badge={item.label === "Vouchers" ? unusedVoucherCount : undefined}
+                  onClose={() => setOpen(false)}
+                />
               ))}
             </div>
 
@@ -195,22 +218,57 @@ const Section = ({
   </div>
 );
 
-const QuickActionTile = ({ action }: { action: QuickAction }) => {
+const QuickActionTile = ({ 
+  action, 
+  badge, 
+  onClose 
+}: { 
+  action: QuickAction; 
+  badge?: string | undefined;
+  onClose?: () => void;
+}) => {
   const Icon = action.icon;
-  return (
-    <button
-      type="button"
-      className="relative flex flex-col items-center justify-center gap-2 rounded-lg border border-border/70 bg-background px-3 py-2"
-    >
+  const router = useRouter();
+  
+  const handleClick = () => {
+    if (action.href) {
+      onClose?.();
+      router.push(action.href);
+    }
+  };
+
+  const content = (
+    <div className="relative flex flex-col items-center justify-center gap-2 rounded-lg border border-border/70 bg-background px-3 py-2">
       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
         <Icon className="h-4 w-4" />
       </div>
       <span>{action.label}</span>
-      {action.badge ? (
+      {badge ? (
         <span className="absolute -right-1.5 -top-1 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] text-white">
-          {action.badge}
+          {badge}
         </span>
       ) : null}
+    </div>
+  );
+
+  if (action.href) {
+    return (
+      <button
+        type="button"
+        onClick={handleClick}
+        className="w-full"
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      className="w-full"
+    >
+      {content}
     </button>
   );
 };

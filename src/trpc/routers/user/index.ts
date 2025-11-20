@@ -5,6 +5,8 @@ import { teamRouter } from "./team";
 import { stakingRouter } from "./staking";
 import { depositRouter } from "./deposit";
 import { withdrawRouter } from "./withdraw";
+import { voucherRouter } from "./voucher";
+import { promotionRouter } from "./promotion";
 
 /**
  * Main user router
@@ -28,5 +30,11 @@ export const userRouter = createTRPCRouter({
 
   // Withdrawal operations
   ...withdrawRouter,
+
+  // Voucher operations
+  ...voucherRouter,
+
+  // Promotion operations
+  ...promotionRouter,
 });
 

@@ -54,7 +54,24 @@ async function processUserEntries(
   let totalRewarded = 0;
   let onStakingReleased = 0;
   let overflowTotal = 0;
+  let voucherEarnings = 0; // Track earnings from vouchers separately
+  let realPackageEarnings = 0; // Track earnings from real packages for team distribution
   const entryResults: EntryDistributionResult[] = [];
+
+  // IMPORTANT: Check which entries came from vouchers
+  // Voucher earnings should NOT generate team earnings for sponsors
+  // Only real package earnings should be added to dailyEarning for team distribution
+  const entryIds = entries.map(e => e.id);
+  const vouchers = await tx.voucher.findMany({
+    where: {
+      appliedToStakeId: { in: entryIds },
+      status: "used",
+    },
+    select: {
+      appliedToStakeId: true,
+    },
+  });
+  const voucherStakeIds = new Set(vouchers.map(v => v.appliedToStakeId).filter(Boolean) as string[]);
 
   for (const entry of entries) {
     const amount = entry.amount ?? 0;
@@ -62,6 +79,52 @@ async function processUserEntries(
     const maxEarning = entry.maxEarning ?? 0;
     const totalEarned = entry.totalEarned ?? 0;
 
+    // Check if this entry came from a voucher
+    const isFromVoucher = voucherStakeIds.has(entry.id);
+
+    // Check if this is a flushed ROI entry (maxEarning = 0, typically from vouchers without max cap)
+    const isFlushedROI = maxEarning === 0;
+
+    // For flushed ROI, always provide payout without cap checking
+    if (isFlushedROI) {
+      const rawPayout = calculateDailyEarning(amount, roi);
+      
+      // Check if voucher ROI period has ended (if applicable)
+      // Note: This check would require linking to voucher table, which we'll add later if needed
+      
+      if (rawPayout > 0) {
+        // Flushed ROI - payout all, no cap tracking
+        await tx.transactionRecord.create({
+          data: {
+            userId,
+            type: "dailyReward",
+            amount: rawPayout,
+            currency: entry.currency ?? "USDT",
+            status: "completed",
+            description: `Daily ROI for ${entry.packageName ?? "staking package"} (Flushed - No Max Cap)`,
+          },
+        });
+
+        totalRewarded += rawPayout;
+        
+        // Track voucher earnings separately (don't count for team distribution)
+        if (isFromVoucher) {
+          voucherEarnings += rawPayout;
+        } else {
+          realPackageEarnings += rawPayout;
+        }
+        
+        entryResults.push({
+          entryId: entry.id,
+          packageName: entry.packageName ?? "Unknown package",
+          payout: rawPayout,
+          reachedCap: false, // Flushed ROI never reaches cap
+        });
+      }
+      continue; // Continue to next entry for flushed ROI
+    }
+
+    // Normal ROI distribution with max cap checking
     const remainingCap = Math.max(0, maxEarning - totalEarned);
     if (remainingCap <= 0) {
       if (entry.status !== "completed") {
@@ -111,6 +174,14 @@ async function processUserEntries(
     });
 
     totalRewarded += payout;
+    
+    // Track voucher earnings separately (don't count for team distribution)
+    if (isFromVoucher) {
+      voucherEarnings += payout;
+    } else {
+      realPackageEarnings += payout;
+    }
+    
     if (reachedCap) {
       onStakingReleased += amount;
     }
@@ -128,7 +199,11 @@ async function processUserEntries(
 
     if (totalRewarded > 0) {
       balanceUpdate.balance = { increment: totalRewarded };
-      balanceUpdate.dailyEarning = { increment: totalRewarded };
+      // Only add real package earnings to dailyEarning for team distribution
+      // Voucher earnings should NOT generate team earnings
+      if (realPackageEarnings > 0) {
+        balanceUpdate.dailyEarning = { increment: realPackageEarnings };
+      }
       balanceUpdate.latestEarning = totalRewarded;
     }
 

@@ -40,6 +40,8 @@ model User {
   teamRewardRecords TeamEarningRecord[] @relation("TeamEarningRecipient")
   teamRewardSources TeamEarningRecord[] @relation("TeamEarningSource")
   coinpaymentsDepositAddress CoinpaymentsDepositAddress?
+  vouchers Voucher[]
+  promotionRegistrations PromotionRegistration[]
   
   @@unique([email])
   @@map("user")
@@ -225,5 +227,79 @@ model CoinpaymentsDepositAddress {
 
   @@index([userId])
   @@map("coinpayments_deposit_address")
+}
+
+model Voucher {
+  id          String   @id @default(uuid())
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String?
+  
+  // Voucher identification
+  code        String?  @unique // Optional redemption code (for manual vouchers)
+  
+  // Voucher value and currency
+  value       Float    // Voucher value/amount
+  currency    String   @default("USDT")
+  
+  // Voucher type: 'package' (for buying staking packages), 'withdraw' (instant withdrawable), 'futures' (futures position), 'bonus' (general bonus)
+  type        String   // 'package', 'withdraw', 'futures', 'bonus', 'trading_fee'
+  
+  // Display information
+  title       String   // e.g., "Futures Position", "Staking Bonus", "Instant Withdrawal"
+  badge       String?  // e.g., "Position Voucher", "Package Voucher", "Withdrawal Voucher"
+  badgeColor  String?  @default("orange") // 'orange', 'blue', 'green', 'purple'
+  description String?  @db.Text // e.g., "The position will close automatically after 1D.; Up to 5x Leverage"
+  linkText    String?  @db.Text // e.g., "Designated pairs in Futures"
+  linkHref    String?  @db.Text // Optional link URL
+  
+  // Package-specific (if type is 'package')
+  packageId   Int?     // If voucher is for specific staking package
+  packageName String?  // Package name for display
+  
+  // ROI validity for package vouchers (in days)
+  roiValidityDays Int? // Number of days voucher provides ROI (3, 7, 14, 30 days)
+  roiEndDate      DateTime? // When voucher's ROI period ends (calculated from usedAt)
+  appliedToStakeId String? // Link to staking entry if voucher is applied to a stake
+  affectsMaxCap    Boolean @default(false) // Whether voucher has its own max cap (true = independent max cap, false = no max cap)
+  requiresRealPackage Boolean @default(false) // If true, voucher only works if user has purchased a real package (ROI is flushed without real package)
+  
+  // Status: 'active', 'used', 'expired', 'cancelled'
+  status      String   @default("active")
+  
+  // Dates
+  expiresAt   DateTime // Expiry date for the voucher (redemption deadline)
+  usedAt      DateTime? // When voucher was used
+  usedOnPackageId Int? // If used for package, track which package
+  
+  // Transaction tracking (if used)
+  transactionId String? // Link to transaction record if voucher was redeemed
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([type])
+  @@index([expiresAt])
+  @@index([code])
+  @@index([createdAt])
+  @@map("voucher")
+}
+
+model PromotionRegistration {
+  id            String   @id @default(uuid())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String   @unique // One registration per user per promotion
+  
+  promotionType String   @default("prelaunch") // Type of promotion
+  registeredAt  DateTime @default(now())
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
+  @@index([promotionType])
+  @@index([registeredAt])
+  @@map("promotion_registration")
 }
 
