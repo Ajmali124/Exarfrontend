@@ -4,11 +4,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useTheme } from "@/context/ThemeContext";
 
-const lightImages = ["/10promolight.png", "/shardlight1.png"];
+const lightImages = ["/10promolight.png", "/shardlight.png"];
 const darkImages = ["/10promodark.png", "/sharddark.png"];
 
 export default function ImageSlider() {
-  const { theme } = useTheme();
+  const { theme } = useTheme();  
   const [mounted, setMounted] = useState(false);
   
   // State to track current index and direction
