@@ -372,17 +372,32 @@ export const voucherRouter = {
             });
           }
 
-          const updatedVoucher = await tx.voucher.update({
-            where: { id: voucher.id },
-            data: {
-              userId: ctx.auth.user.id,
-              status: "used",
-              usedAt: new Date(),
-              usedOnPackageId: input.packageId || null,
-            },
-          });
+          // For package vouchers: only assign to user, keep status as "active"
+          // User will use it later with "Use Now" button
+          // For withdraw vouchers: mark as used and add to balance immediately
+          if (voucher.type === "package") {
+            // Package voucher - just assign to user, keep active
+            const updatedVoucher = await tx.voucher.update({
+              where: { id: voucher.id },
+              data: {
+                userId: ctx.auth.user.id,
+                // Keep status as "active" - user will use it later
+                // Don't set usedAt or usedOnPackageId yet
+              },
+            });
 
-          if (voucher.type === "withdraw") {
+            return updatedVoucher;
+          } else if (voucher.type === "withdraw") {
+            // Withdraw voucher - mark as used and add to balance immediately
+            const updatedVoucher = await tx.voucher.update({
+              where: { id: voucher.id },
+              data: {
+                userId: ctx.auth.user.id,
+                status: "used",
+                usedAt: new Date(),
+              },
+            });
+
             await tx.userBalance.upsert({
               where: { userId: ctx.auth.user.id },
               create: {
@@ -404,9 +419,20 @@ export const voucherRouter = {
                 description: `Voucher redeemed: ${voucher.title}`,
               },
             });
-          }
 
-          return updatedVoucher;
+            return updatedVoucher;
+          } else {
+            // Other voucher types - just assign to user
+            const updatedVoucher = await tx.voucher.update({
+              where: { id: voucher.id },
+              data: {
+                userId: ctx.auth.user.id,
+                // Keep status as "active" for other types too
+              },
+            });
+
+            return updatedVoucher;
+          }
         });
 
         return {
