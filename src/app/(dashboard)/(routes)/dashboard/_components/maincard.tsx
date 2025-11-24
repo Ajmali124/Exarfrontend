@@ -66,21 +66,6 @@ const MainCard = () => {
               }}
             ></motion.div>
           </motion.div>
-
-          {/* Welcome Text */}
-          {/* <div className="flex flex-col">
-            <p className={`text-xs ${text.secondary} font-semibold`}>
-              Welcome Back!
-            </p>
-            <p
-              className={cn(
-                `text-sm font-bold leading-tight ${text.primary}`,
-                poppins.className
-              )}
-            >
-              {isLoading ? "Loading..." : `Hello ${displayName} 💫`}
-            </p>
-          </div> */}
         </div>
 
         {/* Right Section: Deposit Button */}
