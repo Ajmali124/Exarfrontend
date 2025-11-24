@@ -72,14 +72,29 @@ export function LoginForm() {
       await authClient.signIn.email({
         email: values.email,
         password: values.password,
-        callbackURL: "/dashboard",
       });
       
+      // Use window.location for full page reload to ensure session is properly set
+      // This ensures the session cookie is read and the user is authenticated
       toast.success("Welcome back!");
-      router.push("/dashboard");
+      window.location.href = "/dashboard";
     } catch (error: any) {
+      const errorMessage = error.message?.toLowerCase() || "";
+      const errorStatus = error.status;
+      
+      // Handle wrong password error specifically
+      if (
+        errorMessage.includes("password") ||
+        errorMessage.includes("invalid credentials") ||
+        errorMessage.includes("incorrect password") ||
+        errorStatus === 401
+      ) {
+        showError("Wrong Password", "The password you entered is incorrect. Please try again or use 'Forgot password?' to reset it.");
+        return;
+      }
+      
       // Handle email verification error
-      if (error.status === 403 || error.message?.toLowerCase().includes("email") || error.message?.toLowerCase().includes("verify")) {
+      if (errorStatus === 403 || errorMessage.includes("email") || errorMessage.includes("verify")) {
         try {
           // Send OTP automatically when email is not verified
           await authClient.emailOtp.sendVerificationOtp({
@@ -95,9 +110,9 @@ export function LoginForm() {
           );
         }
       } else {
-        // Show other errors in dialog (wrong password, etc.)
-        const errorMessage = error.message || "Failed to sign in. Please check your credentials and try again.";
-        showError("Sign In Failed", errorMessage);
+        // Show other errors in dialog
+        const genericErrorMessage = error.message || "Failed to sign in. Please check your credentials and try again.";
+        showError("Sign In Failed", genericErrorMessage);
       }
     }
   };
