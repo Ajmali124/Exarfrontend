@@ -12,6 +12,13 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: true, // Require email verification to login
   },
+  trustedOrigins: [
+    "https://www.exarpro.com",
+    "http://localhost:3000",
+    "http://localhost:8081", // Expo default
+    "exp://localhost:8081",
+    "exp://192.168.100.58:8081"  // Expo dev
+  ],
   plugins: [
     emailOTP({
       allowedAttempts: 5,
