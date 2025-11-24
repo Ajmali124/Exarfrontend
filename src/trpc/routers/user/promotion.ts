@@ -190,6 +190,8 @@ export async function grantPromotionVoucher(
     description?: string;
     badge?: string;
     badgeColor?: "orange" | "blue" | "green" | "purple";
+    packageId?: number; // Package ID this voucher is associated with (for package purchase rewards)
+    packageName?: string; // Package name this voucher is associated with
   }
 ) {
   try {
@@ -240,6 +242,8 @@ export async function grantPromotionVoucher(
       userId,
       roiValidityDays: rewardConfig.roiDays,
       affectsMaxCap: rewardConfig.affectsMaxCap || false,
+      packageId: rewardConfig.packageId,
+      packageName: rewardConfig.packageName,
     });
 
     return {
@@ -466,6 +470,8 @@ export async function checkAndGrantPackageReward(userId: string, packageId: numb
       description: `Pre-Launch Promotion: ${packageInfo.name} Package Purchase`,
       badge: "Package Reward",
       badgeColor: packageId === 2 ? "purple" : "blue", // Silver Node gets purple badge
+      packageId: packageId, // Store which package this reward is for
+      packageName: packageInfo.name, // Store package name
     });
 
     return result;

@@ -507,9 +507,42 @@ export const voucherRouter = {
         // Find matching package based on voucher value or packageId
         let packageInfo;
         if (voucher.packageId !== null && voucher.packageId !== undefined) {
+          // Use specified packageId if available
           packageInfo = STAKING_PACKAGES.find((p) => p.id === voucher.packageId);
+        } else if (voucher.packageName) {
+          // Try to find package by name
+          packageInfo = STAKING_PACKAGES.find((p) => 
+            p.name.toLowerCase() === voucher.packageName?.toLowerCase()
+          );
         } else {
-          packageInfo = findPackageForAmount(voucher.value);
+          // Try to infer package from voucher title/description for package purchase rewards
+          // Format: "$30 Silver Node Purchase Reward" -> Silver Node
+          const titleLower = (voucher.title || "").toLowerCase();
+          const descriptionLower = (voucher.description || "").toLowerCase();
+          
+          // Check if title/description mentions a package name
+          for (const pkg of STAKING_PACKAGES) {
+            const packageNameLower = pkg.name.toLowerCase();
+            if (titleLower.includes(packageNameLower) || descriptionLower.includes(packageNameLower)) {
+              packageInfo = pkg;
+              console.log(`Inferred package ${pkg.name} (ID: ${pkg.id}) from voucher title/description`);
+              break;
+            }
+          }
+          
+          // If still no match, try exact value match
+          if (!packageInfo) {
+            packageInfo = findPackageForAmount(voucher.value);
+          }
+          
+          // If no exact match, use Trial Node (packageId: 0) as default for promotional vouchers
+          // This allows vouchers with arbitrary values to still create stakes
+          if (!packageInfo) {
+            packageInfo = STAKING_PACKAGES.find((p) => p.id === 0); // Trial Node
+            if (packageInfo) {
+              console.log(`Using Trial Node package for voucher value $${voucher.value} (no match found)`);
+            }
+          }
         }
 
         if (!packageInfo) {
@@ -519,12 +552,13 @@ export const voucherRouter = {
           });
         }
 
-        // Verify voucher value matches package amount
+        // For promotion vouchers with arbitrary values, allow using the voucher value
+        // even if it doesn't exactly match package amount
+        // The stake will use voucher.value as amount, but package ROI and cap settings
         if (voucher.value !== packageInfo.amount) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: `Voucher value ($${voucher.value}) does not match package amount ($${packageInfo.amount})`,
-          });
+          // Allow non-matching values for promotional vouchers (they use voucher value as stake amount)
+          // Only log a warning, don't block usage
+          console.log(`Voucher value ($${voucher.value}) doesn't match package amount ($${packageInfo.amount}), using voucher value as stake amount with ${packageInfo.name} settings`);
         }
 
         // Check if voucher requires a real package purchase
@@ -572,22 +606,14 @@ export const voucherRouter = {
           }
         }
 
-        // Calculate max earning based on voucher type
-        let maxEarning = 0;
-        if (affectsMaxCap) {
-          // Voucher has its own independent max cap
-          maxEarning = calculateMaxEarning(voucher.value, packageInfo.cap);
-        } else {
-          // Voucher provides ROI but no max cap tracking (flushed ROI)
-          maxEarning = 0; // No max cap, ROI is flushed
-        }
+        // For voucher stakes, always flush ROI (no max cap) and use 14 days
+        // Vouchers use the package's ROI rate but don't have a max cap
+        const maxEarning = 0; // Always flushed for vouchers (no max cap tracking)
+        const voucherROIDays = 14; // Always 14 days for voucher stakes
 
-        // Calculate ROI end date if voucher has validity period
-        let roiEndDate: Date | null = null;
-        if ((voucher as any).roiValidityDays) {
-          roiEndDate = new Date();
-          roiEndDate.setDate(roiEndDate.getDate() + (voucher as any).roiValidityDays);
-        }
+        // Calculate ROI end date (always 14 days for vouchers)
+        const roiEndDate = new Date();
+        roiEndDate.setDate(roiEndDate.getDate() + voucherROIDays);
 
         // Find sponsor for team rewards
         const invitedMember = await prisma.invitedMember.findFirst({
@@ -612,17 +638,17 @@ export const voucherRouter = {
           }
 
           // Create stake entry
-          // Note: If maxEarning is 0, ROI will be flushed (no max cap tracking)
+          // Voucher stakes use "Voucher Position" as name, package ROI but no cap, and 14 days ROI
           const stakeEntry = await tx.stakingEntry.create({
             data: {
               userId: ctx.auth.user.id,
-              packageName: packageInfo.name,
-              packageId: packageInfo.id,
+              packageName: "Voucher Position", // Always use "Voucher Position" for vouchers
+              packageId: packageInfo.id, // Keep packageId for reference (which package's ROI to use)
               amount: voucher.value, // Stake amount = voucher value
               currency: voucher.currency || "USDT",
-              dailyROI: packageInfo.roi,
-              cap: packageInfo.cap,
-              maxEarning, // If affectsMaxCap=true: has max cap, else: 0 (flushed ROI)
+              dailyROI: packageInfo.roi, // Use package ROI (e.g., 1.1% for Silver Node)
+              cap: 0, // No cap for vouchers (flushed ROI)
+              maxEarning: 0, // Always flushed for vouchers (no max cap tracking)
               totalEarned: 0,
               status: "active",
               startDate: new Date(),
@@ -637,7 +663,7 @@ export const voucherRouter = {
               usedAt: new Date(),
               usedOnPackageId: packageInfo.id,
               appliedToStakeId: stakeEntry.id, // Link voucher to stake
-              roiEndDate, // Set ROI end date based on validity period
+              roiEndDate, // Set ROI end date (14 days for vouchers)
             } as any, // Type assertion until Prisma client is regenerated
           });
 
