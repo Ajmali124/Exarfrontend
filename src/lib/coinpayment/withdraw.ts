@@ -20,6 +20,9 @@ function resolveStatus(statusCode?: number, statusText?: string): string {
   return STATUS_MAP[statusCode ?? -1] ?? statusText?.toLowerCase() ?? "pending";
 }
 
+// Application-level minimum withdrawal (enforced before CoinPayments)
+const APP_MIN_WITHDRAWAL = 10; // $10 minimum
+
 export async function createUsdtBscWithdrawal(
   params: CreateWithdrawalParams
 ): Promise<{
@@ -37,6 +40,13 @@ export async function createUsdtBscWithdrawal(
     );
   }
 
+  // Enforce application minimum ($10)
+  if (amount < APP_MIN_WITHDRAWAL) {
+    throw new CoinpaymentsError(
+      `Minimum withdrawal is $${APP_MIN_WITHDRAWAL} USDT.`
+    );
+  }
+
   const address = params.address?.trim();
   if (!address) {
     throw new CoinpaymentsError("Withdrawal address is required.");
@@ -44,13 +54,15 @@ export async function createUsdtBscWithdrawal(
 
   const { cryptoAmount: minCryptoAmount } = await fetchUsdtBscMinimums();
 
-  if (
-    typeof minCryptoAmount === "number" &&
-    minCryptoAmount > 0 &&
-    amount + Number.EPSILON < minCryptoAmount
-  ) {
+  // Use the higher of app minimum or CoinPayments minimum
+  const effectiveMinimum = Math.max(
+    APP_MIN_WITHDRAWAL,
+    minCryptoAmount ?? APP_MIN_WITHDRAWAL
+  );
+
+  if (amount + Number.EPSILON < effectiveMinimum) {
     throw new CoinpaymentsError(
-      `Minimum withdrawal is ${minCryptoAmount} USDT on BNB Smart Chain.`
+      `Minimum withdrawal is ${effectiveMinimum} USDT on BNB Smart Chain.`
     );
   }
 

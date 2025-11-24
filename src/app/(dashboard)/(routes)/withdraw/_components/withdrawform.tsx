@@ -19,19 +19,38 @@ const WithdrawForm = () => {
   const requestWithdrawal = trpc.user.requestWithdrawal.useMutation();
 
   const balance = walletData?.balance ?? 0;
-  const minAmount = withdrawalSettings?.minAmount ?? null;
-  const minAmountDisplay = minAmount ? minAmount.toFixed(6) : null;
+  const minAmount = withdrawalSettings?.minAmount ?? 10; // Default minimum (what user types)
+  const minAmountDisplay = minAmount ? minAmount.toFixed(2) : "10.00";
+  const minReceiveAmount = withdrawalSettings?.minReceiveAmount ?? 9.40; // Minimum user will receive after fees
+  const feeThreshold = withdrawalSettings?.feeThreshold ?? 30;
+  const feePercentage = withdrawalSettings?.feePercentage ?? 6;
 
   const parsedAmount = useMemo(() => {
     const parsed = Number(amount);
     return Number.isFinite(parsed) ? parsed : NaN;
   }, [amount]);
 
+  // NEW LOGIC: Amount user types is total deducted, fee comes out of that
+  // Calculate fee: 6% for amounts under $30, 0% for $30+
+  const withdrawalFee = useMemo(() => {
+    if (Number.isNaN(parsedAmount) || parsedAmount <= 0) return 0;
+    if (parsedAmount >= feeThreshold) return 0;
+    return parsedAmount * (feePercentage / 100);
+  }, [parsedAmount, feeThreshold, feePercentage]);
+
+  // Amount user will receive (what we send to CoinPayments)
+  const amountToReceive = useMemo(() => {
+    if (Number.isNaN(parsedAmount) || parsedAmount <= 0) return 0;
+    return parsedAmount - withdrawalFee;
+  }, [parsedAmount, withdrawalFee]);
+
+  // Total deduction = what user types (this is what gets deducted from balance)
+  const totalDeduction = parsedAmount;
+
   const amountInvalid = Number.isNaN(parsedAmount) || parsedAmount <= 0;
   const exceedsBalance =
-    !Number.isNaN(parsedAmount) && parsedAmount > balance + Number.EPSILON;
+    !Number.isNaN(parsedAmount) && totalDeduction > balance + Number.EPSILON;
   const belowMinimum =
-    minAmount !== null &&
     !Number.isNaN(parsedAmount) &&
     parsedAmount + Number.EPSILON < minAmount;
   const addressInvalid = address.trim().length < 10;
@@ -104,12 +123,12 @@ const WithdrawForm = () => {
           )}
           {hasSubmitted && exceedsBalance && (
             <p className="text-xs text-red-500">
-              Amount exceeds your available balance.
+              Insufficient balance. You have {balance.toFixed(2)} USDT, but need {totalDeduction.toFixed(2)} USDT.
             </p>
           )}
           {hasSubmitted && belowMinimum && (
             <p className="text-xs text-red-500">
-              Minimum withdrawal is {minAmountDisplay} USDT (BNB Smart Chain).
+              Minimum withdrawal is ${minAmountDisplay} USDT (you will receive ${minReceiveAmount.toFixed(2)} USDT after fees).
             </p>
           )}
         </div>
@@ -137,10 +156,29 @@ const WithdrawForm = () => {
           </p>
           <ul className="mt-2 space-y-1 list-disc pl-5">
             <li>Asset: USDT (BNB Smart Chain, BEP-20)</li>
-            {minAmountDisplay && (
-              <li>Provider minimum (CoinPayments): ≥ {minAmountDisplay} USDT</li>
+            <li>Minimum withdrawal: ${minAmountDisplay} USDT (you receive ${minReceiveAmount.toFixed(2)} USDT)</li>
+            <li>
+              Fees: {feePercentage}% for withdrawals under ${feeThreshold}, 0% for ${feeThreshold}+
+            </li>
+            <li className="text-gray-600 dark:text-gray-400 italic">
+              Note: The amount you type is the total deducted from your balance. Fees are deducted from this amount.
+            </li>
+            {!Number.isNaN(parsedAmount) && parsedAmount > 0 && (
+              <>
+                <li className="mt-2 font-medium">Current withdrawal:</li>
+                <li className="pl-2">Amount you type: {parsedAmount.toFixed(2)} USDT</li>
+                <li className="pl-2">
+                  Fee ({feePercentage}%): {withdrawalFee > 0 ? `${withdrawalFee.toFixed(2)} USDT` : "No fee"}
+                </li>
+                <li className="pl-2 font-semibold text-green-600 dark:text-green-400">
+                  You will receive: {amountToReceive.toFixed(2)} USDT
+                </li>
+                <li className="pl-2 text-gray-600 dark:text-gray-400">
+                  Total deducted from balance: {totalDeduction.toFixed(2)} USDT
+                </li>
+              </>
             )}
-            <li>Network fees are handled by CoinPayments.</li>
+            <li className="mt-2">Network fees are handled by CoinPayments.</li>
           </ul>
         </div>
 

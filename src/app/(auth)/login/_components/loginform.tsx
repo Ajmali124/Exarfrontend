@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -23,6 +24,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useTheme } from "@/context/ThemeContext";
@@ -37,6 +46,15 @@ export function LoginForm() {
   const router = useRouter();
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const [errorDialog, setErrorDialog] = useState<{
+    open: boolean;
+    title: string;
+    message: string;
+  }>({
+    open: false,
+    title: "",
+    message: "",
+  });
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -44,6 +62,10 @@ export function LoginForm() {
       password: "",
     },
   });
+
+  const showError = (title: string, message: string) => {
+    setErrorDialog({ open: true, title, message });
+  };
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     try {
@@ -57,11 +79,25 @@ export function LoginForm() {
       router.push("/dashboard");
     } catch (error: any) {
       // Handle email verification error
-      if (error.status === 403) {
-        toast.error("Please verify your email address first");
-        router.push(`/verify-otp?email=${encodeURIComponent(values.email)}`);
+      if (error.status === 403 || error.message?.toLowerCase().includes("email") || error.message?.toLowerCase().includes("verify")) {
+        try {
+          // Send OTP automatically when email is not verified
+          await authClient.emailOtp.sendVerificationOtp({
+            email: values.email,
+            type: "email-verification",
+          });
+          toast.success("Verification code sent to your email");
+          router.push(`/verify-otp?email=${encodeURIComponent(values.email)}&from=login`);
+        } catch (otpError: any) {
+          showError(
+            "Email Verification Required",
+            "Your email address is not verified. We tried to send a verification code but encountered an error. Please try again or contact support."
+          );
+        }
       } else {
-        toast.error(error.message || "Failed to sign in");
+        // Show other errors in dialog (wrong password, etc.)
+        const errorMessage = error.message || "Failed to sign in. Please check your credentials and try again.";
+        showError("Sign In Failed", errorMessage);
       }
     }
   };
@@ -232,6 +268,30 @@ export function LoginForm() {
         </Card>
         </div>
       </div>
+
+      {/* Error Dialog */}
+      <Dialog open={errorDialog.open} onOpenChange={(open) => setErrorDialog({ ...errorDialog, open })}>
+        <DialogContent className={isDark ? "bg-gray-900 border-white/10 text-white" : ""}>
+          <DialogHeader>
+            <DialogTitle className={isDark ? "text-white" : ""}>{errorDialog.title}</DialogTitle>
+            <DialogDescription className={isDark ? "text-white/70" : ""}>
+              {errorDialog.message}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              onClick={() => setErrorDialog({ ...errorDialog, open: false })}
+              className={
+                isDark
+                  ? "bg-white text-black hover:bg-white/90"
+                  : "bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600"
+              }
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
