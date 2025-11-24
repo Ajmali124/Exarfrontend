@@ -280,7 +280,7 @@ export async function getUserByEmail(email: string) {
   try {
     const user = await prisma.user.findUnique({
       where: { email },
-      select: { id: true, email: true, name: true, username: true, inviteCode: true, emailVerified: true },
+      select: { id: true, email: true, name: true, username: true, inviteCode: true },
     });
     return user;
   } catch (error) {

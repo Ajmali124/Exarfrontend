@@ -23,14 +23,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useTheme } from "@/context/ThemeContext";
@@ -44,20 +36,9 @@ export function VerifyOTPForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
-  const fromLogin = searchParams.get("from") === "login";
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const [pendingPassword, setPendingPassword] = useState<string | null>(null);
-  const [errorDialog, setErrorDialog] = useState<{
-    open: boolean;
-    title: string;
-    message: string;
-  }>({
-    open: false,
-    title: "",
-    message: "",
-  });
-  const [otpSent, setOtpSent] = useState(false);
 
   const form = useForm<z.infer<typeof otpSchema>>({
     resolver: zodResolver(otpSchema),
@@ -65,31 +46,6 @@ export function VerifyOTPForm() {
       otp: "",
     },
   });
-
-  const showError = (title: string, message: string) => {
-    setErrorDialog({ open: true, title, message });
-  };
-
-  // Automatically send OTP when coming from login
-  useEffect(() => {
-    const sendOtpOnLogin = async () => {
-      if (fromLogin && email && !otpSent) {
-        try {
-          await authClient.emailOtp.sendVerificationOtp({
-            email: email,
-            type: "email-verification",
-          });
-          setOtpSent(true);
-          toast.success("Verification code sent to your email");
-        } catch (error: any) {
-          console.error("Failed to send OTP:", error);
-          // Don't show error dialog here, let user try resend
-        }
-      }
-    };
-
-    sendOtpOnLogin();
-  }, [fromLogin, email, otpSent]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -106,7 +62,7 @@ export function VerifyOTPForm() {
   const onSubmit = async (values: z.infer<typeof otpSchema>) => {
     try {
       if (!email) {
-        showError("Error", "Email not found. Please go back to registration.");
+        toast.error("Email not found");
         return;
       }
 
@@ -136,15 +92,14 @@ export function VerifyOTPForm() {
       clearPendingCredentials();
       router.push(`/login?email=${encodeURIComponent(email)}`);
     } catch (error: any) {
-      const errorMessage = error.message || "Invalid verification code. Please check the code and try again.";
-      showError("Verification Failed", errorMessage);
+      toast.error(error.message || "Invalid verification code");
     }
   };
 
   const resendOTP = async () => {
     try {
       if (!email) {
-        showError("Error", "Email not found. Please go back to registration.");
+        toast.error("Email not found");
         return;
       }
 
@@ -153,11 +108,9 @@ export function VerifyOTPForm() {
         type: "email-verification",
       });
 
-      setOtpSent(true);
       toast.success("Verification code sent to your email");
     } catch (error: any) {
-      const errorMessage = error.message || "Failed to resend verification code. Please try again later.";
-      showError("Resend Failed", errorMessage);
+      toast.error(error.message || "Failed to resend code");
     }
   };
 
@@ -267,30 +220,6 @@ export function VerifyOTPForm() {
         </Card>
         </div>
       </div>
-
-      {/* Error Dialog */}
-      <Dialog open={errorDialog.open} onOpenChange={(open) => setErrorDialog({ ...errorDialog, open })}>
-        <DialogContent className={isDark ? "bg-gray-900 border-white/10 text-white" : ""}>
-          <DialogHeader>
-            <DialogTitle className={isDark ? "text-white" : ""}>{errorDialog.title}</DialogTitle>
-            <DialogDescription className={isDark ? "text-white/70" : ""}>
-              {errorDialog.message}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              onClick={() => setErrorDialog({ ...errorDialog, open: false })}
-              className={
-                isDark
-                  ? "bg-white text-black hover:bg-white/90"
-                  : "bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600"
-              }
-            >
-              Close
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
