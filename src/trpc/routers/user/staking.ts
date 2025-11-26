@@ -17,9 +17,11 @@ import {
  * Handles staking packages, stake creation, and unstaking
  */
 export const stakingRouter = {
-  // Get all staking packages
+  // Get all staking packages (filtered to only show visible ones)
   getStakingPackages: protectedProcedure.query(async () => {
-    return STAKING_PACKAGES;
+    // Filter out packages where visible is explicitly false
+    // This allows hiding packages (like Silver) from UI while keeping them in data for backward compatibility
+    return STAKING_PACKAGES.filter((pkg) => pkg.visible !== false);
   }),
 
   // Get active staking entries for user

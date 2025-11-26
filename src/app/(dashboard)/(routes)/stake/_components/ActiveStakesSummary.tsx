@@ -39,7 +39,7 @@ const ActiveStakesSummary = () => {
               </span>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.28em] text-emerald-600/80 dark:text-purple-100/70">
-                  Active Staking
+                  Active Subscriptions
                 </p>
                 <h2 className="mt-1 text-sm font-medium text-gray-900 dark:text-white">
                   No active subscriptions
@@ -48,7 +48,7 @@ const ActiveStakesSummary = () => {
             </div>
           </div>
           <p className="text-xs text-gray-600 dark:text-gray-400">
-            Start staking to earn daily rewards
+            Subscribe to a package to earn daily rewards
           </p>
         </div>
       </Card>
@@ -72,7 +72,7 @@ const ActiveStakesSummary = () => {
             </span>
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-emerald-600/80 dark:text-purple-100/70">
-                Active Staking
+                Active Subscriptions
               </p>
               <h2 className="mt-1 text-sm font-medium text-gray-900 dark:text-white">
                 {activeStakes.length} {activeStakes.length === 1 ? "Subscription" : "Subscriptions"}
@@ -94,7 +94,7 @@ const ActiveStakesSummary = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-xl border border-emerald-400/20 bg-white/80 p-3 backdrop-blur dark:border-purple-500/20 dark:bg-neutral-900/70">
               <p className="text-xs font-medium uppercase tracking-[0.24em] text-emerald-600/80 dark:text-purple-200/70">
-                Total Staked
+                Total Subscribed
               </p>
               <p className="mt-2 text-2xl font-semibold text-gray-900 dark:text-white">
                 {totalStaked.toFixed(2)}
@@ -103,7 +103,7 @@ const ActiveStakesSummary = () => {
             </div>
             <div className="rounded-xl border border-emerald-400/20 bg-white/80 p-3 backdrop-blur dark:border-purple-500/20 dark:bg-neutral-900/70">
               <p className="text-xs font-medium uppercase tracking-[0.24em] text-emerald-600/80 dark:text-purple-200/70">
-                Total Earned
+                Total Yielded
               </p>
               <p className="mt-2 text-2xl font-semibold text-gray-900 dark:text-white">
                 {totalEarned.toFixed(2)}

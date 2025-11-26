@@ -297,6 +297,10 @@ const PackageCard = ({
               {createStakeMutation.isPending ? "Subscribing…" : "Activate subscription"}
             </Button>
           )}
+          <div className="border-t border-gray-200 dark:border-gray-700"></div>
+          <p className="text-center text-sm font-medium text-gray-700 dark:text-gray-300">
+            Subscription value: {pkg.amount.toLocaleString()} USDT
+          </p>
         </div>
       </div>
     </Card>

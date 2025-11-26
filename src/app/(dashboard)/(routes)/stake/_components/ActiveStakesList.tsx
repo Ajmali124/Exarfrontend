@@ -15,7 +15,7 @@ const ActiveStakesList = () => {
 
   const utils = trpc.useUtils();
   const {
-    data: stakes,
+    data: subscriptions,
     isLoading,
     error,
   } = trpc.user.getStakingEntries.useQuery(undefined, {
@@ -46,18 +46,18 @@ const ActiveStakesList = () => {
     },
   });
 
-  const handleRequestUnstake = (stakeId: string) => {
+  const handleRequestUnstake = (subscriptionId: string) => {
     if (
       confirm(
         "Are you sure you want to unsubscribe? This will start a 3-day cooldown period with no ROI distribution."
       )
     ) {
-      requestUnstakeMutation.mutate({ stakeId });
+      requestUnstakeMutation.mutate({ stakeId: subscriptionId });
     }
   };
 
-  const handleCompleteUnstake = (stakeId: string) => {
-    completeUnstakeMutation.mutate({ stakeId });
+  const handleCompleteUnstake = (subscriptionId: string) => {
+    completeUnstakeMutation.mutate({ stakeId: subscriptionId });
   };
 
   const getRemainingCooldown = (cooldownEndDate: Date | string | null) => {
@@ -103,8 +103,8 @@ const ActiveStakesList = () => {
     );
   }
 
-  // Handle empty state - no stakes
-  if (!stakes || stakes.length === 0) {
+  // Handle empty state - no subscriptions
+  if (!subscriptions || subscriptions.length === 0) {
     return (
       <Card
         className={cn(
@@ -127,12 +127,12 @@ const ActiveStakesList = () => {
 
   return (
     <div className="space-y-4">
-      {stakes.map((stake) => {
+      {subscriptions.map((subscription) => {
         // Safety checks for edge cases
-        const totalEarned = stake.totalEarned ?? 0;
-        const maxEarning = stake.maxEarning ?? 0;
-        const dailyROI = stake.dailyROI ?? 0;
-        const amount = stake.amount ?? 0;
+        const totalEarned = subscription.totalEarned ?? 0;
+        const maxEarning = subscription.maxEarning ?? 0;
+        const dailyROI = subscription.dailyROI ?? 0;
+        const amount = subscription.amount ?? 0;
 
         // Calculate progress safely (handle division by zero)
         const progress =
@@ -142,18 +142,18 @@ const ActiveStakesList = () => {
 
         const isCapReached = totalEarned >= maxEarning;
         const dailyEarning = (amount * dailyROI) / 100;
-        const remainingCooldown = getRemainingCooldown(stake.cooldownEndDate);
+        const remainingCooldown = getRemainingCooldown(subscription.cooldownEndDate);
         const canCompleteUnstake =
-          stake.status === "unstaking" &&
-          stake.cooldownEndDate &&
-          new Date() >= new Date(stake.cooldownEndDate);
+          subscription.status === "unstaking" &&
+          subscription.cooldownEndDate &&
+          new Date() >= new Date(subscription.cooldownEndDate);
 
         return (
           <Card
-            key={stake.id}
+            key={subscription.id}
             className={cn(
               "relative overflow-hidden rounded-3xl border border-transparent bg-white/75 p-6 backdrop-blur transition-all duration-300 dark:bg-neutral-950/70",
-              stake.status === "active"
+              subscription.status === "active"
                 ? "hover:border-emerald-400/40 shadow-[0_18px_70px_-50px_rgba(16,185,129,0.45)]"
                 : "hover:border-orange-400/40 shadow-[0_18px_70px_-60px_rgba(249,115,22,0.35)]",
               isCapReached && "ring-1 ring-emerald-400/60 dark:ring-emerald-400/50"
@@ -162,7 +162,7 @@ const ActiveStakesList = () => {
             <div
               className={cn(
                 "pointer-events-none absolute -right-24 top-0 h-60 w-60 rounded-full blur-3xl",
-                stake.status === "active"
+                subscription.status === "active"
                   ? "bg-emerald-400/20 dark:bg-purple-500/25"
                   : "bg-orange-400/20 dark:bg-amber-500/25"
               )}
@@ -174,17 +174,17 @@ const ActiveStakesList = () => {
               <div>
                   <div className="flex items-center gap-3">
                     <h3 className={`text-lg font-semibold ${text.primary}`}>
-                    {stake.packageName}
+                    {subscription.packageName}
                   </h3>
                   <span
                     className={cn(
                         "rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em]",
-                      stake.status === "active"
+                      subscription.status === "active"
                           ? "bg-emerald-500/15 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-200"
                           : "bg-orange-500/15 text-orange-600 dark:bg-orange-500/20 dark:text-orange-200"
                     )}
                   >
-                    {stake.status === "active" ? "Active" : "Unsubscribing"}
+                    {subscription.status === "active" ? "Active" : "Unsubscribing"}
                   </span>
                 </div>
                   <p className={`mt-2 text-sm ${text.muted}`}>
@@ -196,7 +196,7 @@ const ActiveStakesList = () => {
                     Started
                   </p>
                   <p className={`mt-1 text-sm font-medium ${text.primary}`}>
-                  {formatDistanceToNow(new Date(stake.startDate), {
+                  {formatDistanceToNow(new Date(subscription.startDate), {
                     addSuffix: true,
                   })}
                 </p>
@@ -243,7 +243,7 @@ const ActiveStakesList = () => {
                     Status
                   </p>
                   <p className="mt-2 text-lg font-semibold text-gray-900 dark:text-white">
-                    {isCapReached ? "Complete" : stake.status === "active" ? "Running" : "Cooling"}
+                    {isCapReached ? "Complete" : subscription.status === "active" ? "Running" : "Cooling"}
                 </p>
                   <p className="text-xs text-gray-600 dark:text-gray-400">
                     {remainingCooldown ? `Cooldown ${remainingCooldown}` : "Rewards streaming"}
@@ -252,11 +252,11 @@ const ActiveStakesList = () => {
             </div>
 
               <div className="space-y-3 border-t border-white/20 pt-4 dark:border-white/10">
-              {stake.status === "active" && !isCapReached && (
+              {subscription.status === "active" && !isCapReached && (
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handleRequestUnstake(stake.id)}
+                  onClick={() => handleRequestUnstake(subscription.id)}
                   disabled={requestUnstakeMutation.isPending}
                     className="w-full rounded-full border border-emerald-400/60 bg-white/70 text-sm font-semibold text-emerald-700 shadow-sm transition hover:bg-white dark:border-purple-500/40 dark:bg-neutral-900/70 dark:text-purple-100"
                 >
@@ -264,7 +264,7 @@ const ActiveStakesList = () => {
                 </Button>
               )}
 
-              {stake.status === "unstaking" && (
+              {subscription.status === "unstaking" && (
                   <div className="space-y-3">
                     <div className="flex items-center gap-3 rounded-2xl border border-orange-400/30 bg-orange-500/10 p-3 text-sm text-orange-700 backdrop-blur dark:border-orange-500/30 dark:bg-orange-500/15 dark:text-orange-200">
                       <Clock className="h-4 w-4" />
@@ -275,7 +275,7 @@ const ActiveStakesList = () => {
                   </div>
                   {canCompleteUnstake && (
                     <Button
-                      onClick={() => handleCompleteUnstake(stake.id)}
+                      onClick={() => handleCompleteUnstake(subscription.id)}
                       disabled={completeUnstakeMutation.isPending}
                         className="w-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-sm font-semibold text-white shadow-lg hover:scale-[1.01] dark:from-purple-500 dark:to-indigo-500"
                     >
