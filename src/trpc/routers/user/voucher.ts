@@ -606,12 +606,26 @@ export const voucherRouter = {
           }
         }
 
-        // For voucher stakes, always flush ROI (no max cap) and use 14 days
-        // Vouchers use the package's ROI rate but don't have a max cap
-        const maxEarning = 0; // Always flushed for vouchers (no max cap tracking)
-        const voucherROIDays = 14; // Always 14 days for voucher stakes
+        // Get ROI validity days from voucher (defaults to 14 if not set)
+        const voucherROIDays = (voucher as any).roiValidityDays || 14;
+        
+        // Calculate max cap based on affectsMaxCap flag
+        // If affectsMaxCap = true: calculate independent max cap
+        // If affectsMaxCap = false: no max cap (flushed ROI)
+        let maxEarning = 0;
+        let cap = 0;
+        
+        if (affectsMaxCap) {
+          // Calculate independent max cap: voucher value × package cap multiplier
+          cap = packageInfo.cap;
+          maxEarning = calculateMaxEarning(voucher.value, packageInfo.cap);
+        } else {
+          // Flushed ROI - no max cap tracking
+          cap = 0;
+          maxEarning = 0;
+        }
 
-        // Calculate ROI end date (always 14 days for vouchers)
+        // Calculate ROI end date based on voucher's ROI validity period
         const roiEndDate = new Date();
         roiEndDate.setDate(roiEndDate.getDate() + voucherROIDays);
 
@@ -638,7 +652,7 @@ export const voucherRouter = {
           }
 
           // Create stake entry
-          // Voucher stakes use "Voucher Position" as name, package ROI but no cap, and 14 days ROI
+          // Voucher stakes use "Voucher Position" as name, package ROI, and respect affectsMaxCap flag
           const stakeEntry = await tx.stakingEntry.create({
             data: {
               userId: ctx.auth.user.id,
@@ -646,9 +660,9 @@ export const voucherRouter = {
               packageId: packageInfo.id, // Keep packageId for reference (which package's ROI to use)
               amount: voucher.value, // Stake amount = voucher value
               currency: voucher.currency || "USDT",
-              dailyROI: packageInfo.roi, // Use package ROI (e.g., 1.1% for Silver Node)
-              cap: 0, // No cap for vouchers (flushed ROI)
-              maxEarning: 0, // Always flushed for vouchers (no max cap tracking)
+              dailyROI: packageInfo.roi, // Use package ROI (e.g., 1.0% for Bronze Node)
+              cap: cap, // Set cap based on affectsMaxCap flag
+              maxEarning: maxEarning, // Set max cap based on affectsMaxCap flag
               totalEarned: 0,
               status: "active",
               startDate: new Date(),

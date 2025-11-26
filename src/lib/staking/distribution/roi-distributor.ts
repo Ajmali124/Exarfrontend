@@ -69,9 +69,16 @@ async function processUserEntries(
     },
     select: {
       appliedToStakeId: true,
+      roiEndDate: true,
     },
   });
   const voucherStakeIds = new Set(vouchers.map(v => v.appliedToStakeId).filter(Boolean) as string[]);
+  // Create a map of stake ID to roiEndDate for quick lookup
+  const voucherRoiEndDates = new Map(
+    vouchers
+      .filter(v => v.appliedToStakeId && v.roiEndDate)
+      .map(v => [v.appliedToStakeId!, v.roiEndDate!])
+  );
 
   for (const entry of entries) {
     const amount = entry.amount ?? 0;
@@ -87,10 +94,16 @@ async function processUserEntries(
 
     // For flushed ROI, always provide payout without cap checking
     if (isFlushedROI) {
-      const rawPayout = calculateDailyEarning(amount, roi);
+      // Check if voucher ROI period has ended (if this is a voucher entry)
+      if (isFromVoucher) {
+        const roiEndDate = voucherRoiEndDates.get(entry.id);
+        if (roiEndDate && new Date() > new Date(roiEndDate)) {
+          // ROI period has ended - skip this entry
+          continue;
+        }
+      }
       
-      // Check if voucher ROI period has ended (if applicable)
-      // Note: This check would require linking to voucher table, which we'll add later if needed
+      const rawPayout = calculateDailyEarning(amount, roi);
       
       if (rawPayout > 0) {
         // Flushed ROI - payout all, no cap tracking
@@ -122,6 +135,24 @@ async function processUserEntries(
         });
       }
       continue; // Continue to next entry for flushed ROI
+    }
+
+    // Check if voucher ROI period has ended (if this is a voucher entry with max cap)
+    if (isFromVoucher) {
+      const roiEndDate = voucherRoiEndDates.get(entry.id);
+      if (roiEndDate && new Date() > new Date(roiEndDate)) {
+        // ROI period has ended - mark as completed and skip
+        if (entry.status !== "completed") {
+          await tx.stakingEntry.update({
+            where: { id: entry.id },
+            data: {
+              status: "completed",
+              endDate: new Date(roiEndDate),
+            },
+          });
+        }
+        continue;
+      }
     }
 
     // Normal ROI distribution with max cap checking
