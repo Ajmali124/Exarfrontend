@@ -13,6 +13,32 @@ export default function Header() {
   const [selectedLanguage, setSelectedLanguage] = useState("En");
   const [mounted, setMounted] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const isDarkMode = mounted ? theme === "dark" : false;
+  const logoSrc = isDarkMode ? "/logo.svg" : "/logodark.svg";
+  const navSurfaceClasses = isDarkMode
+    ? "bg-gray-800/60 border border-gray-700/30 text-gray-300"
+    : "bg-white/80 border border-gray-200/70 text-gray-700 shadow-lg";
+  const buttonSurfaceClasses = isDarkMode
+    ? "bg-gray-800/60 border border-gray-700/30 text-gray-300 hover:bg-gray-700/60 hover:text-white"
+    : "bg-white/80 border border-gray-200/70 text-gray-700 hover:bg-white hover:text-gray-900 shadow";
+  const desktopLinkClasses = isDarkMode
+    ? "text-gray-300 hover:text-white"
+    : "text-gray-700 hover:text-gray-900";
+  const mobilePanelClasses = isDarkMode
+    ? "bg-gray-800/90 border border-gray-700/40 text-gray-100"
+    : "bg-white/95 border border-gray-200/80 text-gray-800 shadow-2xl";
+  const mobileControlClasses = isDarkMode
+    ? "bg-gray-700/50 text-gray-200"
+    : "bg-gray-100 text-gray-800 border border-gray-200/80";
+  const mobileLoginButtonClasses = isDarkMode
+    ? "bg-gray-700/60 text-gray-100 hover:bg-gray-600/60"
+    : "bg-gray-100 text-gray-800 hover:bg-gray-200 border border-gray-200/80";
+  const desktopSignupButtonClasses = isDarkMode
+    ? "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium text-sm px-4 py-2 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl border border-indigo-500/30"
+    : "bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white font-medium text-sm px-4 py-2 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl border border-green-400/40";
+  const mobileSignupButtonClasses = isDarkMode
+    ? "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg"
+    : "bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white shadow-lg";
 
   // Prevent hydration mismatch by only rendering theme-dependent content after mount
   useEffect(() => {
@@ -77,7 +103,7 @@ export default function Header() {
               {/* Logo from public folder */}
               <div className="w-40 h-10 relative">
                 <Image
-                  src="/logo.svg"
+                  src={logoSrc}
                   alt="CBA Exchange Logo"
                   fill
                   className="object-contain"
@@ -88,9 +114,11 @@ export default function Header() {
             </div>
           </motion.div>
 
-          {/* Desktop Navigation - Dark background container only around nav links */}
+          {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center">
-            <div className="bg-gray-800/60 backdrop-blur-xl rounded-full px-6 py-2 border border-gray-700/30">
+            <div
+              className={`${navSurfaceClasses} backdrop-blur-xl rounded-full px-6 py-2`}
+            >
               <div className="flex items-center space-x-6">
                 {navItems.map((item, index) => (
                   <motion.div
@@ -103,7 +131,7 @@ export default function Header() {
                     {item.href.startsWith("/") ? (
                       <Link href={item.href}>
                         <motion.div
-                          className="flex items-center gap-1 text-gray-300 hover:text-white font-medium text-sm transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-white/5 cursor-pointer"
+                          className={`flex items-center gap-1 ${desktopLinkClasses} font-medium text-sm transition-colors duration-200 py-2 px-3 rounded-lg ${isDarkMode ? "hover:bg-white/5" : "hover:bg-gray-100"} cursor-pointer`}
                           whileHover={{ y: -1 }}
                           whileTap={{ scale: 0.98 }}
                         >
@@ -116,7 +144,7 @@ export default function Header() {
                     ) : (
                       <motion.a
                         href={item.href}
-                        className="flex items-center gap-1 text-gray-300 hover:text-white font-medium text-sm transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-white/5"
+                        className={`flex items-center gap-1 ${desktopLinkClasses} font-medium text-sm transition-colors duration-200 py-2 px-3 rounded-lg ${isDarkMode ? "hover:bg-white/5" : "hover:bg-gray-100"} cursor-pointer`}
                         whileHover={{ y: -1 }}
                         whileTap={{ scale: 0.98 }}
                       >
@@ -141,7 +169,7 @@ export default function Header() {
               whileTap={{ scale: 0.95 }}
             >
               <button
-                className="flex items-center gap-1 text-gray-300 hover:text-white font-medium text-sm bg-gray-800/60 backdrop-blur-xl hover:bg-gray-700/60 px-3 py-2 rounded-lg transition-all duration-200 border border-gray-700/30"
+                className={`flex items-center gap-1 font-medium text-sm px-3 py-2 rounded-lg transition-all duration-200 backdrop-blur-xl ${buttonSurfaceClasses}`}
                 onClick={() => setIsLanguageOpen(!isLanguageOpen)}
               >
                 {selectedLanguage}
@@ -158,12 +186,20 @@ export default function Header() {
                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="absolute top-full mt-2 right-0 bg-gray-800/90 backdrop-blur-xl border border-gray-700/30 rounded-lg py-2 min-w-[140px] shadow-xl z-50"
+                  className={`absolute top-full mt-2 right-0 rounded-xl py-2 min-w-[160px] shadow-xl z-50 backdrop-blur-xl ${
+                    isDarkMode
+                      ? "bg-gray-800/95 border border-gray-700/30"
+                      : "bg-white border border-gray-200"
+                  }`}
                 >
                   {languages.map((language) => (
                     <button
                       key={language.code}
-                      className="w-full text-left px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700/50 transition-colors duration-200 text-sm"
+                      className={`w-full text-left px-4 py-2 text-sm transition-colors duration-200 ${
+                        isDarkMode
+                          ? "text-gray-200 hover:text-white hover:bg-gray-700/50"
+                          : "text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
+                      }`}
                       onClick={() => {
                         setSelectedLanguage(language.code);
                         setIsLanguageOpen(false);
@@ -181,7 +217,7 @@ export default function Header() {
 
             {/* Theme Toggle */}
             <motion.button
-              className="p-2 text-gray-300 hover:text-white bg-gray-800/60 backdrop-blur-xl hover:bg-gray-700/60 rounded-lg transition-all duration-200 border border-gray-700/30"
+              className={`${buttonSurfaceClasses} p-2 rounded-lg transition-all duration-200 backdrop-blur-xl`}
               onClick={toggleTheme}
               whileHover={{ scale: 1.1, rotate: 180 }}
               whileTap={{ scale: 0.9 }}
@@ -202,7 +238,7 @@ export default function Header() {
             {/* Auth Buttons */}
             <Link href="/login">
               <motion.button
-                className="text-gray-300 hover:text-white font-medium text-sm bg-gray-800/60 backdrop-blur-xl hover:bg-gray-700/60 px-4 py-2 rounded-lg transition-all duration-200 border border-gray-700/30"
+                className={`${buttonSurfaceClasses} font-medium text-sm px-4 py-2 rounded-lg transition-all duration-200 backdrop-blur-xl`}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
@@ -215,7 +251,7 @@ export default function Header() {
 
             <Link href="/register">
               <motion.button
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium text-sm px-4 py-2 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl border border-indigo-500/30"
+                className={desktopSignupButtonClasses}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 }}
@@ -245,9 +281,7 @@ export default function Header() {
 
         {/* Mobile Menu */}
         <motion.div
-          className={`lg:hidden overflow-hidden ${
-            isMobileMenuOpen ? "max-h-96" : "max-h-0"
-          }`}
+          className="lg:hidden overflow-hidden"
           initial={false}
           animate={{
             height: isMobileMenuOpen ? "auto" : 0,
@@ -255,13 +289,19 @@ export default function Header() {
           }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
         >
-          <div className="bg-gray-800/90 backdrop-blur-xl rounded-xl mx-4 my-4 p-6 space-y-4 border border-gray-700/30">
+          <div
+            className={`${mobilePanelClasses} backdrop-blur-xl rounded-b-2xl px-4 py-6 space-y-4 w-full`}
+          >
             {navItems.map((item, index) => (
               <div key={item.name}>
                 {item.href.startsWith("/") ? (
                   <Link href={item.href}>
                     <motion.div
-                      className="flex items-center justify-between text-gray-300 hover:text-white font-medium py-3 border-b border-gray-600/30 last:border-b-0 transition-colors duration-200 cursor-pointer"
+                      className={`flex items-center justify-between font-medium py-3 border-b last:border-b-0 transition-colors duration-200 cursor-pointer ${
+                        isDarkMode
+                          ? "text-gray-200 hover:text-white border-gray-600/30 hover:bg-white/5"
+                          : "text-gray-800 hover:text-gray-900 border-gray-200 hover:bg-gray-50 rounded-lg px-2"
+                      }`}
                       onClick={() => setIsMobileMenuOpen(false)}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -276,7 +316,11 @@ export default function Header() {
                 ) : (
                   <motion.a
                     href={item.href}
-                    className="flex items-center justify-between text-gray-300 hover:text-white font-medium py-3 border-b border-gray-600/30 last:border-b-0 transition-colors duration-200"
+                    className={`flex items-center justify-between font-medium py-3 border-b last:border-b-0 transition-colors duration-200 ${
+                      isDarkMode
+                        ? "text-gray-200 hover:text-white border-gray-600/30 hover:bg-white/5"
+                        : "text-gray-800 hover:text-gray-900 border-gray-200 hover:bg-gray-50 rounded-lg px-2"
+                    }`}
                     onClick={() => setIsMobileMenuOpen(false)}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -291,12 +335,16 @@ export default function Header() {
               </div>
             ))}
 
-            <div className="pt-4 space-y-3 border-t border-gray-600/30">
+            <div
+              className={`pt-4 border-t ${
+                isDarkMode ? "border-gray-600/30" : "border-gray-200/70"
+              } flex flex-col gap-4`}
+            >
               {/* Mobile Language & Theme */}
-              <div className="flex items-center justify-between">
-                <motion.div className="relative">
+              <div className="flex items-center justify-between gap-4">
+                <motion.div className="relative flex-1">
                   <motion.button
-                    className="flex items-center gap-2 text-gray-300 hover:text-white font-medium bg-gray-700/50 px-3 py-2 rounded-lg transition-all duration-200"
+                    className={`flex w-full items-center justify-between font-medium px-3 py-2 rounded-lg transition-all duration-200 ${mobileControlClasses}`}
                     onClick={() => setIsLanguageOpen(!isLanguageOpen)}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -314,12 +362,20 @@ export default function Header() {
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="absolute top-full mt-2 left-0 bg-gray-800/90 backdrop-blur-xl border border-gray-700/30 rounded-lg py-2 min-w-[140px] shadow-xl z-50"
+                      className={`absolute top-full mt-2 left-0 rounded-xl py-2 min-w-[140px] shadow-xl z-50 backdrop-blur-xl ${
+                        isDarkMode
+                          ? "bg-gray-800/95 border border-gray-700/40"
+                          : "bg-white border border-gray-200"
+                      }`}
                     >
                       {languages.map((language) => (
                         <button
                           key={language.code}
-                          className="w-full text-left px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700/50 transition-colors duration-200 text-sm"
+                          className={`w-full text-left px-4 py-2 text-sm transition-colors duration-200 ${
+                            isDarkMode
+                              ? "text-gray-200 hover:text-white hover:bg-gray-700/50"
+                              : "text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
+                          }`}
                           onClick={() => {
                             setSelectedLanguage(language.code);
                             setIsLanguageOpen(false);
@@ -336,7 +392,7 @@ export default function Header() {
                 </motion.div>
 
                 <motion.button
-                  className="p-2 text-gray-300 hover:text-white bg-gray-700/50 rounded-lg transition-all duration-200"
+                  className={`p-2 rounded-lg transition-all duration-200 ${mobileControlClasses}`}
                   onClick={toggleTheme}
                   whileHover={{ scale: 1.1, rotate: 180 }}
                   whileTap={{ scale: 0.9 }}
@@ -358,7 +414,7 @@ export default function Header() {
               {/* Mobile Auth Buttons */}
               <Link href="/login" className="w-full">
                 <motion.button
-                  className="w-full text-gray-300 hover:text-white font-medium bg-gray-700/50 hover:bg-gray-600/50 px-4 py-3 rounded-lg transition-all duration-200"
+                  className={`w-full font-medium px-4 py-3 rounded-lg transition-all duration-200 ${mobileLoginButtonClasses}`}
                   whileHover={{ scale: 1.02, y: -1 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -368,7 +424,7 @@ export default function Header() {
 
               <Link href="/register" className="w-full">
                 <motion.button
-                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium px-4 py-3 rounded-lg transition-all duration-200 shadow-lg"
+                  className={`w-full font-medium px-4 py-3 rounded-lg transition-all duration-200 ${mobileSignupButtonClasses}`}
                   whileHover={{ scale: 1.02, y: -1 }}
                   whileTap={{ scale: 0.98 }}
                 >

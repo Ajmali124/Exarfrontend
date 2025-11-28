@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -27,6 +28,8 @@ import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useTheme } from "@/context/ThemeContext";
 import { AuthBrandingSection } from "@/app/(auth)/_components/auth-branding-section";
+import { Eye, EyeOff } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -36,7 +39,14 @@ const loginSchema = z.object({
 export function LoginForm() {
   const router = useRouter();
   const { theme } = useTheme();
-  const isDark = theme === "dark";
+  const [mounted, setMounted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const shouldUseDarkTheme = mounted && theme === "dark";
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -46,23 +56,54 @@ export function LoginForm() {
   });
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
+    form.clearErrors();
+
     try {
       await authClient.signIn.email({
         email: values.email,
         password: values.password,
-        callbackURL: "/dashboard",
       });
-      
+
       toast.success("Welcome back!");
       router.push("/dashboard");
     } catch (error: any) {
-      // Handle email verification error
-      if (error.status === 403) {
-        toast.error("Please verify your email address first");
-        router.push(`/verify-otp?email=${encodeURIComponent(values.email)}`);
-      } else {
-        toast.error(error.message || "Failed to sign in");
+      const errorMessage = (error?.message || "").toLowerCase();
+      const statusCode = error?.status || error?.statusCode || error?.code;
+
+      // Wrong password or invalid credentials
+      if (
+        statusCode === 401 ||
+        errorMessage.includes("password") ||
+        errorMessage.includes("incorrect") ||
+        errorMessage.includes("invalid") ||
+        errorMessage.includes("wrong") ||
+        errorMessage.includes("credentials")
+      ) {
+        toast.error("Incorrect email or password. Please try again.");
+        form.setError("password", {
+          type: "manual",
+          message: "Incorrect password",
+        });
+        return;
       }
+
+      // User not found
+      if (
+        statusCode === 404 ||
+        errorMessage.includes("not found") ||
+        errorMessage.includes("does not exist") ||
+        errorMessage.includes("no user") ||
+        errorMessage.includes("user not found")
+      ) {
+        toast.error("No account found with this email address");
+        form.setError("email", {
+          type: "manual",
+          message: "No account found with this email",
+        });
+        return;
+      }
+
+      toast.error(error?.message || "Failed to sign in. Please try again.");
     }
   };
 
@@ -78,13 +119,13 @@ export function LoginForm() {
         {/* Right Side - Login Form */}
         <div className="w-full max-w-md mx-auto lg:max-w-none">
           <Card className={`bg-transparent backdrop-blur-md ${
-            isDark ? "border-white/5" : "border-gray-200/50"
+            shouldUseDarkTheme ? "border-white/5" : "border-gray-200/50"
           }`}>
           <CardHeader className="text-center">
-            <CardTitle className={isDark ? "text-white" : "text-gray-900"}>
+            <CardTitle className={shouldUseDarkTheme ? "text-white" : "text-gray-900"}>
               Welcome back
             </CardTitle>
-            <CardDescription className={isDark ? "text-white/70" : "text-gray-600"}>
+            <CardDescription className={shouldUseDarkTheme ? "text-white/70" : "text-gray-600"}>
               Enter your email and password to login to your account
             </CardDescription>
           </CardHeader>
@@ -97,7 +138,7 @@ export function LoginForm() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className={isDark ? "text-white" : "text-gray-900"}>
+                        <FormLabel className={shouldUseDarkTheme ? "text-white" : "text-gray-900"}>
                           Email
                         </FormLabel>
                         <FormControl>
@@ -107,7 +148,7 @@ export function LoginForm() {
                             {...field}
                             disabled={isPending}
                             className={
-                              isDark
+                              shouldUseDarkTheme
                                 ? "bg-white/5 border-white/20 text-white placeholder:text-white/50 focus:border-white/40"
                                 : "bg-gray-50/80 border-gray-300/50 text-gray-900 placeholder:text-gray-500 focus:border-green-500/50 focus:ring-green-500/20"
                             }
@@ -122,21 +163,32 @@ export function LoginForm() {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className={isDark ? "text-white" : "text-gray-900"}>
+                        <FormLabel className={shouldUseDarkTheme ? "text-white" : "text-gray-900"}>
                           Password
                         </FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Enter your password"
-                            type="password"
-                            {...field}
-                            disabled={isPending}
-                            className={
-                              isDark
-                                ? "bg-white/5 border-white/20 text-white placeholder:text-white/50 focus:border-white/40"
-                                : "bg-gray-50/80 border-gray-300/50 text-gray-900 placeholder:text-gray-500 focus:border-green-500/50 focus:ring-green-500/20"
-                            }
-                          />
+                          <div className="relative">
+                            <Input
+                              placeholder="Enter your password"
+                              type={showPassword ? "text" : "password"}
+                              {...field}
+                              disabled={isPending}
+                              className={cn(
+                                shouldUseDarkTheme
+                                  ? "bg-white/5 border-white/20 text-white placeholder:text-white/50 focus:border-white/40"
+                                  : "bg-gray-50/80 border-gray-300/50 text-gray-900 placeholder:text-gray-500 focus:border-green-500/50 focus:ring-green-500/20",
+                                "pr-12"
+                              )}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword((prev) => !prev)}
+                              className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-900 dark:text-white/60 dark:hover:text-white"
+                              aria-label={showPassword ? "Hide password" : "Show password"}
+                            >
+                              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -148,7 +200,7 @@ export function LoginForm() {
                   <Link
                     href="/forgot-password"
                     className={`text-sm transition-colors ${
-                      isDark
+                      shouldUseDarkTheme
                         ? "text-white/70 hover:text-white"
                         : "text-gray-600 hover:text-gray-900"
                     }`}
@@ -160,7 +212,7 @@ export function LoginForm() {
                 <Button
                   type="submit"
                   className={`w-full ${
-                    isDark
+                    shouldUseDarkTheme
                       ? "bg-white text-black hover:bg-white/90"
                       : "bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600"
                   }`}
@@ -176,7 +228,7 @@ export function LoginForm() {
                   <div className="relative flex justify-center text-xs uppercase">
                     <span
                       className={`px-2 ${
-                        isDark
+                        shouldUseDarkTheme
                           ? "bg-black text-white/50"
                           : "bg-white text-gray-500"
                       }`}
@@ -190,7 +242,7 @@ export function LoginForm() {
                   <Button
                     variant="outline"
                     className={
-                      isDark
+                      shouldUseDarkTheme
                         ? "w-full bg-white/5 border-white/20 text-white hover:bg-white/10 hover:border-white/40"
                         : "w-full bg-gray-100/80 border-gray-300/50 text-gray-900 hover:bg-gray-200/80 hover:border-gray-400/50"
                     }
@@ -202,7 +254,7 @@ export function LoginForm() {
                   <Button
                     variant="outline"
                     className={
-                      isDark
+                      shouldUseDarkTheme
                         ? "w-full bg-white/5 border-white/20 text-white hover:bg-white/10 hover:border-white/40"
                         : "w-full bg-gray-100/80 border-gray-300/50 text-gray-900 hover:bg-gray-200/80 hover:border-gray-400/50"
                     }
@@ -214,13 +266,13 @@ export function LoginForm() {
                 </div>
 
                 <div className={`text-center text-sm ${
-                  isDark ? "text-white/70" : "text-gray-600"
+                  shouldUseDarkTheme ? "text-white/70" : "text-gray-600"
                 }`}>
                   Don't have an account?{" "}
                   <Link
                     href="/register"
                     className={`hover:underline font-medium ${
-                      isDark ? "text-white" : "text-green-600 hover:text-green-700"
+                      shouldUseDarkTheme ? "text-white" : "text-green-600 hover:text-green-700"
                     }`}
                   >
                     Sign up

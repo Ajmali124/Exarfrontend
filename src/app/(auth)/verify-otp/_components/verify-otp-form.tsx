@@ -38,7 +38,9 @@ export function VerifyOTPForm() {
   const email = searchParams.get("email");
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const [pendingPassword, setPendingPassword] = useState<string | null>(null);
+  const [pendingSignupPassword, setPendingSignupPassword] = useState<string | null>(null);
+  const [pendingLoginPassword, setPendingLoginPassword] = useState<string | null>(null);
+  const [otpSent, setOtpSent] = useState(false);
 
   const form = useForm<z.infer<typeof otpSchema>>({
     resolver: zodResolver(otpSchema),
@@ -49,14 +51,55 @@ export function VerifyOTPForm() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const storedPassword = sessionStorage.getItem("pendingSignupPassword");
-    setPendingPassword(storedPassword);
+    const storedSignupPassword = sessionStorage.getItem("pendingSignupPassword");
+    const storedLoginPassword = sessionStorage.getItem("pendingLoginPassword");
+    setPendingSignupPassword(storedSignupPassword);
+    setPendingLoginPassword(storedLoginPassword);
   }, []);
+
+  // Auto-send OTP only if user came from login (not from registration)
+  useEffect(() => {
+    const sendOTPIfFromLogin = async () => {
+      if (!email || otpSent || typeof window === "undefined") return;
+
+      // Check if user came from login (not registration)
+      const fromLogin = sessionStorage.getItem("fromLogin");
+      const fromRegistration = sessionStorage.getItem("pendingSignupEmail") === email;
+      const loginEmailMatches = sessionStorage.getItem("pendingLoginEmail") === email;
+
+      // Only send OTP if:
+      // 1. User came from login (fromLogin flag is set)
+      // 2. User did NOT come from registration (no pendingSignupEmail matching this email)
+      if (fromLogin === "true" && !fromRegistration && loginEmailMatches) {
+        try {
+          await authClient.emailOtp.sendVerificationOtp({
+            email: email,
+            type: "email-verification",
+          });
+          setOtpSent(true);
+          // Clear the fromLogin flag after sending
+          sessionStorage.removeItem("fromLogin");
+          toast.success("Verification code sent to your email");
+        } catch (error: any) {
+          console.error("Failed to send OTP:", error);
+          // Don't show error toast on initial load, user can click resend if needed
+        }
+      } else if (fromLogin === "true") {
+        // Clear the flag even if we don't send (to avoid confusion)
+        sessionStorage.removeItem("fromLogin");
+      }
+    };
+
+    sendOTPIfFromLogin();
+  }, [email, otpSent]);
 
   const clearPendingCredentials = () => {
     if (typeof window === "undefined") return;
     sessionStorage.removeItem("pendingSignupEmail");
     sessionStorage.removeItem("pendingSignupPassword");
+    sessionStorage.removeItem("pendingLoginEmail");
+    sessionStorage.removeItem("pendingLoginPassword");
+    sessionStorage.removeItem("fromLogin");
   };
 
   const onSubmit = async (values: z.infer<typeof otpSchema>) => {
@@ -71,11 +114,11 @@ export function VerifyOTPForm() {
         otp: values.otp,
       });
 
-      if (pendingPassword) {
+      if (pendingSignupPassword) {
         try {
           await authClient.signIn.email({
             email,
-            password: pendingPassword,
+            password: pendingSignupPassword,
           });
           clearPendingCredentials();
           toast.success("Email verified and you are now signed in!");
@@ -83,6 +126,20 @@ export function VerifyOTPForm() {
           return;
         } catch (signinError: any) {
           console.error("Auto sign-in after verification failed:", signinError);
+          toast.info("Email verified! Please sign in to continue.");
+        }
+      } else if (pendingLoginPassword) {
+        try {
+          await authClient.signIn.email({
+            email,
+            password: pendingLoginPassword,
+          });
+          clearPendingCredentials();
+          toast.success("Email verified and you are now signed in!");
+          router.push("/dashboard");
+          return;
+        } catch (signinError: any) {
+          console.error("Auto sign-in after login verification failed:", signinError);
           toast.info("Email verified! Please sign in to continue.");
         }
       } else {

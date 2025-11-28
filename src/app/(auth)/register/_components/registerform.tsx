@@ -7,6 +7,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Form,
   FormField,
@@ -18,13 +19,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Eye, EyeOff, Info } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
-import { toast } from "sonner";
 import { handlePostRegistration, getUserByEmail } from "@/action/Auth/register";
 import { useTheme } from "@/context/ThemeContext";
 import { AuthBrandingSection } from "@/app/(auth)/_components/auth-branding-section";
 import { RegisterCard } from "@/app/(auth)/_components/register-card";
+import { cn } from "@/lib/utils";
 
 const registerSchema = z.object({
   email: z.email("Please enter a valid email address"),
@@ -41,6 +42,10 @@ export function RegisterForm() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const [showInviteCode, setShowInviteCode] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [status, setStatus] = useState<
+    null | { tone: "success" | "error"; title: string; description: string }
+  >(null);
   
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -85,40 +90,30 @@ export function RegisterForm() {
     }
   }, [inviteCodeValue]);
 
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const storedEmail = sessionStorage.getItem("pendingSignupEmail");
-    const storedPassword = sessionStorage.getItem("pendingSignupPassword");
-    if (storedEmail) {
-      form.setValue("email", storedEmail);
-    }
-    if (storedPassword) {
-      form.setValue("password", storedPassword);
-    }
-  }, [form]);
-
   const onSubmit = async (values: z.infer<typeof registerSchema>) => {
+    setStatus(null);
     try {
       const existingUser = await getUserByEmail(values.email);
       if (existingUser) {
-        toast.error("An account with this email already exists. Redirecting you to login…");
+        form.setError("email", {
+          type: "manual",
+          message: "An account with this email already exists",
+        });
+        setStatus({
+          tone: "error",
+          title: "Email already registered",
+          description: "Redirecting you to the login page so you can sign in.",
+        });
         setTimeout(() => {
           router.push(`/login?email=${encodeURIComponent(values.email)}`);
         }, 1500);
         return;
       }
 
-      if (typeof window !== "undefined") {
-        sessionStorage.setItem("pendingSignupEmail", values.email);
-        sessionStorage.setItem("pendingSignupPassword", values.password);
-      }
-
       await authClient.signUp.email({
         name: values.email,
         email: values.email,
         password: values.password,
-        callbackURL: "/verify-otp",
       });
 
       const user = await getUserByEmail(values.email);
@@ -136,17 +131,53 @@ export function RegisterForm() {
       });
 
       if (!postRegResult.success) {
-        toast.error(postRegResult.error || "Failed to complete registration setup");
+        setStatus({
+          tone: "error",
+          title: "Setup issue",
+          description: postRegResult.error || "Failed to complete registration setup. You can continue, but some bonus features may be delayed.",
+        });
       }
 
-      toast.success("Account created! Please check your email for verification code.");
-      router.push(`/verify-otp?email=${encodeURIComponent(values.email)}`);
-    } catch (error: any) {
-      if (typeof window !== "undefined") {
-        sessionStorage.removeItem("pendingSignupEmail");
-        sessionStorage.removeItem("pendingSignupPassword");
+      setStatus({
+        tone: "success",
+        title: "Account created",
+        description: "Signing you in now…",
+      });
+
+      try {
+        await authClient.signIn.email({
+          email: values.email,
+          password: values.password,
+        });
+        setStatus({
+          tone: "success",
+          title: "Welcome to Exarpro",
+          description: "Redirecting you to your dashboard.",
+        });
+        router.push("/dashboard");
+      } catch (loginError: any) {
+        console.error("Auto sign-in after registration failed:", loginError);
+        setStatus({
+          tone: "error",
+          title: "Auto sign-in failed",
+          description: "Your account is ready. Please sign in to continue.",
+        });
+        router.push("/login");
       }
-      toast.error(error.message || "Failed to create account");
+    } catch (error: any) {
+      const message = error?.message || "Failed to create account";
+      setStatus({
+        tone: "error",
+        title: "Unable to create account",
+        description: message,
+      });
+
+      if (message.toLowerCase().includes("password")) {
+        form.setError("password", {
+          type: "manual",
+          message: "Please choose a different password",
+        });
+      }
     }
   };
 
@@ -164,6 +195,22 @@ export function RegisterForm() {
           <RegisterCard>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                {status && (
+                  <Alert
+                    variant={status.tone === "error" ? "destructive" : "default"}
+                    className={cn(
+                      "border border-border/60",
+                      status.tone === "error"
+                        ? "bg-red-50/90 text-red-900 dark:bg-red-500/10 dark:text-red-100"
+                        : "bg-emerald-50/80 text-emerald-900 dark:bg-emerald-500/10 dark:text-emerald-100"
+                    )}
+                  >
+                    <Info className="mt-1 text-current" />
+                    <AlertTitle>{status.title}</AlertTitle>
+                    <AlertDescription>{status.description}</AlertDescription>
+                  </Alert>
+                )}
+
                 <div className="grid gap-4">
                   <FormField
                     control={form.control}
@@ -199,17 +246,32 @@ export function RegisterForm() {
                           Password
                         </FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Create a strong password"
-                            type="password"
-                            {...field}
-                            disabled={isPending}
-                            className={
-                              isDark
-                                ? "bg-white/5 border-white/20 text-white placeholder:text-white/50 focus:border-white/40"
-                                : "bg-gray-50/80 border-gray-300/50 text-gray-900 placeholder:text-gray-500 focus:border-green-500/50 focus:ring-green-500/20"
-                            }
-                          />
+                          <div className="relative">
+                            <Input
+                              placeholder="Create a strong password"
+                              type={showPassword ? "text" : "password"}
+                              {...field}
+                              disabled={isPending}
+                              className={cn(
+                                isDark
+                                  ? "bg-white/5 border-white/20 text-white placeholder:text-white/50 focus:border-white/40"
+                                  : "bg-gray-50/80 border-gray-300/50 text-gray-900 placeholder:text-gray-500 focus:border-green-500/50 focus:ring-green-500/20",
+                                "pr-12"
+                              )}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword((prev) => !prev)}
+                              className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-900 dark:text-white/60 dark:hover:text-white"
+                              aria-label={showPassword ? "Hide password" : "Show password"}
+                            >
+                              {showPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
+                            </button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
