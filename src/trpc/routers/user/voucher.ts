@@ -695,6 +695,9 @@ export const voucherRouter = {
 
           // NO direct bonus or team earning for sponsor when voucher is used
           // Vouchers are promotional rewards and don't generate sponsor benefits
+          // NOTE: If direct bonuses were ever added for voucher positions in the future,
+          // they must follow the same max cap checking logic as package purchases
+          // (see staking.ts direct bonus distribution for reference)
 
           // Create transaction record for voucher redemption
           await tx.transactionRecord.create({

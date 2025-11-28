@@ -2,6 +2,7 @@ import { protectedProcedure } from "../../init";
 import prisma from "@/lib/prismadb";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 import {
   findPackageForAmount,
   calculateMaxEarning,
@@ -182,49 +183,125 @@ export const stakingRouter = {
           });
 
           // Distribute direct bonus to sponsor (5% of package amount)
+          // This follows the same cap-checking logic as team earnings distribution
+          // Priority: Real package entries first, then voucher positions (if no real packages)
           if (invitedMember?.sponsorId) {
             const directBonus = amount * 0.05; // 5% direct bonus
 
-            // Check if sponsor has any active staking package
-            const sponsorActiveStakes = await tx.stakingEntry.findFirst({
+            // Get sponsor's active staking entries to check remaining cap space
+            const sponsorActiveStakes = await tx.stakingEntry.findMany({
               where: {
                 userId: invitedMember.sponsorId,
                 status: { in: ["active", "unstaking"] },
               },
+              orderBy: {
+                createdAt: "asc",
+              },
             });
 
-            // Only give bonus if sponsor has an active package
-            if (sponsorActiveStakes) {
-              // Get or create sponsor balance
+            // Separate real package entries from voucher position entries
+            const realPackageEntries = sponsorActiveStakes.filter(
+              (entry) => entry.packageName !== "Voucher Position"
+            );
+            const voucherPositionEntries = sponsorActiveStakes.filter(
+              (entry) => entry.packageName === "Voucher Position" && (entry.maxEarning ?? 0) > 0
+            );
+
+            // Determine which entries to use for distribution
+            // Priority: Real packages first, then voucher positions (only if no real packages)
+            const entriesToUse = realPackageEntries.length > 0 
+              ? realPackageEntries 
+              : voucherPositionEntries;
+
+            // Only give bonus if sponsor has eligible entries (real packages or voucher positions with maxCap)
+            if (entriesToUse.length > 0) {
+              // Get sponsor balance
               const sponsorBalance = await tx.userBalance.findUnique({
                 where: { userId: invitedMember.sponsorId },
               });
 
               if (sponsorBalance) {
-                // Add bonus to balance and maxEarn (maxcap)
-                await tx.userBalance.update({
-                  where: { userId: invitedMember.sponsorId },
-                  data: {
-                    balance: {
-                      increment: directBonus,
-                    },
-                    maxEarn: {
-                      increment: directBonus,
-                    },
-                  },
-                });
+                let remainingBonus = directBonus;
+                let credited = 0;
+                let missed = 0;
+                let onStakingReleased = 0;
 
-                // Create transaction record for the bonus
-                await tx.transactionRecord.create({
-                  data: {
-                    userId: invitedMember.sponsorId,
-                    type: "reward",
-                    amount: directBonus,
-                    currency: "USDT",
-                    status: "completed",
-                    description: `Direct bonus from ${ctx.auth.user.email || ctx.auth.user.id} package subscription`,
-                  },
-                });
+                // Distribute bonus across eligible entries respecting their max caps
+                // (Real packages prioritized, or voucher positions if no real packages)
+                for (const entry of entriesToUse) {
+                  if (remainingBonus <= 0) {
+                    break;
+                  }
+
+                  const maxEarning = entry.maxEarning ?? 0;
+                  const totalEarned = entry.totalEarned ?? 0;
+                  const remainingCap = Math.max(0, maxEarning - totalEarned);
+
+                  // Skip entries that have reached their cap
+                  if (remainingCap <= 0) {
+                    continue;
+                  }
+
+                  // Apply only what fits within this entry's remaining cap
+                  const applied = Math.min(remainingBonus, remainingCap);
+                  const newTotal = totalEarned + applied;
+                  const reachedCap = newTotal >= maxEarning;
+
+                  // Update entry with the applied bonus
+                  await tx.stakingEntry.update({
+                    where: { id: entry.id },
+                    data: {
+                      totalEarned: newTotal,
+                      status: reachedCap ? "completed" : entry.status,
+                      endDate: reachedCap ? new Date() : entry.endDate,
+                    },
+                  });
+
+                  credited += applied;
+                  remainingBonus -= applied;
+
+                  // Track onStaking release if cap reached
+                  if (reachedCap) {
+                    onStakingReleased += entry.amount ?? 0;
+                  }
+                }
+
+                // Any remaining bonus that couldn't fit goes to missed earnings
+                missed = remainingBonus;
+
+                // Update sponsor balance (single update for all changes)
+                const balanceUpdate: Prisma.UserBalanceUpdateInput = {};
+                if (credited > 0) {
+                  balanceUpdate.balance = { increment: credited };
+                  balanceUpdate.maxEarn = { increment: credited };
+                }
+                if (onStakingReleased > 0) {
+                  balanceUpdate.onStaking = { decrement: onStakingReleased };
+                }
+                if (missed > 0) {
+                  balanceUpdate.missedEarnings = { increment: missed };
+                }
+
+                if (Object.keys(balanceUpdate).length > 0) {
+                  await tx.userBalance.update({
+                    where: { userId: invitedMember.sponsorId },
+                    data: balanceUpdate,
+                  });
+                }
+
+                // Create transaction record only for credited amount
+                if (credited > 0) {
+                  await tx.transactionRecord.create({
+                    data: {
+                      userId: invitedMember.sponsorId,
+                      type: "reward",
+                      amount: credited,
+                      currency: "USDT",
+                      status: "completed",
+                      description: `Direct bonus from ${ctx.auth.user.email || ctx.auth.user.id} package subscription${missed > 0 ? ` (${missed.toFixed(2)} USDT missed due to cap limit)` : ""}`,
+                    },
+                  });
+                }
               }
             }
             // If sponsor has no active package, bonus is flushed out (not given)
