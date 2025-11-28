@@ -5,7 +5,7 @@ import { DataTable } from "./data-table";
 const WalletData = async () => {
   const transactions = (await caller.user.getTransactions()) ?? [];
 
-  const formattedData: UserTransactionss[] = transactions.map((tx) => ({
+  const formattedData: UserTransactionss[] = transactions.map((tx: any) => ({
     id: tx.id,
     type: (tx.type || "TRANSACTION").toUpperCase(),
     status: (tx.status || "PENDING").toUpperCase(),
@@ -16,6 +16,8 @@ const WalletData = async () => {
     fromAddress: tx.fromAddress,
     toAddress: tx.toAddress,
     createdAt: (tx.createdAt ?? new Date()).toISOString(),
+    isTeamEarning: tx.isTeamEarning || false,
+    teamEarningDate: tx.teamEarningDate || undefined,
   }));
 
   const hasTransactions = formattedData.length > 0;

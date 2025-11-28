@@ -15,6 +15,8 @@ export type UserTransactionss = {
   fromAddress?: string | null;
   toAddress?: string | null;
   createdAt: string;
+  isTeamEarning?: boolean; // Flag for team earnings
+  teamEarningDate?: string; // Date for team earnings detail page (YYYY-MM-DD)
 };
 
 export const columns: ColumnDef<UserTransactionss, unknown>[] = [

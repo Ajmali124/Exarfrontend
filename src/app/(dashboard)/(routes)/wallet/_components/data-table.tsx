@@ -14,6 +14,7 @@ import {
 } from "@tanstack/react-table";
 import * as React from "react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import TransactionDetailsDialog from "./TransactionDetailsDialog";
 import { UserTransactionss } from "./columns";
 
@@ -28,6 +29,7 @@ export function DataTable<TData extends UserTransactionss>({
   data,
   emptyMessage = "No transactions yet.",
 }: DataTableProps<TData>) {
+  const router = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState<TData | null>(null);
@@ -45,6 +47,13 @@ export function DataTable<TData extends UserTransactionss>({
   });
 
   const handleRowClick = (row: TData) => {
+    // If it's a team earning, navigate to detail page
+    if (row.isTeamEarning && row.teamEarningDate) {
+      router.push(`/wallet/team-earnings/${row.teamEarningDate}`);
+      return;
+    }
+    
+    // Otherwise, show transaction details dialog
     setSelectedRow(row);
     setIsOpen(true);
   };
