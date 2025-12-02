@@ -247,18 +247,18 @@ export function RegisterForm() {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input
-                              placeholder="Create a strong password"
+                          <Input
+                            placeholder="Create a strong password"
                               type={showPassword ? "text" : "password"}
-                              {...field}
-                              disabled={isPending}
+                            {...field}
+                            disabled={isPending}
                               className={cn(
-                                isDark
-                                  ? "bg-white/5 border-white/20 text-white placeholder:text-white/50 focus:border-white/40"
+                              isDark
+                                ? "bg-white/5 border-white/20 text-white placeholder:text-white/50 focus:border-white/40"
                                   : "bg-gray-50/80 border-gray-300/50 text-gray-900 placeholder:text-gray-500 focus:border-green-500/50 focus:ring-green-500/20",
                                 "pr-12"
                               )}
-                            />
+                          />
                             <button
                               type="button"
                               onClick={() => setShowPassword((prev) => !prev)}
