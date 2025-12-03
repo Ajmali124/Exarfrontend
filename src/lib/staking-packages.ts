@@ -17,7 +17,7 @@ export const STAKING_PACKAGES: StakingPackage[] = [
   { id: 1, name: "Bronze Node", amount: 100, roi: 1.0, cap: 1.8 },
   { id: 2, name: "Silver Node", amount: 250, roi: 1.1, cap: 2.0, visible: false }, // Hidden from UI, kept for backward compatibility
   { id: 3, name: "Gold Node", amount: 250, roi: 1.1, cap: 2.0 },
-  { id: 4, name: "Platinum Node", amount: 500, roi: 1.2, cap: 2.6 },
+  { id: 4, name: "Platinum Node", amount: 500, roi: 1.2, cap: 2.3 },
   { id: 5, name: "Diamond Node", amount: 2000, roi: 1.4, cap: 3.0 },
   { id: 6, name: "Titan Node", amount: 5000, roi: 1.5, cap: 3.5 },
   { id: 7, name: "Crown Node", amount: 10000, roi: 1.6, cap: 4.0 },
