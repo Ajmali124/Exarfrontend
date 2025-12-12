@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -24,13 +24,28 @@ const PublicPromotionHero = () => {
   const [isTyping, setIsTyping] = useState(true);
   const mainText = "PreLaunch Promo";
 
-  // Calculate target date: 14 days from today
+  // Calculate target date once and store it (2 days from when component mounts)
+  // Use useRef to store the target date so it doesn't change on re-renders
+  const targetDateRef = useRef<Date | null>(null);
+  
+  // Initialize target date on first render
+  if (targetDateRef.current === null) {
+    const target = new Date();
+    // Add 2 days properly using getTime() to avoid date calculation issues
+    target.setTime(target.getTime() + 2 * 24 * 60 * 60 * 1000);
+    // Set to end of day (23:59:59.999)
+    target.setHours(23, 59, 59, 999);
+    targetDateRef.current = target;
+  }
+
+  // Calculate time left based on the fixed target date
   const calculateTimeLeft = (): TimeLeft => {
+    if (!targetDateRef.current) {
+      return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+    }
+    
     const now = new Date().getTime();
-    const targetDate = new Date();
-    targetDate.setDate(targetDate.getDate() + 14); // 14 days for promotion
-    targetDate.setHours(23, 59, 59, 999); // End of day, 14 days from now
-    const difference = targetDate.getTime() - now;
+    const difference = targetDateRef.current.getTime() - now;
 
     if (difference <= 0) {
       return { days: 0, hours: 0, minutes: 0, seconds: 0 };
@@ -46,7 +61,7 @@ const PublicPromotionHero = () => {
 
   // Initialize with safe default to prevent hydration mismatch
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
-    days: 14,
+    days: 2, // Updated to 2 days
     hours: 0,
     minutes: 0,
     seconds: 0,
@@ -192,10 +207,10 @@ const PublicPromotionHero = () => {
               </span>
             </>
           ) : (
-            // Server-side render placeholder (matches initial state - 14 days)
+            // Server-side render placeholder (matches initial state - 2 days)
             <>
               <span className="text-2xl md:text-3xl font-bold">
-                14D
+                02D
               </span>
               <span className="text-xl text-gray-400">|</span>
               <span className="text-2xl md:text-3xl font-bold">
