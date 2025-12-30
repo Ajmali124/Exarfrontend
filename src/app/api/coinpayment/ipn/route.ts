@@ -7,6 +7,7 @@ import {
   COINPAYMENTS_DEPOSIT_CURRENCY,
   ensureFiatPrecision,
 } from "@/lib/coinpayment";
+import { notifyN8nWithdrawal } from "@/lib/notifications/n8n";
 
 function buildJsonResponse(
   message: string,
@@ -115,6 +116,9 @@ export async function POST(request: Request) {
           userId: true,
           amount: true,
           status: true,
+          currency: true,
+          toAddress: true,
+          description: true,
         },
       });
 
@@ -187,6 +191,22 @@ export async function POST(request: Request) {
             });
           }
         });
+
+        // Notify n8n if withdrawal is completed (fire-and-forget)
+        if (status === "completed") {
+          notifyN8nWithdrawal({
+            withdrawalId: withdrawalTxnId,
+            amount: withdrawalTransaction.amount,
+            currency: withdrawalTransaction.currency || "USDT",
+            status: status,
+            userId: withdrawalTransaction.userId,
+            toAddress: withdrawalTransaction.toAddress,
+            description: withdrawalTransaction.description,
+            transactionId: withdrawalTransaction.id,
+          }).catch((err) => {
+            console.error("Failed to notify n8n:", err);
+          });
+        }
       }
 
       return buildJsonResponse("Withdrawal status updated");
