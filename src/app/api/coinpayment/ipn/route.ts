@@ -194,20 +194,22 @@ export async function POST(request: Request) {
           }
         });
 
-        // Notify n8n if withdrawal is completed (fire-and-forget)
+        // Notify n8n if withdrawal is completed
         if (status === "completed") {
-          notifyN8nWithdrawal({
-            withdrawalId: withdrawalTxnId,
-            amount: withdrawalTransaction.amount,
-            currency: withdrawalTransaction.currency || "USDT",
-            status: status,
-            userId: withdrawalTransaction.userId,
-            toAddress: withdrawalTransaction.toAddress,
-            description: withdrawalTransaction.description,
-            transactionId: withdrawalTransaction.id,
-          }).catch((err) => {
+          try {
+            await notifyN8nWithdrawal({
+              withdrawalId: withdrawalTxnId,
+              amount: withdrawalTransaction.amount,
+              currency: withdrawalTransaction.currency || "USDT",
+              status: status,
+              userId: withdrawalTransaction.userId,
+              toAddress: withdrawalTransaction.toAddress,
+              description: withdrawalTransaction.description,
+              transactionId: withdrawalTransaction.id,
+            });
+          } catch (err) {
             console.error("Failed to notify n8n:", err);
-          });
+          }
         }
       }
 
