@@ -48,7 +48,7 @@ export async function notifyN8nWithdrawal(
 
     // Create abort controller for timeout (compatible with older Node.js versions)
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout (increased from 5s)
 
     const response = await fetch(N8N_WEBHOOK_URL, {
       method: "POST",
@@ -68,9 +68,16 @@ export async function notifyN8nWithdrawal(
     }
   } catch (error) {
     // Log error but don't throw - this is fire-and-forget
-    console.error(
-      `Failed to notify n8n about withdrawal ${data.withdrawalId}:`,
-      error instanceof Error ? error.message : String(error)
-    );
+    // Handle abort errors specifically (timeout)
+    if (error instanceof Error && error.name === "AbortError") {
+      console.warn(
+        `n8n webhook timeout for withdrawal ${data.withdrawalId} (request took longer than 15s)`
+      );
+    } else {
+      console.error(
+        `Failed to notify n8n about withdrawal ${data.withdrawalId}:`,
+        error instanceof Error ? error.message : String(error)
+      );
+    }
   }
 }
