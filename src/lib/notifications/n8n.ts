@@ -47,62 +47,85 @@ export async function notifyN8nWithdrawal(
 
   console.log(`[n8n] Sending webhook for withdrawal ${data.withdrawalId} to ${N8N_WEBHOOK_URL}`);
 
-  // Start the fetch but don't await it - truly fire-and-forget
-  // The caller already uses .catch() so errors won't propagate
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
+  // Retry logic for network failures
+  const maxRetries = 3;
+  let attempt = 0;
 
-  fetch(N8N_WEBHOOK_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "User-Agent": "ExarPro-Webhook/1.0",
-    },
-    body: JSON.stringify(payload),
-    signal: controller.signal,
-  })
-    .then(async (response) => {
-      clearTimeout(timeoutId);
-      console.log(`[n8n] Webhook response for withdrawal ${data.withdrawalId}: status ${response.status}`);
+  const attemptFetch = (): void => {
+    attempt++;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout per attempt
 
-      if (!response.ok) {
-        let errorBody = "";
-        try {
-          errorBody = await response.text();
-        } catch (e) {
-          // Ignore if we can't read body
+    fetch(N8N_WEBHOOK_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "User-Agent": "ExarPro-Webhook/1.0",
+      },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        clearTimeout(timeoutId);
+        console.log(`[n8n] Webhook response for withdrawal ${data.withdrawalId}: status ${response.status} (attempt ${attempt})`);
+
+        if (!response.ok) {
+          let errorBody = "";
+          try {
+            errorBody = await response.text();
+          } catch (e) {
+            // Ignore if we can't read body
+          }
+          
+          // Retry on 5xx errors
+          if (response.status >= 500 && attempt < maxRetries) {
+            console.warn(`[n8n] Server error ${response.status}, retrying... (attempt ${attempt}/${maxRetries})`);
+            setTimeout(() => attemptFetch(), 1000 * attempt); // Exponential backoff
+            return;
+          }
+          
+          console.error(
+            `[n8n] Webhook returned error status ${response.status} for withdrawal ${data.withdrawalId}`,
+            errorBody ? `Response: ${errorBody.substring(0, 200)}` : ""
+          );
+        } else {
+          console.log(`[n8n] Successfully notified n8n about withdrawal ${data.withdrawalId} (attempt ${attempt})`);
+        }
+      })
+      .catch((error) => {
+        clearTimeout(timeoutId);
+        
+        // Retry on network errors
+        if (attempt < maxRetries && error instanceof Error && error.message.includes("fetch failed")) {
+          console.warn(`[n8n] Network error, retrying... (attempt ${attempt}/${maxRetries}): ${error.message}`);
+          setTimeout(() => attemptFetch(), 1000 * attempt); // Exponential backoff: 1s, 2s, 3s
+          return;
         }
         
-        console.error(
-          `[n8n] Webhook returned error status ${response.status} for withdrawal ${data.withdrawalId}`,
-          errorBody ? `Response: ${errorBody.substring(0, 200)}` : ""
-        );
-      } else {
-        console.log(`[n8n] Successfully notified n8n about withdrawal ${data.withdrawalId}`);
-      }
-    })
-    .catch((error) => {
-      clearTimeout(timeoutId);
-      // Log error but don't throw - this is fire-and-forget
-      if (error instanceof Error && error.name === "AbortError") {
-        console.warn(
-          `[n8n] Webhook timeout for withdrawal ${data.withdrawalId} (request took longer than 2 minutes)`
-        );
-      } else {
-        const errorDetails = error instanceof Error 
-          ? {
-              name: error.name,
-              message: error.message,
-              stack: error.stack?.substring(0, 500),
-            }
-          : String(error);
-        
-        console.error(
-          `[n8n] Failed to notify n8n about withdrawal ${data.withdrawalId}:`,
-          JSON.stringify(errorDetails, null, 2)
-        );
-      }
-    });
+        // Log error but don't throw - this is fire-and-forget
+        if (error instanceof Error && error.name === "AbortError") {
+          console.warn(
+            `[n8n] Webhook timeout for withdrawal ${data.withdrawalId} (attempt ${attempt})`
+          );
+        } else {
+          const errorDetails = error instanceof Error 
+            ? {
+                name: error.name,
+                message: error.message,
+                cause: error.cause,
+              }
+            : String(error);
+          
+          console.error(
+            `[n8n] Failed to notify n8n about withdrawal ${data.withdrawalId} after ${attempt} attempt(s):`,
+            JSON.stringify(errorDetails, null, 2)
+          );
+        }
+      });
+  };
+
+  // Start the first attempt
+  attemptFetch();
 
   // Return immediately - don't wait for the webhook
   return Promise.resolve();

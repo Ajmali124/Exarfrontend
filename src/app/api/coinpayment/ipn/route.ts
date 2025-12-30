@@ -9,6 +9,8 @@ import {
 } from "@/lib/coinpayment";
 import { notifyN8nWithdrawal } from "@/lib/notifications/n8n";
 
+export const runtime = "nodejs";
+
 function buildJsonResponse(
   message: string,
   status: number = 200
