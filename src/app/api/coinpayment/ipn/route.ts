@@ -7,7 +7,8 @@ import {
   COINPAYMENTS_DEPOSIT_CURRENCY,
   ensureFiatPrecision,
 } from "@/lib/coinpayment";
-import { notifyN8nWithdrawal } from "@/lib/notifications/n8n";
+import { notifyZapierWithdrawal } from "@/lib/notifications/n8n";
+
 
 export const runtime = "nodejs";
 
@@ -197,7 +198,7 @@ export async function POST(request: Request) {
         // Notify n8n if withdrawal is completed
         if (status === "completed") {
           try {
-            await notifyN8nWithdrawal({
+            await notifyZapierWithdrawal({
               withdrawalId: withdrawalTxnId,
               amount: withdrawalTransaction.amount,
               currency: withdrawalTransaction.currency || "USDT",

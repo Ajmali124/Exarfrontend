@@ -1,8 +1,8 @@
-// Utility to send withdrawal completion notifications to n8n
+// Utility to send withdrawal completion notifications to Zapier
 
-const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL;
+const ZAPIER_WEBHOOK_URL = process.env.ZAPIER_WEBHOOK_URL;
 
-export interface NotifyN8nWithdrawalData {
+export interface NotifyZapierWithdrawalData {
   withdrawalId: string;
   amount: number;
   currency: string;
@@ -14,17 +14,12 @@ export interface NotifyN8nWithdrawalData {
 }
 
 /**
- * Sends a withdrawal completion notification to n8n webhook.
- * 
- * @param data - Withdrawal data to send to n8n
+ * Sends a withdrawal completion notification to Zapier webhook.
  */
-export async function notifyN8nWithdrawal(
-  data: NotifyN8nWithdrawalData
+export async function notifyZapierWithdrawal(
+  data: NotifyZapierWithdrawalData
 ): Promise<void> {
-  // Skip if webhook URL is not configured
-  if (!N8N_WEBHOOK_URL) {
-    return;
-  }
+  if (!ZAPIER_WEBHOOK_URL) return;
 
   const payload = {
     event: "withdrawal_completed",
@@ -43,7 +38,7 @@ export async function notifyN8nWithdrawal(
     timestamp: new Date().toISOString(),
   };
 
-  await fetch(N8N_WEBHOOK_URL, {
+  await fetch(ZAPIER_WEBHOOK_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
