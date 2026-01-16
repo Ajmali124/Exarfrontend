@@ -12,6 +12,8 @@ const WithdrawForm = () => {
   const [address, setAddress] = useState<string>("");
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
+  const trpcUtils = trpc.useUtils();
+
   const { data: walletData } = trpc.user.getWalletBalance.useQuery();
   const { data: withdrawalSettings, isLoading: settingsLoading } =
     trpc.user.getWithdrawalSettings.useQuery();
@@ -62,6 +64,57 @@ const WithdrawForm = () => {
     !addressInvalid &&
     !requestWithdrawal.isPending;
 
+  const requestId = useMemo(() => {
+    if (typeof window === "undefined") return null;
+
+    const key = "withdraw:request";
+    const payloadKey = `${address.trim()}|${amount}`;
+    try {
+      const existingRaw = window.sessionStorage.getItem(key);
+      if (existingRaw) {
+        const existing = JSON.parse(existingRaw) as {
+          id: string;
+          payloadKey: string;
+          createdAt: number;
+        };
+
+        // Reuse the same requestId across refresh/retry ONLY if inputs match and it's recent.
+        if (
+          existing?.id &&
+          existing?.payloadKey === payloadKey &&
+          Date.now() - (existing.createdAt ?? 0) < 10 * 60 * 1000
+        ) {
+          return existing.id;
+        }
+      }
+
+      const id =
+        typeof window.crypto?.randomUUID === "function"
+          ? window.crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+      window.sessionStorage.setItem(
+        key,
+        JSON.stringify({ id, payloadKey, createdAt: Date.now() })
+      );
+      return id;
+    } catch {
+      // If sessionStorage is blocked, fall back to an in-memory id.
+      return typeof window.crypto?.randomUUID === "function"
+        ? window.crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+  }, [address, amount]);
+
+  const clearRequestId = () => {
+    if (typeof window === "undefined") return;
+    try {
+      window.sessionStorage.removeItem("withdraw:request");
+    } catch {
+      // ignore
+    }
+  };
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setHasSubmitted(true);
@@ -74,11 +127,22 @@ const WithdrawForm = () => {
       {
         amount: parsedAmount,
         address: address.trim(),
+        requestId: requestId ?? undefined,
       },
       {
         onSuccess: () => {
           setAmount("");
           setAddress("");
+          clearRequestId();
+          void trpcUtils.user.getWalletBalance.invalidate();
+          void trpcUtils.user.getTransactions.invalidate();
+        },
+        onError: (error) => {
+          // If the server responded with an error, allow a fresh attempt with a new requestId.
+          // If it's a network error (no structured tRPC data), keep requestId to safely retry.
+          if (error.data?.code) {
+            clearRequestId();
+          }
         },
       }
     );
@@ -202,7 +266,7 @@ const WithdrawForm = () => {
         <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-900/20 dark:text-emerald-200">
           <CheckCircle2 className="h-4 w-4" />
           Withdrawal requested successfully. ID:{" "}
-          {requestWithdrawal.data.withdrawalId}
+          {requestWithdrawal.data.withdrawalId ?? requestWithdrawal.data.requestId}
         </div>
       )}
 
