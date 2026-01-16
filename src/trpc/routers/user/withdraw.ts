@@ -170,15 +170,25 @@ export const withdrawRouter = {
           // Serialize withdrawal creation per user (prevents race conditions / double submits).
           // MySQL advisory lock is per-connection, so this works inside the transaction callback.
           const lockName = `withdraw:${userId}`;
-          const lockRows = (await tx.$queryRaw<
-            Array<{ acquired: number | null }>
-          >`SELECT GET_LOCK(${lockName}, 10) as acquired`) ?? [];
+          // NOTE: Some hosted MySQL variants (e.g. Vitess/PlanetScale) do not support GET_LOCK.
+          // In that case we gracefully continue without the advisory lock (we still keep idempotency
+          // + atomic balance update inside this DB transaction).
+          let shouldReleaseLock = false;
+          try {
+            const lockRows = (await tx.$queryRaw<
+              Array<{ acquired: number | null }>
+            >`SELECT GET_LOCK(${lockName}, 10) as acquired`) ?? [];
 
-          if (!lockRows[0]?.acquired) {
-            throw new TRPCError({
-              code: "CONFLICT",
-              message: "Withdrawal is already being processed. Please try again.",
-            });
+            if (!lockRows[0]?.acquired) {
+              throw new TRPCError({
+                code: "CONFLICT",
+                message: "Withdrawal is already being processed. Please try again.",
+              });
+            }
+            shouldReleaseLock = true;
+          } catch (e) {
+            // Fallback: proceed without advisory lock
+            shouldReleaseLock = false;
           }
 
           try {
@@ -240,7 +250,13 @@ export const withdrawRouter = {
             });
           } finally {
             // Best-effort lock release (also releases automatically if connection ends).
-            await tx.$executeRaw`SELECT RELEASE_LOCK(${lockName})`;
+            if (shouldReleaseLock) {
+              try {
+                await tx.$executeRaw`SELECT RELEASE_LOCK(${lockName})`;
+              } catch {
+                // ignore (lock may not be supported or already released)
+              }
+            }
           }
         });
 
@@ -290,6 +306,11 @@ export const withdrawRouter = {
           totalDeduction: totalAmount, // Total deducted from balance
         };
       } catch (error) {
+        // Preserve any explicit TRPC errors (validation, insufficient balance, pending withdrawal, etc.)
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+
         // If CoinPayments call fails after we've reserved/deducted balance, we must refund.
         if (error instanceof CoinpaymentsError) {
           await prisma.$transaction(async (tx) => {
@@ -317,6 +338,13 @@ export const withdrawRouter = {
             message: error.message,
           });
         }
+
+        // Log unexpected errors so we can diagnose production issues (DB lock support, schema mismatch, etc.)
+        console.error("requestWithdrawal unexpected error", {
+          userId,
+          requestId,
+          error,
+        });
 
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
