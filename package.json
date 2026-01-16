@@ -9,7 +9,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "postinstall": "prisma generate",
-    "email": "email dev"
+    "email": "email dev",
+    "seed:rank-test": "tsx scripts/seed-rank-test.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

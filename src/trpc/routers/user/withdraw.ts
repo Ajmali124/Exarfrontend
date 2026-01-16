@@ -89,6 +89,18 @@ export const withdrawRouter = {
       const requestId = input.requestId ?? randomUUID();
       const totalAmount = ensureFiatPrecision(Number(input.amount)); // This is what user types (total to deduct)
 
+      // Require Basic KYC before allowing withdrawals.
+      const kycRow = await (prisma as any).kycSubmission?.findUnique?.({
+        where: { userId },
+        select: { basicStatus: true },
+      });
+      if (kycRow?.basicStatus !== "approved") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Basic KYC is required to withdraw. Please complete KYC first.",
+        });
+      }
+
       if (!Number.isFinite(totalAmount) || totalAmount <= 0) {
         throw new TRPCError({
           code: "BAD_REQUEST",

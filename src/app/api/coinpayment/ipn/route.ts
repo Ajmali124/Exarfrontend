@@ -12,6 +12,17 @@ import { notifyZapierWithdrawal } from "@/lib/notifications/n8n";
 
 export const runtime = "nodejs";
 
+function parseCountryFromAddress(address?: string | null): string | null {
+  if (!address) return null;
+  const parts = address
+    .split(",")
+    .map((p) => p.trim())
+    .filter(Boolean);
+  if (!parts.length) return null;
+  const last = parts[parts.length - 1];
+  return last.length ? last : null;
+}
+
 function buildJsonResponse(
   message: string,
   status: number = 200
@@ -198,12 +209,26 @@ export async function POST(request: Request) {
         // Notify n8n if withdrawal is completed
         if (status === "completed") {
           try {
+            const user = await prisma.user.findUnique({
+              where: { id: withdrawalTransaction.userId },
+              select: { name: true, location: true },
+            });
+            const kyc = await (prisma as any).kycSubmission?.findUnique?.({
+              where: { userId: withdrawalTransaction.userId },
+              select: { address: true },
+            });
+            const country = parseCountryFromAddress(
+              (kyc?.address as string | null | undefined) ?? user?.location ?? null
+            );
+
             await notifyZapierWithdrawal({
               withdrawalId: withdrawalTxnId,
               amount: withdrawalTransaction.amount,
               currency: withdrawalTransaction.currency || "USDT",
               status: status,
               userId: withdrawalTransaction.userId,
+              userName: user?.name ?? null,
+              country,
               toAddress: withdrawalTransaction.toAddress,
               description: withdrawalTransaction.description,
               transactionId: withdrawalTransaction.id,

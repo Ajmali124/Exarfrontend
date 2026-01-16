@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import prisma from "@/lib/prismadb";
 import { getCloudinaryConfig } from "@/lib/cloudinary";
 import crypto from "crypto";
 
 export const runtime = "nodejs";
+
+const ALLOWED_KINDS = new Set(["selfie", "document_front", "document_back"]);
 
 export async function POST(request: Request) {
   const session = await auth.api.getSession({
@@ -15,19 +16,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // If Basic KYC is approved, lock avatar changes.
-  // (Users can still get an avatar via the Basic KYC selfie, which auto-sets `user.image`.)
-  const kycRow = await (prisma as any).kycSubmission?.findUnique?.({
-    where: { userId: session.user.id },
-    select: { basicStatus: true },
-  });
-  if (kycRow?.basicStatus === "approved") {
-    return NextResponse.json(
-      { error: "Avatar is locked after Basic KYC." },
-      { status: 403 }
-    );
-  }
-
   const config = getCloudinaryConfig();
   if (!config) {
     return NextResponse.json(
@@ -36,33 +24,42 @@ export async function POST(request: Request) {
     );
   }
 
+  const { searchParams } = new URL(request.url);
+  const kind = searchParams.get("kind") ?? "selfie";
+  if (!ALLOWED_KINDS.has(kind)) {
+    return NextResponse.json(
+      { error: "Invalid upload kind" },
+      { status: 400 }
+    );
+  }
+
   try {
     const form = await request.formData();
     const file = form.get("file");
 
     if (!(file instanceof File)) {
-      return NextResponse.json(
-        { error: "File is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "File is required" }, { status: 400 });
     }
 
-    if (file.size > 5 * 1024 * 1024) {
+    // KYC docs can be slightly larger than avatars.
+    if (file.size > 10 * 1024 * 1024) {
       return NextResponse.json(
-        { error: "File size must be under 5MB" },
+        { error: "File size must be under 10MB" },
         { status: 400 }
       );
     }
 
     const timestamp = Math.floor(Date.now() / 1000);
+    const folder = `kyc/${session.user.id}`;
+
     const cloudinaryForm = new FormData();
     cloudinaryForm.append("file", file);
-    cloudinaryForm.append("folder", "profile-avatars");
+    cloudinaryForm.append("folder", folder);
     cloudinaryForm.append("timestamp", String(timestamp));
     cloudinaryForm.append("api_key", config.apiKey);
 
     const signature = createCloudinarySignature({
-      folder: "profile-avatars",
+      folder,
       timestamp,
     });
     cloudinaryForm.append("signature", signature);
@@ -76,7 +73,7 @@ export async function POST(request: Request) {
     );
 
     if (!uploadResponse.ok) {
-      const errorPayload = await uploadResponse.json();
+      const errorPayload = await uploadResponse.json().catch(() => null);
       console.error("Cloudinary upload failed", errorPayload);
       return NextResponse.json(
         { error: "Failed to upload image" },
@@ -95,21 +92,10 @@ export async function POST(request: Request) {
       );
     }
 
-    await prisma.user.update({
-      where: { id: session.user.id },
-      data: {
-        image: uploadJson.secure_url,
-        updatedAt: new Date(),
-      },
-    });
-
-    return NextResponse.json({ url: uploadJson.secure_url });
+    return NextResponse.json({ url: uploadJson.secure_url, kind });
   } catch (error) {
-    console.error("Avatar upload failed", error);
-    return NextResponse.json(
-      { error: "Unexpected error" },
-      { status: 500 }
-    );
+    console.error("KYC upload failed", error);
+    return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
   }
 }
 
@@ -128,7 +114,6 @@ function createCloudinarySignature({
   // IMPORTANT: Cloudinary signs the raw parameter string (do NOT URL-encode `/`).
   // Docs: signature = sha1("param1=value1&param2=value2" + api_secret)
   const stringToSign = `folder=${folder}&timestamp=${timestamp}${config.apiSecret}`;
-
   return crypto.createHash("sha1").update(stringToSign).digest("hex");
 }
 

@@ -41,13 +41,17 @@ type QuickAction = {
   href?: string;
 };
 
-const settingsItems = [
-  { label: "Verification", value: "Verified" as string | undefined, icon: ShieldCheck },
-  { label: "Security Center", value: "Moderate" as string | undefined, icon: ShieldHalf },
-  { label: "Preferences", value: undefined, icon: Sparkles },
-] as const;
-
-type SettingsItem = (typeof settingsItems)[number];
+type SettingsItem = {
+  label: string;
+  value?: string;
+  icon: typeof ShieldCheck;
+  href?: string;
+} | {
+  label: string;
+  value?: string;
+  icon: typeof ShieldHalf | typeof Sparkles;
+  href?: string;
+};
 
 const otherItems = [
   { label: "Satisfaction Survey", value: "Submitted" as string | undefined, icon: MessageSquare },
@@ -86,6 +90,9 @@ const MobileProfileSheet = ({ children }: MobileProfileSheetProps) => {
   const { data: vouchers } = trpc.user.getVouchers.useQuery(undefined, {
     enabled: open,
   });
+  const { data: kyc } = trpc.user.getKycStatus.useQuery(undefined, {
+    enabled: open,
+  });
   
   const maskedUid = useMemo(() => {
     const id = ensureString(basicInfo?.id);
@@ -100,7 +107,10 @@ const MobileProfileSheet = ({ children }: MobileProfileSheetProps) => {
       basicInfo?.email,
     "User"
   );
-  const profileImage = resolveProfileImage(basicInfo?.image);
+  // Prefer user profile image; fall back to KYC selfie; else show initial.
+  const profileImage =
+    resolveProfileImage(basicInfo?.image) ??
+    resolveProfileImage(kyc?.selfieImageUrl);
 
   // Count unused vouchers
   const unusedVoucherCount = useMemo(() => {
@@ -115,6 +125,24 @@ const MobileProfileSheet = ({ children }: MobileProfileSheetProps) => {
     if (typeof basicInfo?.id !== "string") return;
     void navigator.clipboard?.writeText(basicInfo.id);
   };
+
+  const kycValue = useMemo(() => {
+    const basic = kyc?.basicStatus ?? "not_submitted";
+    const adv = kyc?.advancedStatus ?? "not_submitted";
+    if (adv === "approved") return "Advanced Approved";
+    if (basic === "approved") return "Basic Approved";
+    if (adv === "submitted" || basic === "submitted") return "Submitted";
+    return "Not started";
+  }, [kyc?.basicStatus, kyc?.advancedStatus]);
+
+  const settingsItems: SettingsItem[] = useMemo(
+    () => [
+      { label: "KYC", value: kycValue, icon: ShieldCheck, href: "/kyc" },
+      { label: "Security Center", value: "Moderate", icon: ShieldHalf },
+      { label: "Preferences", value: undefined, icon: Sparkles },
+    ],
+    [kycValue]
+  );
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -176,13 +204,21 @@ const MobileProfileSheet = ({ children }: MobileProfileSheetProps) => {
             <div className="flex flex-col gap-5 px-5 pb-5">
               <Section title="Settings">
                 {settingsItems.map((item) => (
-                  <ProfileRow key={item.label} item={item} />
+                  <ProfileRow
+                    key={item.label}
+                    item={item}
+                    onClose={() => setOpen(false)}
+                  />
                 ))}
               </Section>
 
               <Section title="Others">
                 {otherItems.map((item) => (
-                  <ProfileRow key={item.label} item={item} />
+                  <ProfileRow
+                    key={item.label}
+                    item={item}
+                    onClose={() => setOpen(false)}
+                  />
                 ))}
               </Section>
             </div>
@@ -275,13 +311,24 @@ const QuickActionTile = ({
 
 const ProfileRow = ({
   item,
+  onClose,
 }: {
   item: SettingsItem | OtherItem;
+  onClose?: () => void;
 }) => {
   const Icon = item.icon;
+  const router = useRouter();
+  const handleClick = () => {
+    if ((item as any).href) {
+      onClose?.();
+      router.push((item as any).href);
+      return;
+    }
+  };
   return (
     <button
       type="button"
+      onClick={handleClick}
       className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm hover:bg-muted"
     >
       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">

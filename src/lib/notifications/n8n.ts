@@ -8,6 +8,8 @@ export interface NotifyZapierWithdrawalData {
   currency: string;
   status: string;
   userId: string;
+  userName?: string | null;
+  country?: string | null;
   toAddress?: string | null;
   description?: string | null;
   transactionId?: string;
@@ -34,6 +36,8 @@ export async function notifyZapierWithdrawal(
     },
     user: {
       id: data.userId,
+      name: data.userName ?? null,
+      country: data.country ?? null,
     },
     timestamp: new Date().toISOString(),
   };

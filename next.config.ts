@@ -15,6 +15,11 @@ const nextConfig = {
         hostname: "s2.coinmarketcap.com", // For CoinMarketCap images
         pathname: "/static/img/coins/**",
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com", // Cloudinary hosted images (avatars/KYC)
+        pathname: "/**",
+      },
     ],
   },
   // You can add other Next.js configurations here

@@ -28,6 +28,7 @@ const Navbar = () => {
   const { text, bg, border } = useThemeClasses();
   const isDark = theme === "dark";
   const { data: userBasic } = trpc.user.getBasicInfo.useQuery();
+  const { data: kyc } = trpc.user.getKycStatus.useQuery();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -51,7 +52,9 @@ const Navbar = () => {
             <div className="relative h-8 w-8 overflow-hidden rounded-full ring-2 ring-green-500/20 dark:ring-purple-500/20">
               <img
                 src={
-                  ensureString(userBasic?.image) ?? "/user.png"
+                  ensureString(userBasic?.image) ??
+                  ensureString(kyc?.selfieImageUrl) ??
+                  "/user.png"
                 }
                 alt={`${ensureString(userBasic?.username ?? userBasic?.name) ?? "User"} profile`}
                 className="h-full w-full object-cover"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -34,6 +34,7 @@ import {
 import { toast } from "sonner";
 import { trpc } from "@/trpc/client";
 import { useThemeClasses } from "@/lib/theme-utils";
+import { KycSection } from "./_components/kyc-section";
 
 export type ProfileBasicInfo = {
   id: string;
@@ -81,6 +82,41 @@ const ProfileScreenClient = ({ basicInfo }: ProfileScreenClientProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const utils = trpc.useUtils();
   const themeClasses = useThemeClasses();
+  const { data: kyc } = trpc.user.getKycStatus.useQuery();
+  const { data: liveBasicInfo } = trpc.user.getBasicInfo.useQuery(undefined, {
+    initialData: basicInfo as any,
+  });
+
+  // Prefer profile fields; fall back to KYC fields so the UI updates immediately even if
+  // the user record hasn't propagated yet.
+  const mergedProfile = useMemo(() => {
+    return {
+      ...profile,
+      name: profile.name ?? kyc?.fullName ?? profile.name,
+      location: profile.location ?? kyc?.address ?? profile.location,
+      image: profile.image ?? kyc?.selfieImageUrl ?? profile.image,
+    };
+  }, [profile, kyc?.fullName, kyc?.address, kyc?.selfieImageUrl]);
+
+  const avatarUrl = mergedProfile.image ?? null;
+  const avatarLocked = (kyc?.basicStatus ?? "not_submitted") === "approved";
+
+  // Keep Profile screen in sync when KYC updates name/location/avatar, so user doesn't re-enter info.
+  useEffect(() => {
+    if (!liveBasicInfo) return;
+    setProfile((prev) => ({ ...prev, ...(liveBasicInfo as any) }));
+  }, [liveBasicInfo]);
+
+  // Also merge in KYC fields into local state (best-effort) to keep editable rows consistent.
+  useEffect(() => {
+    if (!kyc) return;
+    setProfile((prev) => ({
+      ...prev,
+      name: prev.name ?? (kyc.fullName ?? prev.name),
+      location: prev.location ?? (kyc.address ?? prev.location),
+      image: prev.image ?? (kyc.selfieImageUrl ?? prev.image),
+    }));
+  }, [kyc]);
 
   const updateProfile = trpc.user.updateProfile.useMutation({
     onSuccess: (data) => {
@@ -96,6 +132,12 @@ const ProfileScreenClient = ({ basicInfo }: ProfileScreenClientProps) => {
   const handleAvatarSelect = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    if (avatarLocked) {
+      toast.error("Avatar is locked after Basic KYC.");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
 
     setIsUploadingAvatar(true);
     const form = new FormData();
@@ -143,41 +185,41 @@ const ProfileScreenClient = ({ basicInfo }: ProfileScreenClientProps) => {
     () => [
       {
         label: "Nickname",
-        value: profile.nickname ?? "",
-        display: profile.nickname ?? "Not Set",
+        value: mergedProfile.nickname ?? "",
+        display: mergedProfile.nickname ?? "Not Set",
         field: "nickname",
         type: "text",
       },
       {
         label: "Gender",
-        value: profile.gender ?? "unknown",
-        display: formatGender(profile.gender),
+        value: mergedProfile.gender ?? "unknown",
+        display: formatGender(mergedProfile.gender),
         field: "gender",
         type: "gender",
       },
       {
         label: "Homepage",
-        value: profile.homepage ?? "",
-        display: profile.homepage ?? "Not Set",
+        value: mergedProfile.homepage ?? "",
+        display: mergedProfile.homepage ?? "Not Set",
         field: "homepage",
         type: "url",
       },
       {
         label: "Location",
-        value: profile.location ?? "",
-        display: profile.location ?? "Not Set",
+        value: mergedProfile.location ?? "",
+        display: mergedProfile.location ?? "Not Set",
         field: "location",
         type: "text",
       },
       {
         label: "Link Email",
-        value: profile.linkEmail ?? "",
-        display: profile.linkEmail ? maskEmail(profile.linkEmail) : "Not Set",
+        value: mergedProfile.linkEmail ?? "",
+        display: mergedProfile.linkEmail ? maskEmail(mergedProfile.linkEmail) : "Not Set",
         field: "linkEmail",
         type: "email",
       },
     ],
-    [profile]
+    [mergedProfile]
   );
 
   const staticRows = useMemo(
@@ -188,10 +230,10 @@ const ProfileScreenClient = ({ basicInfo }: ProfileScreenClientProps) => {
       },
       {
         label: "My Referrer",
-        value: profile.inviteCode ?? "Not Set",
+        value: mergedProfile.inviteCode ?? "Not Set",
       },
     ],
-    [profile.inviteCode]
+    [mergedProfile.inviteCode]
   );
 
   return (
@@ -233,9 +275,9 @@ const ProfileScreenClient = ({ basicInfo }: ProfileScreenClientProps) => {
                 themeClasses.border.primary
               )}
             >
-              {profile.image ? (
+              {avatarUrl ? (
                 <Image
-                  src={profile.image}
+                  src={avatarUrl}
                   alt={displayName}
                   fill
                   className="object-cover"
@@ -256,14 +298,16 @@ const ProfileScreenClient = ({ basicInfo }: ProfileScreenClientProps) => {
                 </div>
               ) : null}
             </div>
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="absolute bottom-1 right-1 flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-600 shadow dark:bg-neutral-800 dark:text-white"
-              disabled={isUploadingAvatar}
-            >
-              <Pencil className="h-4 w-4 text-gray-600" />
-            </button>
+            {!avatarLocked ? (
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute bottom-1 right-1 flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-600 shadow dark:bg-neutral-800 dark:text-white"
+                disabled={isUploadingAvatar}
+              >
+                <Pencil className="h-4 w-4 text-gray-600" />
+              </button>
+            ) : null}
             <input
               ref={fileInputRef}
               type="file"
@@ -328,6 +372,9 @@ const ProfileScreenClient = ({ basicInfo }: ProfileScreenClientProps) => {
             />
           ))}
         </section>
+        <div className="mt-6">
+          <KycSection />
+        </div>
       </main>
     </div>
   );

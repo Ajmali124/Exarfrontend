@@ -8,10 +8,6 @@ import {
   calculateMaxEarning,
   STAKING_PACKAGES,
 } from "@/lib/staking-packages";
-import {
-  checkAndGrantPackageReward,
-  checkAndGrantTeamRewards,
-} from "./promotion";
 
 /**
  * Staking-related tRPC procedures
@@ -309,21 +305,6 @@ export const stakingRouter = {
 
           return stakeEntry;
         });
-
-        // After successful stake creation, check for promotion rewards
-        // Note: These are non-blocking and run after the transaction
-        try {
-          // Grant package purchase reward to the user
-          await checkAndGrantPackageReward(ctx.auth.user.id, packageInfo.id);
-
-          // If user has a sponsor, check and grant team rewards to sponsor
-          if (invitedMember?.sponsorId) {
-            await checkAndGrantTeamRewards(invitedMember.sponsorId, ctx.auth.user.id);
-          }
-        } catch (error) {
-          // Log but don't fail the stake creation if reward granting fails
-          console.error("Error granting promotion rewards:", error);
-        }
 
         return result;
       } catch (error: any) {

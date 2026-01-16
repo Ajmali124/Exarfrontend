@@ -42,10 +42,45 @@ model User {
   coinpaymentsDepositAddress CoinpaymentsDepositAddress?
   vouchers Voucher[]
   promotionRegistrations PromotionRegistration[]
+  gridBots        GridBot[]
+  dcaBots         DCABot[]
+  kycSubmission KycSubmission?
   
   @@unique([email])
   @@map("user")
   
+}
+
+model KycSubmission {
+  id String @id @default(uuid())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+
+  // Basic KYC
+  basicStatus String @default("not_submitted") // 'not_submitted' | 'submitted' | 'approved' | 'rejected'
+  fullName String? @db.Text
+  address String? @db.Text
+  selfieImageUrl String? @db.Text
+  basicSubmittedAt DateTime?
+  basicReviewedAt DateTime?
+  basicReviewNote String? @db.Text
+
+  // Advanced KYC
+  advancedStatus String @default("not_submitted") // 'not_submitted' | 'submitted' | 'approved' | 'rejected'
+  documentType String? @db.Text // 'passport' | 'id_card'
+  documentFrontUrl String? @db.Text
+  documentBackUrl String? @db.Text
+  advancedSubmittedAt DateTime?
+  advancedReviewedAt DateTime?
+  advancedReviewNote String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([basicStatus])
+  @@index([advancedStatus])
+  @@map("kyc_submission")
 }
 
 model InvitedMember {
@@ -120,6 +155,7 @@ model UserBalance {
 
   userId              String @unique
   balance             Float  @default(0)
+  demoBalance         Float  @default(0) 
   onStaking           Float  @default(0)
   maxEarn             Float  @default(0)
   dailyEarning        Float  @default(0)
@@ -303,3 +339,253 @@ model PromotionRegistration {
   @@map("promotion_registration")
 }
 
+
+model GridBot {
+  id              String   @id @default(uuid())
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String
+  
+  // Basic Configuration
+  name            String?  @db.Text // Optional bot name
+  symbol          String   // Trading pair (e.g., SOLUSD, BTCUSD)
+  accountType     String   @default("DEMO") // DEMO or REAL
+  status          String   @default("stopped") // active, paused, stopped
+  
+  // Investment
+  investment      Float    // Investment amount in lots
+  margin          Float    // Calculated margin
+  
+  // AI Preset
+  aiPreset        String   @default("Optimal") // Conservative, Optimal, Aggressive
+  
+  // Grid Configuration
+  upperPrice      Float    // High price bound
+  lowerPrice      Float    // Low price bound
+  gridLevels      Int      // Number of grid levels
+  gridSpacing     Float    // Calculated spacing between levels
+  orderAmountPerLevel Float // Investment per grid level
+  
+  // Price Units (for frontend display)
+  upperPriceUnit  String   @default("price") // price or percent
+  lowerPriceUnit  String   @default("price") // price or percent
+  gridLevelsUnit  String   @default("levels") // levels or percent
+  
+  // Trading Filters
+  totalTargetProfit    Float?  // Auto-stop profit target
+  allowableTotalLoss   Float?  // Auto-stop loss limit
+  maxPrice             Float?  // Maximum execution price
+  minPrice             Float?  // Minimum execution price
+  
+  // Performance Tracking
+  totalProfit          Float   @default(0)
+  totalProfitPercent   Float   @default(0)
+  totalPL              Float   @default(0) // Total P/L
+  totalPLPercent       Float   @default(0)
+  currentPrice         Float?  // Last known price
+  
+  // Balances (demo trading)
+  baseBalance          Float   @default(0) // Base currency (e.g., USDT)
+  quoteBalance         Float   @default(0) // Quote currency (e.g., BTC)
+  
+  // Timestamps
+  startedAt            DateTime?
+  stoppedAt            DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  
+  // Relations
+  orders               GridBotOrder[]
+  executions           GridBotExecution[]
+  
+  @@index([userId])
+  @@index([status])
+  @@index([symbol])
+  @@index([createdAt])
+  @@map("grid_bot")
+}
+
+model GridBotOrder {
+  id              String   @id @default(uuid())
+  bot             GridBot  @relation(fields: [botId], references: [id], onDelete: Cascade)
+  botId           String
+  
+  // Order Details
+  orderType       String   // BUY or SELL
+  gridLevel       Int      // Which grid level this order belongs to
+  price           Float    // Order price
+  quantity        Float    // Order quantity (in lots or base currency)
+  status          String   @default("PENDING") // PENDING, FILLED, CANCELLED
+  
+  // Execution Details
+  filledPrice     Float?
+  filledQuantity  Float?
+  filledAt        DateTime?
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  executions      GridBotExecution[]
+  
+  @@index([botId])
+  @@index([status])
+  @@index([gridLevel])
+  @@map("grid_bot_order")
+}
+
+model GridBotExecution {
+  id              String   @id @default(uuid())
+  bot             GridBot  @relation(fields: [botId], references: [id], onDelete: Cascade)
+  botId           String
+  order           GridBotOrder? @relation(fields: [orderId], references: [id])
+  orderId         String?
+  
+  // Execution Details
+  executionType   String   // BUY or SELL
+  price           Float    // Execution price
+  quantity        Float    // Executed quantity
+  fee             Float    @default(0) // Trading fee (for future use)
+  
+  // Profit Tracking
+  profit          Float    @default(0) // Profit from this execution
+  cumulativeProfit Float   @default(0) // Total profit up to this execution
+  
+  // Position Tracking
+  baseBalanceAfter  Float   // Base balance after execution
+  quoteBalanceAfter Float   // Quote balance after execution
+  
+  timestamp       DateTime @default(now())
+  
+  @@index([botId])
+  @@index([timestamp])
+  @@map("grid_bot_execution")
+}
+
+model DCABot {
+  id              String   @id @default(uuid())
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String
+  
+  // Basic Configuration
+  name            String?  @db.Text // Optional bot name
+  symbol          String   // Trading pair (e.g., SOLUSD, BTCUSD)
+  accountType     String   @default("DEMO") // DEMO or REAL
+  status          String   @default("stopped") // active, paused, stopped
+  position        String   @default("Long") // Long or Short
+  
+  // Investment
+  investment      Float    // Investment amount in lots
+  margin          Float    // Calculated margin
+  
+  // AI Preset
+  aiPreset        String   @default("Optimal") // Conservative, Optimal, Aggressive
+  
+  // DCA Configuration
+  initialOrderAmount Float  // Initial order amount
+  extraOrderAmount  Float   // Extra order amount
+  extraOrders       Int     // Number of extra orders
+  extraOrdersStep   Float   // Step between extra orders
+  extraOrdersStepUnit String @default("pips") // pips or percent
+  amountMultiplier   Float  @default(1.0) // Amount multiplier
+  stepMultiplier     Float  @default(1.0) // Step multiplier
+  entryCondition     String @default("instantly") // instantly, rsi, cci, etc.
+  
+  // Take Profit & Stop Loss
+  takeProfit      Float?   // Take profit value
+  takeProfitUnit  String?  @default("pips") // pips or percent
+  stopLoss        Float?   // Stop loss value
+  stopLossUnit    String?  @default("pips") // pips or percent
+  stopLossEnabled Boolean  @default(false)
+  
+  // Trading Filters
+  totalTargetProfit    Float?  // Auto-stop profit target
+  allowableTotalLoss   Float?  // Auto-stop loss limit
+  maxPrice             Float?  // Maximum execution price
+  minPrice             Float?  // Minimum execution price
+  
+  // Performance Tracking
+  totalProfit          Float   @default(0)
+  totalProfitPercent   Float   @default(0)
+  totalPL              Float   @default(0) // Total P/L
+  totalPLPercent       Float   @default(0)
+  currentPrice         Float?  // Last known price
+  
+  // Balances (demo trading)
+  baseBalance          Float   @default(0) // Base currency (e.g., USDT)
+  quoteBalance         Float   @default(0) // Quote currency (e.g., BTC)
+  
+  // Timestamps
+  startedAt            DateTime?
+  stoppedAt            DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  
+  // Relations
+  orders               DCABotOrder[]
+  executions           DCABotExecution[]
+  
+  @@index([userId])
+  @@index([status])
+  @@index([symbol])
+  @@index([createdAt])
+  @@map("dca_bot")
+}
+
+model DCABotOrder {
+  id              String   @id @default(uuid())
+  bot             DCABot  @relation(fields: [botId], references: [id], onDelete: Cascade)
+  botId           String
+  
+  // Order Details
+  orderType       String   // BUY or SELL
+  orderNumber     Int      // Order number in sequence (1, 2, 3, ...)
+  price           Float    // Order price
+  quantity        Float    // Order quantity (in lots or base currency)
+  status          String   @default("PENDING") // PENDING, FILLED, CANCELLED
+  
+  // Execution Details
+  filledPrice     Float?
+  filledQuantity  Float?
+  filledAt        DateTime?
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  executions      DCABotExecution[]
+  
+  @@index([botId])
+  @@index([status])
+  @@index([orderNumber])
+  @@map("dca_bot_order")
+}
+
+model DCABotExecution {
+  id              String   @id @default(uuid())
+  bot             DCABot  @relation(fields: [botId], references: [id], onDelete: Cascade)
+  botId           String
+  order           DCABotOrder? @relation(fields: [orderId], references: [id])
+  orderId         String?
+  
+  // Execution Details
+  executionType   String   // BUY or SELL
+  price           Float    // Execution price
+  quantity        Float    // Executed quantity
+  fee             Float    @default(0) // Trading fee (for future use)
+  
+  // Profit Tracking
+  profit          Float    @default(0) // Profit from this execution
+  cumulativeProfit Float   @default(0) // Total profit up to this execution
+  
+  // Position Tracking
+  baseBalanceAfter  Float   // Base balance after execution
+  quoteBalanceAfter Float   // Quote balance after execution
+  
+  timestamp       DateTime @default(now())
+  
+  @@index([botId])
+  @@index([timestamp])
+  @@map("dca_bot_execution")
+}

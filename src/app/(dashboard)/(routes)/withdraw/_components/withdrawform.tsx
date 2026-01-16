@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { trpc } from "@/trpc/client";
 import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2, Info, Loader2, TriangleAlert } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const WithdrawForm = () => {
   const [amount, setAmount] = useState<string>("");
@@ -13,10 +14,12 @@ const WithdrawForm = () => {
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const trpcUtils = trpc.useUtils();
+  const router = useRouter();
 
   const { data: walletData } = trpc.user.getWalletBalance.useQuery();
   const { data: withdrawalSettings, isLoading: settingsLoading } =
     trpc.user.getWithdrawalSettings.useQuery();
+  const { data: kyc } = trpc.user.getKycStatus.useQuery();
 
   const requestWithdrawal = trpc.user.requestWithdrawal.useMutation();
 
@@ -56,8 +59,10 @@ const WithdrawForm = () => {
     !Number.isNaN(parsedAmount) &&
     parsedAmount + Number.EPSILON < minAmount;
   const addressInvalid = address.trim().length < 10;
+  const basicKycApproved = (kyc?.basicStatus ?? "not_submitted") === "approved";
 
   const canSubmit =
+    basicKycApproved &&
     !amountInvalid &&
     !exceedsBalance &&
     !belowMinimum &&
@@ -138,6 +143,10 @@ const WithdrawForm = () => {
           void trpcUtils.user.getTransactions.invalidate();
         },
         onError: (error) => {
+          if (error.data?.code === "FORBIDDEN") {
+            router.push("/kyc");
+            return;
+          }
           // If the server responded with an error, allow a fresh attempt with a new requestId.
           // If it's a network error (no structured tRPC data), keep requestId to safely retry.
           if (error.data?.code) {
@@ -161,6 +170,23 @@ const WithdrawForm = () => {
 
   return (
     <div className="w-full max-w-md mx-auto px-4 pb-24 mt-6 space-y-4">
+      {!basicKycApproved ? (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900 dark:bg-amber-900/20 dark:text-amber-200">
+          <p className="font-medium">Basic KYC required</p>
+          <p className="mt-1">
+            Please complete Basic KYC before withdrawing.
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-2 h-8"
+            onClick={() => router.push("/kyc")}
+          >
+            Go to KYC
+          </Button>
+        </div>
+      ) : null}
+
       <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
         <p className="font-medium">Available balance</p>
         <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -257,7 +283,7 @@ const WithdrawForm = () => {
               Processing withdrawal
             </>
           ) : (
-            "Submit withdrawal"
+            basicKycApproved ? "Submit withdrawal" : "Complete KYC to withdraw"
           )}
         </Button>
       </form>
