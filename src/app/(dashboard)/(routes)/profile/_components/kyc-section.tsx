@@ -445,7 +445,7 @@ function BasicKycDialog({
             </div>
           )}
         </div>
-        <SheetFooter className="px-4 bg-background border-t">
+        <SheetFooter className="px-4 bg-background border-t pb-14">
           {step === 1 ? (
             <Button
               type="button"
@@ -830,7 +830,7 @@ function AdvancedKycDialog({
             </div>
           )}
         </div>
-        <SheetFooter className="px-4 bg-background border-t">
+        <SheetFooter className="px-4 bg-background border-t pb-14">
           <Button
             type="button"
             onClick={() => {
