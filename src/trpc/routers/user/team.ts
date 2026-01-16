@@ -8,6 +8,94 @@ import { z } from "zod";
  * Handles team members, referrals, and team statistics
  */
 export const teamRouter = {
+  // Get up to N unique team member avatar images (prefers profile image, falls back to KYC selfie)
+  // Used for the 3D "team sphere" UI.
+  getTeamSphereImages: protectedProcedure
+    .input(
+      z
+        .object({
+          max: z.number().min(1).max(120).default(60),
+          maxLevels: z.number().min(1).max(10).default(10),
+        })
+        .optional()
+    )
+    .query(async ({ ctx, input }) => {
+      const max = input?.max ?? 60;
+      const maxLevels = input?.maxLevels ?? 10;
+
+      // Collect a reasonably-sized set of team userIds (BFS over invite tree) to
+      // account for users missing avatars.
+      const seenUserIds = new Set<string>();
+      const orderedUserIds: string[] = [];
+      const pushUnique = (id: string) => {
+        if (seenUserIds.has(id)) return;
+        seenUserIds.add(id);
+        orderedUserIds.push(id);
+      };
+
+      // Include sponsor (current user) first
+      pushUnique(ctx.auth.user.id);
+
+      let frontier: string[] = [ctx.auth.user.id];
+      for (let level = 1; level <= maxLevels; level++) {
+        if (frontier.length === 0) break;
+
+        const invitees = await prisma.invitedMember.findMany({
+          where: { sponsorId: { in: frontier } },
+          select: { userId: true },
+        });
+
+        const next = invitees.map((i) => i.userId);
+        next.forEach(pushUnique);
+        frontier = next;
+
+        // Pull more than max because many users may not have images
+        if (orderedUserIds.length >= max * 3) break;
+      }
+
+      const users = await prisma.user.findMany({
+        where: { id: { in: orderedUserIds } },
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          image: true,
+          kycSubmission: { select: { selfieImageUrl: true } },
+        },
+      });
+
+      const order = new Map(orderedUserIds.map((id, idx) => [id, idx]));
+      users.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
+
+      const images: { id: string; src: string; alt: string }[] = [];
+      const seenSrc = new Set<string>();
+
+      for (const u of users) {
+        const src = u.image || u.kycSubmission?.selfieImageUrl;
+        if (!src) continue;
+        if (seenSrc.has(src)) continue;
+        seenSrc.add(src);
+
+        const label = u.name || u.username || "Team member";
+        images.push({
+          id: u.id,
+          src,
+          alt: `${label} avatar`,
+        });
+
+        if (images.length >= max) break;
+      }
+
+      // If no one has an avatar yet, return a single local placeholder
+      if (images.length === 0) {
+        return {
+          images: [{ id: "placeholder", src: "/user.png", alt: "User avatar" }],
+        };
+      }
+
+      return { images };
+    }),
+
   // Get team members by level (10 levels deep)
   getTeamMembers: protectedProcedure
     .input(

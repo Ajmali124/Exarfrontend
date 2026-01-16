@@ -1,39 +1,8 @@
 'use client';
 
 import SphereImageGrid, { ImageData } from "@/components/ui/image-sphere";
+import { trpc } from "@/trpc/client";
 import { useEffect, useMemo, useState } from "react";
-
-// ==========================================
-// EASY CONFIGURATION - Edit these values to customize the component
-// ==========================================
-
-// Image sources using project assets - duplicated to fill sphere better
-const BASE_IMAGE_SOURCES: string[] = [
-  "https://res.cloudinary.com/dctgknnt7/image/upload/v1758731403/1_d8uozd.jpg",
-  "https://res.cloudinary.com/dctgknnt7/image/upload/v1758731402/5_ionpyy.jpg",
-  "https://res.cloudinary.com/dctgknnt7/image/upload/v1758731402/4_zeoqje.jpg",
-  "https://res.cloudinary.com/dctgknnt7/image/upload/v1758731402/2_hme6yu.jpg",
-  "https://res.cloudinary.com/dctgknnt7/image/upload/v1758731402/3_nfdtim.jpg",
-  "https://res.cloudinary.com/dctgknnt7/image/upload/v1758823070/11_c9flg6.jpg",
-  "https://res.cloudinary.com/dctgknnt7/image/upload/v1758823069/10_qujlpy.jpg",
-  "https://res.cloudinary.com/dctgknnt7/image/upload/v1758823070/8_hkn2jm.jpg",
-  "https://res.cloudinary.com/dctgknnt7/image/upload/v1758823069/6_li3ger.jpg",
-  "https://res.cloudinary.com/dctgknnt7/image/upload/v1758823069/12_kitql2.jpg",
-  "https://res.cloudinary.com/dctgknnt7/image/upload/v1758823069/7_ojrozd.jpg",
-  "https://res.cloudinary.com/dctgknnt7/image/upload/v1758823069/9_gkuidt.jpg"
-];
-
-// Generate more images by repeating the base set
-const IMAGES: ImageData[] = [];
-for (let i = 0; i < 60; i++) {
-  const baseIndex = i % BASE_IMAGE_SOURCES.length;
-  const src = BASE_IMAGE_SOURCES[baseIndex];
-  IMAGES.push({
-    id: `img-${i + 1}`,
-    src,
-    alt: `Bulb team member ${baseIndex + 1}`
-  });
-}
 
 // Component configuration - easily adjustable
 interface SphereConfig {
@@ -92,6 +61,11 @@ const getResponsiveSettings = (width: number) => {
 const TeamImageSphere = () => {
   const [viewportWidth, setViewportWidth] = useState<number>(375);
 
+  const { data: sphereData } = trpc.user.getTeamSphereImages.useQuery({
+    max: 60,
+    maxLevels: 10,
+  });
+
   useEffect(() => {
     const measure = () => window.innerWidth;
 
@@ -116,11 +90,28 @@ const TeamImageSphere = () => {
     };
   }, [viewportWidth]);
 
+  const images = useMemo<ImageData[]>(() => {
+    const base = sphereData?.images ?? [];
+    if (base.length === 0) return [];
+
+    // Fill the sphere by repeating real user images
+    const filled: ImageData[] = [];
+    for (let i = 0; i < 60; i++) {
+      const img = base[i % base.length];
+      filled.push({
+        id: `${img.id}-${i}`,
+        src: img.src,
+        alt: img.alt ?? `Team member ${i + 1}`,
+      });
+    }
+    return filled;
+  }, [sphereData]);
+
   return (
     <section className="w-full px-4 sm:px-6 md:px-0">
       <div className="mx-auto flex max-w-3xl flex-col items-center justify-center py-6 md:py-10">
         <SphereImageGrid
-          images={IMAGES}
+          images={images}
           {...sphereConfig}
           className="mx-auto"
         />
