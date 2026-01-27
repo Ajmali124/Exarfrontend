@@ -13,29 +13,14 @@ export async function generatePayoutImage(data: {
   const logoSvg = fs.readFileSync(logoPath, "utf8");
   const logoDataUri = `data:image/svg+xml;base64,${Buffer.from(logoSvg).toString("base64")}`;
 
-  // On Vercel, Chromium isn't available. ImageResponse must run in a Route Handler
-  // so the compiled @vercel/og module is in that function's bundle. We fetch the
-  // dedicated payout-image API instead of importing next/og here.
+  // On Vercel, Chromium isn't available. Use shared renderPayoutImage (@vercel/og) in-process — no HTTP, no auth, no bypass header.
   if (process.env.VERCEL === "1") {
-    const base =
-      process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const res = await fetch(`${base}/api/payout-image`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: data.name,
-        amount: data.amount,
-        currency: data.currency,
-        withdrawalId: data.withdrawalId,
-        profileImage: data.profileImage,
-      }),
+    const { renderPayoutImage } = await import("./payout-image");
+    const image = renderPayoutImage({
+      ...data,
+      logoUrl: logoDataUri,
     });
-    if (!res.ok) {
-      throw new Error(`payout-image API failed: ${res.status} ${await res.text()}`);
-    }
-    const buffer = Buffer.from(await res.arrayBuffer());
+    const buffer = Buffer.from(await image.arrayBuffer());
     const filePath = `/tmp/payout-${data.withdrawalId}-${Date.now()}.png`;
     fs.writeFileSync(filePath, buffer);
     return filePath;

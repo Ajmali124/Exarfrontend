@@ -12,8 +12,8 @@ export type PayoutOgData = {
 };
 
 /**
- * Pure JSX for the payout card. Used only by the payout-image API route.
- * ImageResponse must run in a Route Handler — do not call from IPN or other APIs.
+ * Pure JSX for the payout card. Used by renderPayoutImage in payout-image.ts
+ * (shared by the route and by the IPN path on Vercel).
  */
 export function PayoutCardOg(data: PayoutOgData) {
   const pkr = Math.round(data.amount * PKR_RATE);
