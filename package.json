@@ -10,7 +10,9 @@
     "format:check": "prettier --check .",
     "postinstall": "prisma generate",
     "email": "email dev",
-    "seed:rank-test": "tsx scripts/seed-rank-test.ts"
+    "seed:rank-test": "tsx scripts/seed-rank-test.ts",
+    "report:staking-users": "tsx scripts/staking-user-summary.ts",
+    "audit:withdrawals": "tsx scripts/withdrawal-daily-audit.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

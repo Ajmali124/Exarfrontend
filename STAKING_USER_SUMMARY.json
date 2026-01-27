@@ -1,0 +1,3016 @@
+{
+  "generatedAt": "2026-01-23T21:49:34.074Z",
+  "filters": {
+    "activeOnly": false,
+    "onStakeDefinition": "active + unstaking stakes"
+  },
+  "totals": {
+    "users": 84,
+    "stakes": 181,
+    "totalBalance": 6041.219396849999,
+    "totalOnStake": 22655,
+    "totalEarned": 11462.553200000004,
+    "totalRemainingCap": 50811.44679999999
+  },
+  "users": [
+    {
+      "userId": "YndMUgFOo2t7ymT5OoVMmw7SLBI5DLZP",
+      "name": "Muhammad Ajmal",
+      "username": "fairy34",
+      "display": "Muhammad Ajmal",
+      "balance": 2464.20399196,
+      "totalOnStake": 7000,
+      "totalEarned": 4203.3285,
+      "totalRemainingCap": 19356.6715,
+      "stakes": [
+        {
+          "id": "bdbe72c7-d942-4043-9842-1a2f332081b9",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2025-11-20T23:12:26.365Z"
+        },
+        {
+          "id": "0496e992-a202-46a9-b97d-530e769d3450",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2025-11-20T23:13:21.128Z"
+        },
+        {
+          "id": "d04313ed-add0-48a5-b8e7-8bd65fafa764",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 0,
+          "maxEarning": 0,
+          "remainingCap": 0,
+          "createdAt": "2025-11-20T23:13:37.852Z"
+        },
+        {
+          "id": "849ce36b-67bf-4338-afed-3dfa37154635",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2025-11-20T23:16:10.029Z"
+        },
+        {
+          "id": "2c6f7fe5-fa73-4d2d-ad22-9b234b56fb46",
+          "packageName": "Titan Node",
+          "packageId": 6,
+          "amount": 5000,
+          "status": "active",
+          "totalEarned": 3820.0085,
+          "maxEarning": 17500,
+          "remainingCap": 13679.9915,
+          "createdAt": "2025-12-03T19:28:43.958Z"
+        },
+        {
+          "id": "cfcc38a4-c227-4a50-a49d-dabf7731c206",
+          "packageName": "Voucher Position",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 2.32,
+          "maxEarning": 15,
+          "remainingCap": 12.68,
+          "createdAt": "2025-12-24T17:51:29.192Z"
+        },
+        {
+          "id": "44e861f4-ed29-4ca7-ac2f-a0db018706da",
+          "packageName": "Diamond Node",
+          "packageId": 5,
+          "amount": 2000,
+          "status": "active",
+          "totalEarned": 336,
+          "maxEarning": 6000,
+          "remainingCap": 5664,
+          "createdAt": "2026-01-11T19:15:07.903Z"
+        }
+      ]
+    },
+    {
+      "userId": "4QFprHvfic3zmLTImhu5BYfjrEo0FsUa",
+      "name": "Khurram Shahzad",
+      "username": "ltcstor",
+      "display": "Khurram Shahzad",
+      "balance": 123.200104,
+      "totalOnStake": 2000,
+      "totalEarned": 1180.1000000000001,
+      "totalRemainingCap": 5269.900000000001,
+      "stakes": [
+        {
+          "id": "1198e8dd-eb65-4118-877b-fb94094ee2ef",
+          "packageName": "Diamond Node",
+          "packageId": 5,
+          "amount": 2000,
+          "status": "active",
+          "totalEarned": 1119.2,
+          "maxEarning": 6000,
+          "remainingCap": 4880.8,
+          "createdAt": "2025-12-17T16:00:28.891Z"
+        },
+        {
+          "id": "03caae94-042b-4f28-9526-72bd076b384c",
+          "packageName": "Voucher Position",
+          "packageId": 5,
+          "amount": 150,
+          "status": "completed",
+          "totalEarned": 60.9,
+          "maxEarning": 450,
+          "remainingCap": 389.1,
+          "createdAt": "2025-12-17T16:01:01.754Z"
+        }
+      ]
+    },
+    {
+      "userId": "5uFnsAGeUhfRWBPERx7GmASad6bIyfW6",
+      "name": "Majid Butt",
+      "username": "dotmeta",
+      "display": "Majid Butt",
+      "balance": 0,
+      "totalOnStake": 2000,
+      "totalEarned": 112,
+      "totalRemainingCap": 5888,
+      "stakes": [
+        {
+          "id": "8c65409a-d838-4ee7-84d1-ae14d985a03a",
+          "packageName": "Diamond Node",
+          "packageId": 5,
+          "amount": 2000,
+          "status": "active",
+          "totalEarned": 112,
+          "maxEarning": 6000,
+          "remainingCap": 5888,
+          "createdAt": "2026-01-19T16:12:59.160Z"
+        }
+      ]
+    },
+    {
+      "userId": "LQfknIVCvqkpkOoSDQpUTGVwlH3BAcmU",
+      "name": "Shoaib Akhtar",
+      "username": "nft730",
+      "display": "Shoaib Akhtar",
+      "balance": 115.2,
+      "totalOnStake": 600,
+      "totalEarned": 115.2,
+      "totalRemainingCap": 1264.8,
+      "stakes": [
+        {
+          "id": "1ac16ec9-0a06-4422-8a9b-0e876b49c9b6",
+          "packageName": "Platinum Node",
+          "packageId": 4,
+          "amount": 500,
+          "status": "active",
+          "totalEarned": 96,
+          "maxEarning": 1150,
+          "remainingCap": 1054,
+          "createdAt": "2026-01-07T15:34:33.800Z"
+        },
+        {
+          "id": "0678e949-7899-4a41-a51a-c5d42e273704",
+          "packageName": "Voucher Position",
+          "packageId": 4,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 19.2,
+          "maxEarning": 230,
+          "remainingCap": 210.8,
+          "createdAt": "2026-01-07T15:51:12.002Z"
+        }
+      ]
+    },
+    {
+      "userId": "ADrdGerbaJrZ9Guiu6YvPMrAaEgxP6Iu",
+      "name": "Ghulam Mustafa",
+      "username": "maticbl",
+      "display": "Ghulam Mustafa",
+      "balance": 26.16,
+      "totalOnStake": 530,
+      "totalEarned": 236.16,
+      "totalRemainingCap": 958.8399999999999,
+      "stakes": [
+        {
+          "id": "6e0d25e8-060c-4521-ab47-67a7b23f4b96",
+          "packageName": "Platinum Node",
+          "packageId": 4,
+          "amount": 500,
+          "status": "active",
+          "totalEarned": 234,
+          "maxEarning": 1150,
+          "remainingCap": 916,
+          "createdAt": "2025-12-14T10:25:10.591Z"
+        },
+        {
+          "id": "6fe14d4e-5d0d-4c37-b8ea-a130b6afb3af",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 0.7199999999999999,
+          "maxEarning": 15,
+          "remainingCap": 14.28,
+          "createdAt": "2026-01-14T05:11:41.221Z"
+        },
+        {
+          "id": "6e531980-d896-4f6d-ae5b-1e3bff594495",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 0.7199999999999999,
+          "maxEarning": 15,
+          "remainingCap": 14.28,
+          "createdAt": "2026-01-14T05:14:05.925Z"
+        },
+        {
+          "id": "2a3feb84-6b3b-4308-93e3-b13bb47b0ace",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 0.7199999999999999,
+          "maxEarning": 15,
+          "remainingCap": 14.28,
+          "createdAt": "2026-01-14T05:14:30.217Z"
+        }
+      ]
+    },
+    {
+      "userId": "78DjDCZbLnUYDZCzkc7kC25R3WimXox7",
+      "name": "Muhammad Asad",
+      "username": "dao247",
+      "display": "Muhammad Asad",
+      "balance": 42,
+      "totalOnStake": 500,
+      "totalEarned": 72,
+      "totalRemainingCap": 1078,
+      "stakes": [
+        {
+          "id": "6f4e41ab-45ac-4482-bdce-a1d5b25e4177",
+          "packageName": "Platinum Node",
+          "packageId": 4,
+          "amount": 500,
+          "status": "active",
+          "totalEarned": 72,
+          "maxEarning": 1150,
+          "remainingCap": 1078,
+          "createdAt": "2026-01-11T19:37:41.725Z"
+        }
+      ]
+    },
+    {
+      "userId": "E5UspRASSCqHGI71YBMiYbC7yxJOlM3G",
+      "name": "asimpasha990@gmail.com",
+      "username": "web3946",
+      "display": "asimpasha990@gmail.com",
+      "balance": 42,
+      "totalOnStake": 500,
+      "totalEarned": 252,
+      "totalRemainingCap": 898,
+      "stakes": [
+        {
+          "id": "e51117e3-4551-4336-99c5-a4c70b8ea8e2",
+          "packageName": "Platinum Node",
+          "packageId": 4,
+          "amount": 500,
+          "status": "active",
+          "totalEarned": 252,
+          "maxEarning": 1150,
+          "remainingCap": 898,
+          "createdAt": "2025-12-11T11:19:41.879Z"
+        }
+      ]
+    },
+    {
+      "userId": "HcMSM4DwiGT3PIEqQ2t0wgL2Eu7R9c3U",
+      "name": "Noman",
+      "username": "algodao",
+      "display": "Noman",
+      "balance": 24.0000209,
+      "totalOnStake": 500,
+      "totalEarned": 66,
+      "totalRemainingCap": 1084,
+      "stakes": [
+        {
+          "id": "80b89018-b114-4a2e-8ad3-78d3548bc14d",
+          "packageName": "Platinum Node",
+          "packageId": 4,
+          "amount": 500,
+          "status": "active",
+          "totalEarned": 66,
+          "maxEarning": 1150,
+          "remainingCap": 1084,
+          "createdAt": "2026-01-12T10:40:07.165Z"
+        }
+      ]
+    },
+    {
+      "userId": "plQg8SI7KxrZBNngAT9PFiko5wh1LX2X",
+      "name": "Samia Fazal Mehmood",
+      "username": "maticea",
+      "display": "Samia Fazal Mehmood",
+      "balance": 6.000000000000014,
+      "totalOnStake": 500,
+      "totalEarned": 334.8,
+      "totalRemainingCap": 1225.2,
+      "stakes": [
+        {
+          "id": "25e86f42-da98-48e1-a899-156307aa7c93",
+          "packageName": "Platinum Node",
+          "packageId": 4,
+          "amount": 500,
+          "status": "active",
+          "totalEarned": 300,
+          "maxEarning": 1300,
+          "remainingCap": 1000,
+          "createdAt": "2025-12-03T18:43:34.348Z"
+        },
+        {
+          "id": "edda95db-a6f5-4ff4-a396-58bbadb7faec",
+          "packageName": "Voucher Position",
+          "packageId": 4,
+          "amount": 100,
+          "status": "completed",
+          "totalEarned": 34.8,
+          "maxEarning": 260,
+          "remainingCap": 225.2,
+          "createdAt": "2025-12-03T18:48:14.353Z"
+        }
+      ]
+    },
+    {
+      "userId": "po4eLnAlT5WD7RYVjP7pSlBvXXQxdOC8",
+      "name": "Anss gulzar",
+      "username": "unigem3",
+      "display": "Anss gulzar",
+      "balance": 25,
+      "totalOnStake": 500,
+      "totalEarned": 90,
+      "totalRemainingCap": 1060,
+      "stakes": [
+        {
+          "id": "7daba40e-df82-4b1d-935a-f0cdf22c9f1d",
+          "packageName": "Platinum Node",
+          "packageId": 4,
+          "amount": 500,
+          "status": "active",
+          "totalEarned": 90,
+          "maxEarning": 1150,
+          "remainingCap": 1060,
+          "createdAt": "2026-01-08T09:57:45.540Z"
+        }
+      ]
+    },
+    {
+      "userId": "QBe6SwhJyeRb8kcrf9uJbBCTtGUYMk8L",
+      "name": "wwwahmedkhan1112@gmail.com",
+      "username": "ethwave",
+      "display": "wwwahmedkhan1112@gmail.com",
+      "balance": 54,
+      "totalOnStake": 500,
+      "totalEarned": 258,
+      "totalRemainingCap": 892,
+      "stakes": [
+        {
+          "id": "d86c3270-d48b-4c0b-9a15-f6e0484fca0a",
+          "packageName": "Platinum Node",
+          "packageId": 4,
+          "amount": 500,
+          "status": "active",
+          "totalEarned": 258,
+          "maxEarning": 1150,
+          "remainingCap": 892,
+          "createdAt": "2025-12-10T14:53:43.639Z"
+        }
+      ]
+    },
+    {
+      "userId": "TZkPxeC6sB52LlmmVRO7SGGWZdfG7q1l",
+      "name": "Saifullah",
+      "username": "trader8",
+      "display": "Saifullah",
+      "balance": 0,
+      "totalOnStake": 500,
+      "totalEarned": 78,
+      "totalRemainingCap": 1072,
+      "stakes": [
+        {
+          "id": "c7a37d48-7f1b-42aa-9521-a4f47c868f7d",
+          "packageName": "Platinum Node",
+          "packageId": 4,
+          "amount": 500,
+          "status": "active",
+          "totalEarned": 78,
+          "maxEarning": 1150,
+          "remainingCap": 1072,
+          "createdAt": "2026-01-10T19:02:34.000Z"
+        }
+      ]
+    },
+    {
+      "userId": "YRyWMFV7qga4JyAtH93h9yMOvKp1K8HO",
+      "name": "Ehsan Ullah",
+      "username": "xrpdrag",
+      "display": "Ehsan Ullah",
+      "balance": 18.37599999999999,
+      "totalOnStake": 500,
+      "totalEarned": 326.356,
+      "totalRemainingCap": 1053.644,
+      "stakes": [
+        {
+          "id": "a2a0c5dd-e44c-4c41-b118-2eb538281d19",
+          "packageName": "Platinum Node",
+          "packageId": 4,
+          "amount": 500,
+          "status": "active",
+          "totalEarned": 291.556,
+          "maxEarning": 1150,
+          "remainingCap": 858.444,
+          "createdAt": "2025-12-11T19:28:05.430Z"
+        },
+        {
+          "id": "0d34f5ae-50d0-4de5-ad24-7b7921e0d3bd",
+          "packageName": "Voucher Position",
+          "packageId": 4,
+          "amount": 100,
+          "status": "completed",
+          "totalEarned": 34.8,
+          "maxEarning": 230,
+          "remainingCap": 195.2,
+          "createdAt": "2025-12-11T19:29:01.727Z"
+        },
+        {
+          "id": "dd6c8d3e-3eb6-4b38-bdb7-6688d97ecea8",
+          "packageName": "Voucher Position",
+          "packageId": 0,
+          "amount": 15,
+          "status": "completed",
+          "totalEarned": 0,
+          "maxEarning": 0,
+          "remainingCap": 0,
+          "createdAt": "2025-12-16T17:38:02.479Z"
+        }
+      ]
+    },
+    {
+      "userId": "ZVVj4SydTTQ5FpAIMFhgcZkQ7pvoKGN1",
+      "name": "hafizabdullah6445@gmail.com",
+      "username": "solrock",
+      "display": "hafizabdullah6445@gmail.com",
+      "balance": 168,
+      "totalOnStake": 500,
+      "totalEarned": 282,
+      "totalRemainingCap": 868,
+      "stakes": [
+        {
+          "id": "a4d42da2-9a67-49ad-a623-d7bc4446359e",
+          "packageName": "Platinum Node",
+          "packageId": 4,
+          "amount": 500,
+          "status": "active",
+          "totalEarned": 282,
+          "maxEarning": 1150,
+          "remainingCap": 868,
+          "createdAt": "2025-12-06T16:11:12.546Z"
+        }
+      ]
+    },
+    {
+      "userId": "YhpPoCjF525zKEobsTOox9k2w4q7fkvw",
+      "name": "matthiasbiendl@gmx.de",
+      "username": "nearroc",
+      "display": "matthiasbiendl@gmx.de",
+      "balance": 219.2710000000004,
+      "totalOnStake": 350,
+      "totalEarned": 219.67099999999996,
+      "totalRemainingCap": 535.329,
+      "stakes": [
+        {
+          "id": "a2dd5f35-8b30-42e1-be88-27aa7de03953",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2025-11-30T13:24:46.680Z"
+        },
+        {
+          "id": "4fdcc28c-475f-41e0-ac9b-320c2bd58548",
+          "packageName": "Voucher Position",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 0,
+          "maxEarning": 0,
+          "remainingCap": 0,
+          "createdAt": "2025-11-30T13:25:38.716Z"
+        },
+        {
+          "id": "66771a1e-6307-4fdb-bb67-7dd6d1e19bfa",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 68.60099999999997,
+          "maxEarning": 180,
+          "remainingCap": 111.39900000000003,
+          "createdAt": "2025-12-04T02:58:44.162Z"
+        },
+        {
+          "id": "6ceb8329-a195-4801-8e2a-2a443a669f7f",
+          "packageName": "Voucher Position",
+          "packageId": 0,
+          "amount": 15,
+          "status": "completed",
+          "totalEarned": 0,
+          "maxEarning": 0,
+          "remainingCap": 0,
+          "createdAt": "2025-12-07T06:12:39.813Z"
+        },
+        {
+          "id": "fefa5a8d-4f55-4c8a-a050-0f1faf33a6d0",
+          "packageName": "Silver Node",
+          "packageId": 2,
+          "amount": 250,
+          "status": "active",
+          "totalEarned": 126.5,
+          "maxEarning": 500,
+          "remainingCap": 373.5,
+          "createdAt": "2025-12-07T11:20:28.904Z"
+        },
+        {
+          "id": "a9530f11-89a4-4f8e-ba4f-b8c7da2e0649",
+          "packageName": "Voucher Position",
+          "packageId": 2,
+          "amount": 30,
+          "status": "completed",
+          "totalEarned": 9.57,
+          "maxEarning": 60,
+          "remainingCap": 50.43,
+          "createdAt": "2025-12-15T18:28:04.941Z"
+        }
+      ]
+    },
+    {
+      "userId": "wQwSCTrX9x4V2qF9IV2XmZUIaihxBUBO",
+      "name": "Farhan hashim",
+      "username": "tiger45",
+      "display": "Farhan hashim",
+      "balance": 7.911500000000112,
+      "totalOnStake": 300,
+      "totalEarned": 233.17149999999998,
+      "totalRemainingCap": 341.8285,
+      "stakes": [
+        {
+          "id": "efd54874-928b-4a6f-980b-3497f6401e83",
+          "packageName": "Silver Node",
+          "packageId": 2,
+          "amount": 250,
+          "status": "active",
+          "totalEarned": 208.7715,
+          "maxEarning": 500,
+          "remainingCap": 291.2285,
+          "createdAt": "2025-11-22T15:01:43.421Z"
+        },
+        {
+          "id": "73d9463a-7fb2-4306-9b7c-3515ccae3e0b",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 4.88,
+          "maxEarning": 15,
+          "remainingCap": 10.120000000000001,
+          "createdAt": "2025-11-22T15:11:35.006Z"
+        },
+        {
+          "id": "04cdfb9b-098e-4201-8c6e-03b13cde0447",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 4.88,
+          "maxEarning": 15,
+          "remainingCap": 10.120000000000001,
+          "createdAt": "2025-11-22T15:11:55.313Z"
+        },
+        {
+          "id": "00fe34eb-40ca-45b4-a5f6-35f14857d8ef",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 4.88,
+          "maxEarning": 15,
+          "remainingCap": 10.120000000000001,
+          "createdAt": "2025-11-22T15:12:01.138Z"
+        },
+        {
+          "id": "7ae55daa-7e99-477a-92ec-670dfe630361",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 4.88,
+          "maxEarning": 15,
+          "remainingCap": 10.120000000000001,
+          "createdAt": "2025-11-22T15:12:06.084Z"
+        },
+        {
+          "id": "83cb0016-8762-43dd-84ee-e7ef4e193203",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 4.88,
+          "maxEarning": 15,
+          "remainingCap": 10.120000000000001,
+          "createdAt": "2025-11-22T15:12:18.062Z"
+        },
+        {
+          "id": "d166d2a2-d40f-40cd-8152-fcb8aac4e82f",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 0,
+          "maxEarning": 0,
+          "remainingCap": 0,
+          "createdAt": "2025-11-22T15:14:03.054Z"
+        },
+        {
+          "id": "d4858b6d-c64e-43fa-a78b-be85a4c3e650",
+          "packageName": "Voucher Position",
+          "packageId": 2,
+          "amount": 30,
+          "status": "completed",
+          "totalEarned": 0,
+          "maxEarning": 0,
+          "remainingCap": 0,
+          "createdAt": "2025-11-25T09:10:47.538Z"
+        }
+      ]
+    },
+    {
+      "userId": "TEST_USER_1763676498331_0",
+      "name": "Test User 0",
+      "username": "testuser0_1763676498332",
+      "display": "Test User 0",
+      "balance": 172.6300000000001,
+      "totalOnStake": 260,
+      "totalEarned": 178.29,
+      "totalRemainingCap": 336.71,
+      "stakes": [
+        {
+          "id": "9c92413b-3315-4d2f-bf03-2414885cafa8",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 5.04,
+          "maxEarning": 15,
+          "remainingCap": 9.96,
+          "createdAt": "2025-11-20T22:08:22.796Z"
+        },
+        {
+          "id": "3051c796-6ebf-4a51-8b3c-c123e09743f7",
+          "packageName": "Silver Node",
+          "packageId": 2,
+          "amount": 250,
+          "status": "active",
+          "totalEarned": 173.25,
+          "maxEarning": 500,
+          "remainingCap": 326.75,
+          "createdAt": "2025-11-20T22:09:36.135Z"
+        }
+      ]
+    },
+    {
+      "userId": "TEST_USER_1763676499838_1",
+      "name": "Test User 1",
+      "username": "testuser1_1763676499838",
+      "display": "Test User 1",
+      "balance": 172.6300000000001,
+      "totalOnStake": 260,
+      "totalEarned": 178.29,
+      "totalRemainingCap": 336.71,
+      "stakes": [
+        {
+          "id": "001b9cd6-8972-485c-8a78-313c19324ca9",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 5.04,
+          "maxEarning": 15,
+          "remainingCap": 9.96,
+          "createdAt": "2025-11-20T22:08:24.292Z"
+        },
+        {
+          "id": "34e001b1-2070-469a-ab49-0f9de87c60d5",
+          "packageName": "Silver Node",
+          "packageId": 2,
+          "amount": 250,
+          "status": "active",
+          "totalEarned": 173.25,
+          "maxEarning": 500,
+          "remainingCap": 326.75,
+          "createdAt": "2025-11-20T22:09:38.982Z"
+        }
+      ]
+    },
+    {
+      "userId": "7HzlBIwaWNyoIbfCuviyRpRaXzSkBGx1",
+      "name": "amjadali4661978@gmail.com",
+      "username": "queen61",
+      "display": "amjadali4661978@gmail.com",
+      "balance": 19.25,
+      "totalOnStake": 250,
+      "totalEarned": 133.32,
+      "totalRemainingCap": 426.68,
+      "stakes": [
+        {
+          "id": "81c34638-9e45-4497-9c39-91f79f84b9f1",
+          "packageName": "Silver Node",
+          "packageId": 2,
+          "amount": 250,
+          "status": "active",
+          "totalEarned": 123.75,
+          "maxEarning": 500,
+          "remainingCap": 376.25,
+          "createdAt": "2025-12-08T15:03:20.942Z"
+        },
+        {
+          "id": "79922f73-a7f3-4b72-a78d-43f703a8992f",
+          "packageName": "Voucher Position",
+          "packageId": 2,
+          "amount": 30,
+          "status": "completed",
+          "totalEarned": 9.57,
+          "maxEarning": 60,
+          "remainingCap": 50.43,
+          "createdAt": "2025-12-08T15:14:21.832Z"
+        }
+      ]
+    },
+    {
+      "userId": "9A2Lw0Ri1XfZKmyGspl9vd76TzkSEGMs",
+      "name": "Muhammad Abid",
+      "username": "nearnov",
+      "display": "Muhammad Abid",
+      "balance": 10,
+      "totalOnStake": 250,
+      "totalEarned": 110,
+      "totalRemainingCap": 390,
+      "stakes": [
+        {
+          "id": "6fdd51fb-e969-4a17-b4dc-f34a44f876e9",
+          "packageName": "Silver Node",
+          "packageId": 2,
+          "amount": 250,
+          "status": "active",
+          "totalEarned": 110,
+          "maxEarning": 500,
+          "remainingCap": 390,
+          "createdAt": "2025-12-13T01:14:39.643Z"
+        }
+      ]
+    },
+    {
+      "userId": "Fs59k4Efs9z4XBVwWrBtpbB8CscW4SJc",
+      "name": "biendl.patricia93@gmail.com",
+      "username": "nearlio",
+      "display": "biendl.patricia93@gmail.com",
+      "balance": 126.50001637,
+      "totalOnStake": 250,
+      "totalEarned": 126.5,
+      "totalRemainingCap": 373.5,
+      "stakes": [
+        {
+          "id": "27476e3c-31f3-4d8d-b4ba-feca51ed632f",
+          "packageName": "Silver Node",
+          "packageId": 2,
+          "amount": 250,
+          "status": "active",
+          "totalEarned": 126.5,
+          "maxEarning": 500,
+          "remainingCap": 373.5,
+          "createdAt": "2025-12-07T11:15:24.857Z"
+        }
+      ]
+    },
+    {
+      "userId": "TEST_USER_1763676508165_1",
+      "name": "Test User 1",
+      "username": "testuser1_1763676508165",
+      "display": "Test User 1",
+      "balance": 167.75,
+      "totalOnStake": 250,
+      "totalEarned": 173.25,
+      "totalRemainingCap": 326.75,
+      "stakes": [
+        {
+          "id": "396df678-4e2a-49c9-8c59-dfd6b4bb3b10",
+          "packageName": "Silver Node",
+          "packageId": 2,
+          "amount": 250,
+          "status": "active",
+          "totalEarned": 173.25,
+          "maxEarning": 500,
+          "remainingCap": 326.75,
+          "createdAt": "2025-11-20T22:08:38.909Z"
+        }
+      ]
+    },
+    {
+      "userId": "TEST_USER_1763676509505_2",
+      "name": "Test User 2",
+      "username": "testuser2_1763676509505",
+      "display": "Test User 2",
+      "balance": 167.75,
+      "totalOnStake": 250,
+      "totalEarned": 173.25,
+      "totalRemainingCap": 326.75,
+      "stakes": [
+        {
+          "id": "bc721607-4c60-4f48-88fe-82475557f535",
+          "packageName": "Silver Node",
+          "packageId": 2,
+          "amount": 250,
+          "status": "active",
+          "totalEarned": 173.25,
+          "maxEarning": 500,
+          "remainingCap": 326.75,
+          "createdAt": "2025-11-20T22:08:40.591Z"
+        }
+      ]
+    },
+    {
+      "userId": "TEST_USER_1763676510846_3",
+      "name": "Test User 3",
+      "username": "testuser3_1763676510847",
+      "display": "Test User 3",
+      "balance": 167.75,
+      "totalOnStake": 250,
+      "totalEarned": 173.25,
+      "totalRemainingCap": 326.75,
+      "stakes": [
+        {
+          "id": "ac7d2f0d-68d8-433a-9daf-9b8ca8303a5e",
+          "packageName": "Silver Node",
+          "packageId": 2,
+          "amount": 250,
+          "status": "active",
+          "totalEarned": 173.25,
+          "maxEarning": 500,
+          "remainingCap": 326.75,
+          "createdAt": "2025-11-20T22:08:42.276Z"
+        }
+      ]
+    },
+    {
+      "userId": "TeYD46cmEBAFMJF8q6BSGfhlWbOMbzyu",
+      "name": "Nazim Ali",
+      "username": "neardra",
+      "display": "Nazim Ali",
+      "balance": 3.689999999999972,
+      "totalOnStake": 250,
+      "totalEarned": 93.69,
+      "totalRemainingCap": 436.31,
+      "stakes": [
+        {
+          "id": "8e055b97-f6d8-4854-b311-cfe4bb7ebd28",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 7.803200000000001,
+          "maxEarning": 15,
+          "remainingCap": 7.196799999999999,
+          "createdAt": "2025-11-22T11:49:58.916Z"
+        },
+        {
+          "id": "6bd044cb-2767-47e7-8520-1a351957781d",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2025-12-23T13:18:46.330Z"
+        },
+        {
+          "id": "de51eb51-d7d0-4257-a4b4-bf805af1969f",
+          "packageName": "Silver Node",
+          "packageId": 2,
+          "amount": 250,
+          "status": "active",
+          "totalEarned": 70.8868,
+          "maxEarning": 500,
+          "remainingCap": 429.1132,
+          "createdAt": "2026-01-07T15:10:03.324Z"
+        }
+      ]
+    },
+    {
+      "userId": "tOpE7SUoL9BPeD3Na8PKZaCnafGw9Owg",
+      "name": "Faisal nadeem",
+      "username": "ftmfair",
+      "display": "Faisal nadeem",
+      "balance": 23.416,
+      "totalOnStake": 250,
+      "totalEarned": 266.316,
+      "totalRemainingCap": 233.68400000000003,
+      "stakes": [
+        {
+          "id": "1848e96e-503d-4df6-8139-8be0091b4333",
+          "packageName": "Silver Node",
+          "packageId": 2,
+          "amount": 250,
+          "status": "active",
+          "totalEarned": 266.316,
+          "maxEarning": 500,
+          "remainingCap": 233.68400000000003,
+          "createdAt": "2025-12-05T14:37:06.874Z"
+        }
+      ]
+    },
+    {
+      "userId": "IK8uHd81DnFD3rOBVqj9YeSd96WOXQik",
+      "name": "Muhammad Hashim",
+      "username": "fairy23",
+      "display": "Muhammad Hashim",
+      "balance": 0.3999999999999915,
+      "totalOnStake": 215,
+      "totalEarned": 34.4,
+      "totalRemainingCap": 352.6,
+      "stakes": [
+        {
+          "id": "e9b35f60-c41d-4313-a64f-054f86a65502",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 16,
+          "maxEarning": 180,
+          "remainingCap": 164,
+          "createdAt": "2026-01-07T09:23:54.527Z"
+        },
+        {
+          "id": "73560337-c612-40bf-b96f-80bb4308adf6",
+          "packageName": "Voucher Position",
+          "packageId": 1,
+          "amount": 15,
+          "status": "active",
+          "totalEarned": 2.4,
+          "maxEarning": 27,
+          "remainingCap": 24.6,
+          "createdAt": "2026-01-07T09:27:41.784Z"
+        },
+        {
+          "id": "d814e669-a2dc-40e2-9ba2-3fe5e3924a66",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 16,
+          "maxEarning": 180,
+          "remainingCap": 164,
+          "createdAt": "2026-01-07T09:32:57.668Z"
+        }
+      ]
+    },
+    {
+      "userId": "VXMM8XTOtCfHUPtnxoceOmGM6981ackK",
+      "name": "Shakir Noor",
+      "username": "xrpwolf",
+      "display": "Shakir Noor",
+      "balance": 6.455000000000105,
+      "totalOnStake": 210,
+      "totalEarned": 133.535,
+      "totalRemainingCap": 256.465,
+      "stakes": [
+        {
+          "id": "0f1117c5-9e1b-4f8f-84b9-563a63e29e35",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2025-11-29T18:19:20.244Z"
+        },
+        {
+          "id": "e8ceb9b3-f95a-4678-af6f-412cb199cb40",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 63.215,
+          "maxEarning": 180,
+          "remainingCap": 116.785,
+          "createdAt": "2025-11-30T07:23:30.659Z"
+        },
+        {
+          "id": "92fba239-19bb-4fcf-a6a3-bf27588f144b",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 53,
+          "maxEarning": 180,
+          "remainingCap": 127,
+          "createdAt": "2025-11-30T12:34:13.130Z"
+        },
+        {
+          "id": "5fea6e31-c4a9-412d-80ab-828aec80977b",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 2.32,
+          "maxEarning": 15,
+          "remainingCap": 12.68,
+          "createdAt": "2025-12-24T06:52:56.401Z"
+        }
+      ]
+    },
+    {
+      "userId": "e130BzCmX0PDxRNIxrz5QQhJOVuCCHHG",
+      "name": "Muhammad shafique",
+      "username": "neardao",
+      "display": "Muhammad shafique",
+      "balance": 6.800000000000007,
+      "totalOnStake": 130,
+      "totalEarned": 69.02000000000001,
+      "totalRemainingCap": 182.98,
+      "stakes": [
+        {
+          "id": "1d14b1ec-8be7-4fba-a75d-8265b95ea031",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 57,
+          "maxEarning": 180,
+          "remainingCap": 123,
+          "createdAt": "2025-11-26T17:03:21.962Z"
+        },
+        {
+          "id": "4d4754cc-a6ad-448b-97a8-b4bdd05a74fc",
+          "packageName": "Voucher Position",
+          "packageId": 1,
+          "amount": 15,
+          "status": "completed",
+          "totalEarned": 4.500000000000002,
+          "maxEarning": 27,
+          "remainingCap": 22.5,
+          "createdAt": "2025-11-26T17:03:48.737Z"
+        },
+        {
+          "id": "a1da1110-ab7b-48d7-99ba-60f7618ddaf0",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 3.84,
+          "maxEarning": 15,
+          "remainingCap": 11.16,
+          "createdAt": "2025-12-05T03:09:21.502Z"
+        },
+        {
+          "id": "7c714913-5b53-4ab1-9bb2-83d5b0023ba0",
+          "packageName": "Voucher Position",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 0,
+          "maxEarning": 0,
+          "remainingCap": 0,
+          "createdAt": "2025-12-05T10:15:27.169Z"
+        },
+        {
+          "id": "e962b4fd-8b14-4e5a-b812-94ae97b17a81",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 2.56,
+          "maxEarning": 15,
+          "remainingCap": 12.44,
+          "createdAt": "2025-12-21T05:24:30.814Z"
+        },
+        {
+          "id": "83b7c163-89ad-4a3b-a3c9-351fd11dccbd",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 1.12,
+          "maxEarning": 15,
+          "remainingCap": 13.879999999999999,
+          "createdAt": "2026-01-09T01:46:59.931Z"
+        }
+      ]
+    },
+    {
+      "userId": "ExQ6XuCwTzylX5Hp3Qpw4H3VIB54O5m3",
+      "name": "abihafatima1999aabi@gmail.com",
+      "username": "soltoke",
+      "display": "abihafatima1999aabi@gmail.com",
+      "balance": 17.44199999999999,
+      "totalOnStake": 130,
+      "totalEarned": 76.33200000000018,
+      "totalRemainingCap": 175.66799999999986,
+      "stakes": [
+        {
+          "id": "cc015a5a-d078-47f7-b339-bfd948192d57",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 62.39200000000017,
+          "maxEarning": 180,
+          "remainingCap": 117.60799999999983,
+          "createdAt": "2025-11-26T13:10:31.293Z"
+        },
+        {
+          "id": "7094688e-b68d-4106-957a-e17aa08a6328",
+          "packageName": "Voucher Position",
+          "packageId": 1,
+          "amount": 15,
+          "status": "completed",
+          "totalEarned": 4.500000000000002,
+          "maxEarning": 27,
+          "remainingCap": 22.5,
+          "createdAt": "2025-11-26T13:11:29.369Z"
+        },
+        {
+          "id": "ddf82543-db17-4675-bbc1-f1cd943d5f9b",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 3.92,
+          "maxEarning": 15,
+          "remainingCap": 11.08,
+          "createdAt": "2025-12-04T04:29:04.107Z"
+        },
+        {
+          "id": "1e5de42b-db2c-43d0-b437-97347fbb70d1",
+          "packageName": "Voucher Position",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 0,
+          "maxEarning": 0,
+          "remainingCap": 0,
+          "createdAt": "2025-12-04T04:30:48.928Z"
+        },
+        {
+          "id": "6279a2e5-f913-4f33-a78a-2a48c945de5a",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 3.36,
+          "maxEarning": 15,
+          "remainingCap": 11.64,
+          "createdAt": "2025-12-11T08:09:43.142Z"
+        },
+        {
+          "id": "42d8feba-eaf8-468f-acc7-41929fb536e2",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 2.16,
+          "maxEarning": 15,
+          "remainingCap": 12.84,
+          "createdAt": "2025-12-26T13:41:16.167Z"
+        }
+      ]
+    },
+    {
+      "userId": "gDCoC8IrILOlv4A2EgkL2oFcYFdlaeRr",
+      "name": "ajmalazam9@gmail.com",
+      "username": "gem159",
+      "display": "ajmalazam9@gmail.com",
+      "balance": 950.507999999998,
+      "totalOnStake": 120,
+      "totalEarned": 95.40800000000002,
+      "totalRemainingCap": 129.59199999999998,
+      "stakes": [
+        {
+          "id": "e7111f6a-3f8d-4747-8944-d8fd6bc5f390",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 70.00800000000001,
+          "maxEarning": 180,
+          "remainingCap": 109.99199999999999,
+          "createdAt": "2025-11-18T11:32:34.022Z"
+        },
+        {
+          "id": "ea048823-d4ae-4873-a361-39f15f80527a",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2025-11-18T12:04:19.073Z"
+        },
+        {
+          "id": "e5f8364d-1be7-4aa2-a3a3-d49345d06130",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 5.2,
+          "maxEarning": 15,
+          "remainingCap": 9.8,
+          "createdAt": "2025-11-18T13:50:47.048Z"
+        },
+        {
+          "id": "cfecd287-e627-42e8-aeb8-e561ca0ba4bc",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 5.2,
+          "maxEarning": 15,
+          "remainingCap": 9.8,
+          "createdAt": "2025-11-18T16:51:04.315Z"
+        }
+      ]
+    },
+    {
+      "userId": "cKsR4T1ag9cEaEfFvKKUZh58ZBnTa7iw",
+      "name": "kaleemullahhafiz301@gmail.com",
+      "username": "aaveeag",
+      "display": "kaleemullahhafiz301@gmail.com",
+      "balance": 37.79999999999997,
+      "totalOnStake": 110,
+      "totalEarned": 37.8,
+      "totalRemainingCap": 157.2,
+      "stakes": [
+        {
+          "id": "67d36bf3-6d7e-4130-bd04-167e2811d41e",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 2.8,
+          "maxEarning": 15,
+          "remainingCap": 12.2,
+          "createdAt": "2025-12-18T13:18:17.638Z"
+        },
+        {
+          "id": "9a144b30-0abc-4be2-aa6b-4591a5e1c386",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 35,
+          "maxEarning": 180,
+          "remainingCap": 145,
+          "createdAt": "2025-12-18T13:35:02.467Z"
+        }
+      ]
+    },
+    {
+      "userId": "uSEY5QXCKPV2nKl2KuBaJteDCswynaj8",
+      "name": "smabbasi701@gmail.com",
+      "username": "ftmwave",
+      "display": "smabbasi701@gmail.com",
+      "balance": 47.19154845999999,
+      "totalOnStake": 110,
+      "totalEarned": 56.246,
+      "totalRemainingCap": 165.75400000000002,
+      "stakes": [
+        {
+          "id": "b7252380-69d2-40e8-88b8-41e0a0a3d9aa",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 49.176,
+          "maxEarning": 180,
+          "remainingCap": 130.824,
+          "createdAt": "2025-12-05T12:04:34.237Z"
+        },
+        {
+          "id": "49fca809-eeb8-4024-8e74-787babe2c03c",
+          "packageName": "Voucher Position",
+          "packageId": 1,
+          "amount": 15,
+          "status": "completed",
+          "totalEarned": 4.350000000000001,
+          "maxEarning": 27,
+          "remainingCap": 22.65,
+          "createdAt": "2025-12-05T17:55:42.946Z"
+        },
+        {
+          "id": "c43b54b2-bbc5-4a93-8873-0e3ebe30be61",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 2.72,
+          "maxEarning": 15,
+          "remainingCap": 12.28,
+          "createdAt": "2025-12-19T23:23:14.059Z"
+        }
+      ]
+    },
+    {
+      "userId": "5yA9c9Q0uLUHe3mj8a0gOBXJRX2P7WpU",
+      "name": "Abdul sattar",
+      "username": "dao571",
+      "display": "Abdul sattar",
+      "balance": 20.00001009999999,
+      "totalOnStake": 100,
+      "totalEarned": 82.99999999999996,
+      "totalRemainingCap": 97.00000000000004,
+      "stakes": [
+        {
+          "id": "a9c3561d-4b19-4791-9cc9-907c53c7fe97",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 82.99999999999996,
+          "maxEarning": 180,
+          "remainingCap": 97.00000000000004,
+          "createdAt": "2026-01-11T18:49:49.300Z"
+        }
+      ]
+    },
+    {
+      "userId": "HKPJCU1hXLYRYHvr4HBQh4sT7zKEt2qm",
+      "name": "Chaudhry",
+      "username": "xrpdao5",
+      "display": "Chaudhry",
+      "balance": 4.987999999999981,
+      "totalOnStake": 100,
+      "totalEarned": 101.17800000000011,
+      "totalRemainingCap": 105.82199999999989,
+      "stakes": [
+        {
+          "id": "5dada1a8-78e0-442f-8f3a-f91a8d5de5a0",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 96.82800000000012,
+          "maxEarning": 180,
+          "remainingCap": 83.17199999999988,
+          "createdAt": "2025-12-11T19:11:04.936Z"
+        },
+        {
+          "id": "726dd5f3-5357-4c06-875f-a3ce70e3f777",
+          "packageName": "Voucher Position",
+          "packageId": 1,
+          "amount": 15,
+          "status": "completed",
+          "totalEarned": 4.350000000000001,
+          "maxEarning": 27,
+          "remainingCap": 22.65,
+          "createdAt": "2025-12-11T19:14:59.508Z"
+        }
+      ]
+    },
+    {
+      "userId": "rank_invitee_00de70e2-14ea-444c-83d1-fd4362a111d3",
+      "name": "Invitee Test 1",
+      "username": null,
+      "display": "Invitee Test 1",
+      "balance": 7,
+      "totalOnStake": 100,
+      "totalEarned": 7,
+      "totalRemainingCap": 173,
+      "stakes": [
+        {
+          "id": "87adbc5a-100e-46f6-a3e7-66f7e36ddb9b",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 7,
+          "maxEarning": 180,
+          "remainingCap": 173,
+          "createdAt": "2026-01-16T19:53:44.528Z"
+        }
+      ]
+    },
+    {
+      "userId": "rank_invitee_10022523-78d2-4b97-abc5-a0e4643c2ced",
+      "name": "Invitee Test 2",
+      "username": null,
+      "display": "Invitee Test 2",
+      "balance": 7,
+      "totalOnStake": 100,
+      "totalEarned": 7,
+      "totalRemainingCap": 173,
+      "stakes": [
+        {
+          "id": "2711c173-83ea-410e-a898-8fb196c74cc7",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 7,
+          "maxEarning": 180,
+          "remainingCap": 173,
+          "createdAt": "2026-01-16T19:53:49.105Z"
+        }
+      ]
+    },
+    {
+      "userId": "rank_invitee_74967218-b2a1-414e-8121-923693d4ab75",
+      "name": "Invitee Test 3",
+      "username": null,
+      "display": "Invitee Test 3",
+      "balance": 7,
+      "totalOnStake": 100,
+      "totalEarned": 7,
+      "totalRemainingCap": 173,
+      "stakes": [
+        {
+          "id": "7d99a3ca-fe82-4285-b53f-409486a6605a",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 7,
+          "maxEarning": 180,
+          "remainingCap": 173,
+          "createdAt": "2026-01-16T19:53:53.364Z"
+        }
+      ]
+    },
+    {
+      "userId": "rank_invitee_7fe44427-1ea1-4677-97cf-8fe1cb91a236",
+      "name": "Invitee Test 4",
+      "username": null,
+      "display": "Invitee Test 4",
+      "balance": 7,
+      "totalOnStake": 100,
+      "totalEarned": 7,
+      "totalRemainingCap": 173,
+      "stakes": [
+        {
+          "id": "ada82f1e-5604-4955-96ea-bc11f6c7e12b",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 7,
+          "maxEarning": 180,
+          "remainingCap": 173,
+          "createdAt": "2026-01-16T19:53:57.606Z"
+        }
+      ]
+    },
+    {
+      "userId": "rank_invitee_882a4a28-75b9-4d36-94d6-b308e15add52",
+      "name": "Invitee Test 7",
+      "username": null,
+      "display": "Invitee Test 7",
+      "balance": 7,
+      "totalOnStake": 100,
+      "totalEarned": 7,
+      "totalRemainingCap": 173,
+      "stakes": [
+        {
+          "id": "ef2247de-3700-4d6a-89f1-22e669a66647",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 7,
+          "maxEarning": 180,
+          "remainingCap": 173,
+          "createdAt": "2026-01-16T19:54:10.479Z"
+        }
+      ]
+    },
+    {
+      "userId": "rank_invitee_8a1f4110-a004-47bb-a1b4-13e1af627384",
+      "name": "Invitee Test 6",
+      "username": null,
+      "display": "Invitee Test 6",
+      "balance": 7,
+      "totalOnStake": 100,
+      "totalEarned": 7,
+      "totalRemainingCap": 173,
+      "stakes": [
+        {
+          "id": "99e0fe61-3df7-4b1e-b30c-b91aa890674e",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 7,
+          "maxEarning": 180,
+          "remainingCap": 173,
+          "createdAt": "2026-01-16T19:54:06.118Z"
+        }
+      ]
+    },
+    {
+      "userId": "rank_invitee_9df64930-18cb-433d-a566-5640b86cd3fe",
+      "name": "Invitee Test 9",
+      "username": null,
+      "display": "Invitee Test 9",
+      "balance": 7,
+      "totalOnStake": 100,
+      "totalEarned": 7,
+      "totalRemainingCap": 173,
+      "stakes": [
+        {
+          "id": "a20c6464-74b4-4ad2-92b9-cb6f227babb9",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 7,
+          "maxEarning": 180,
+          "remainingCap": 173,
+          "createdAt": "2026-01-16T19:54:19.728Z"
+        }
+      ]
+    },
+    {
+      "userId": "rank_invitee_cc40b89d-d896-49f5-b11d-1bd62272d780",
+      "name": "Invitee Test 8",
+      "username": null,
+      "display": "Invitee Test 8",
+      "balance": 7,
+      "totalOnStake": 100,
+      "totalEarned": 7,
+      "totalRemainingCap": 173,
+      "stakes": [
+        {
+          "id": "4b985a60-15b3-411f-a8ae-6fd549ec6310",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 7,
+          "maxEarning": 180,
+          "remainingCap": 173,
+          "createdAt": "2026-01-16T19:54:15.113Z"
+        }
+      ]
+    },
+    {
+      "userId": "rank_invitee_f5a5f82d-ca89-4832-a78f-a9c282e89de0",
+      "name": "Invitee Test 5",
+      "username": null,
+      "display": "Invitee Test 5",
+      "balance": 7,
+      "totalOnStake": 100,
+      "totalEarned": 7,
+      "totalRemainingCap": 173,
+      "stakes": [
+        {
+          "id": "fb0ec006-a853-4212-990d-6730190d95bd",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 7,
+          "maxEarning": 180,
+          "remainingCap": 173,
+          "createdAt": "2026-01-16T19:54:01.866Z"
+        }
+      ]
+    },
+    {
+      "userId": "RlmT5r1mShWrSElK9ixius6Ol9oHdyPZ",
+      "name": "alfaoldskool@gmail.com",
+      "username": "queen49",
+      "display": "alfaoldskool@gmail.com",
+      "balance": 33.03200000000002,
+      "totalOnStake": 100,
+      "totalEarned": 227.662,
+      "totalRemainingCap": 132.338,
+      "stakes": [
+        {
+          "id": "41498014-1f8f-4e0c-9a7b-8caeb1265859",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "completed",
+          "totalEarned": 180,
+          "maxEarning": 180,
+          "remainingCap": 0,
+          "createdAt": "2025-12-04T12:06:31.189Z"
+        },
+        {
+          "id": "d63338be-ef55-422e-947e-7b2793b0d541",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 47.662,
+          "maxEarning": 180,
+          "remainingCap": 132.338,
+          "createdAt": "2026-01-10T18:53:20.857Z"
+        }
+      ]
+    },
+    {
+      "userId": "SfW95l03VDQcbePXukatBUp9m0dKhHhY",
+      "name": "rizwanjani090078601@gmail.com",
+      "username": "xrpfire",
+      "display": "rizwanjani090078601@gmail.com",
+      "balance": 39.34999999999998,
+      "totalOnStake": 100,
+      "totalEarned": 38.35,
+      "totalRemainingCap": 168.65,
+      "stakes": [
+        {
+          "id": "8278a5e9-a542-4f34-b10a-fe79ee0aa15c",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 34,
+          "maxEarning": 180,
+          "remainingCap": 146,
+          "createdAt": "2025-12-19T12:52:14.438Z"
+        },
+        {
+          "id": "60518f4b-2f51-4f49-9283-3b79c5a01d91",
+          "packageName": "Voucher Position",
+          "packageId": 1,
+          "amount": 15,
+          "status": "completed",
+          "totalEarned": 4.350000000000001,
+          "maxEarning": 27,
+          "remainingCap": 22.65,
+          "createdAt": "2025-12-19T12:52:56.449Z"
+        }
+      ]
+    },
+    {
+      "userId": "waOMoUatQoQtoPyreJDyfsrCWGk34LeQ",
+      "name": "Faisal Iqbal",
+      "username": "gem724",
+      "display": "Faisal Iqbal",
+      "balance": 32.25001062999996,
+      "totalOnStake": 100,
+      "totalEarned": 236.95,
+      "totalRemainingCap": 150.05,
+      "stakes": [
+        {
+          "id": "1e6766a2-21ac-499f-af7a-ecfc172ec133",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "completed",
+          "totalEarned": 180,
+          "maxEarning": 180,
+          "remainingCap": 0,
+          "createdAt": "2025-12-15T16:18:19.394Z"
+        },
+        {
+          "id": "80268d22-ead5-438b-9953-c0a0e6aaf615",
+          "packageName": "Voucher Position",
+          "packageId": 1,
+          "amount": 15,
+          "status": "completed",
+          "totalEarned": 24.75,
+          "maxEarning": 27,
+          "remainingCap": 2.25,
+          "createdAt": "2025-12-15T16:18:54.846Z"
+        },
+        {
+          "id": "36e3f4cf-6eb2-440d-ab4d-450c7700ff34",
+          "packageName": "Bronze Node",
+          "packageId": 1,
+          "amount": 100,
+          "status": "active",
+          "totalEarned": 32.2,
+          "maxEarning": 180,
+          "remainingCap": 147.8,
+          "createdAt": "2026-01-16T10:36:26.577Z"
+        }
+      ]
+    },
+    {
+      "userId": "2qeCUtiM1yFmvYSxYO08hrkHGcRiqv8U",
+      "name": "ludwig.holzleitner@gmx.de",
+      "username": "algotok",
+      "display": "ludwig.holzleitner@gmx.de",
+      "balance": 7.200000000000008,
+      "totalOnStake": 50,
+      "totalEarned": 17.6,
+      "totalRemainingCap": 57.400000000000006,
+      "stakes": [
+        {
+          "id": "2d411094-9590-4640-b73b-63307368d64e",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 3.52,
+          "maxEarning": 15,
+          "remainingCap": 11.48,
+          "createdAt": "2025-12-09T10:01:46.163Z"
+        },
+        {
+          "id": "6a9b792c-2439-491f-bf2c-8615496a7fb8",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 3.52,
+          "maxEarning": 15,
+          "remainingCap": 11.48,
+          "createdAt": "2025-12-09T10:02:25.978Z"
+        },
+        {
+          "id": "b89d3c3b-ef5b-414a-a5c5-102315e514bd",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 3.52,
+          "maxEarning": 15,
+          "remainingCap": 11.48,
+          "createdAt": "2025-12-09T10:02:43.520Z"
+        },
+        {
+          "id": "a178c457-62fe-490b-a952-9022e9e29774",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 3.52,
+          "maxEarning": 15,
+          "remainingCap": 11.48,
+          "createdAt": "2025-12-09T10:02:53.370Z"
+        },
+        {
+          "id": "57f260a7-175b-469c-98ad-bfde78032713",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 3.52,
+          "maxEarning": 15,
+          "remainingCap": 11.48,
+          "createdAt": "2025-12-09T10:03:01.890Z"
+        }
+      ]
+    },
+    {
+      "userId": "mVxTHty8sA3r0jPHvkCKKJAcJf0L6GwR",
+      "name": "komagbedieudonne83@gmail.com",
+      "username": "atomfir",
+      "display": "komagbedieudonne83@gmail.com",
+      "balance": 4.323706560000009,
+      "totalOnStake": 30,
+      "totalEarned": 14.64,
+      "totalRemainingCap": 30.360000000000003,
+      "stakes": [
+        {
+          "id": "b752f348-16c7-4c40-a5ac-b76fcb1ee093",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 4.88,
+          "maxEarning": 15,
+          "remainingCap": 10.120000000000001,
+          "createdAt": "2025-11-22T00:07:53.726Z"
+        },
+        {
+          "id": "a20edd42-a4a2-432a-aa8a-b8bbb774c3d5",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 4.88,
+          "maxEarning": 15,
+          "remainingCap": 10.120000000000001,
+          "createdAt": "2025-11-22T00:08:30.559Z"
+        },
+        {
+          "id": "f0842892-08f7-4541-8328-9959ba79d571",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 4.88,
+          "maxEarning": 15,
+          "remainingCap": 10.120000000000001,
+          "createdAt": "2025-11-22T00:11:33.974Z"
+        }
+      ]
+    },
+    {
+      "userId": "ox8b9DoV7HK8Xa24kIB4d6XWbzI54vWK",
+      "name": "mtboytirus002@gmail.com",
+      "username": "adawave",
+      "display": "mtboytirus002@gmail.com",
+      "balance": 3.783999999999994,
+      "totalOnStake": 30,
+      "totalEarned": 17.164,
+      "totalRemainingCap": 27.836,
+      "stakes": [
+        {
+          "id": "76e9924b-7cf3-40de-aedc-afbc018d62fa",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 13.084,
+          "maxEarning": 15,
+          "remainingCap": 1.9160000000000004,
+          "createdAt": "2025-11-26T16:10:23.858Z"
+        },
+        {
+          "id": "73c379df-e75e-49fc-be1c-b1a6e22a8d82",
+          "packageName": "Voucher Position",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 0,
+          "maxEarning": 0,
+          "remainingCap": 0,
+          "createdAt": "2025-11-26T16:11:42.795Z"
+        },
+        {
+          "id": "a76098ee-be1c-4d8f-90c0-18c6de10ba1e",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 3.28,
+          "maxEarning": 15,
+          "remainingCap": 11.72,
+          "createdAt": "2025-12-12T02:39:57.488Z"
+        },
+        {
+          "id": "a22cb460-02ef-4475-a3a4-83e9b931d9f8",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 0.7999999999999998,
+          "maxEarning": 15,
+          "remainingCap": 14.2,
+          "createdAt": "2026-01-13T02:41:24.014Z"
+        }
+      ]
+    },
+    {
+      "userId": "9sHQ9FaL2IYw2voxiGLjmPY2PbpJXhVn",
+      "name": "Test User Updated",
+      "username": "atomdao",
+      "display": "Test User Updated",
+      "balance": 183.9952288099998,
+      "totalOnStake": 20,
+      "totalEarned": 23.76,
+      "totalRemainingCap": 186.24,
+      "stakes": [
+        {
+          "id": "9238f3de-8f69-4684-852d-5c650da22945",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 5.28,
+          "maxEarning": 15,
+          "remainingCap": 9.719999999999999,
+          "createdAt": "2025-11-18T12:30:41.614Z"
+        },
+        {
+          "id": "63314ae3-ce3c-40f3-b1bf-e2e267774ff7",
+          "packageName": "Voucher Position",
+          "packageId": 1,
+          "amount": 100,
+          "status": "completed",
+          "totalEarned": 0,
+          "maxEarning": 0,
+          "remainingCap": 0,
+          "createdAt": "2025-11-26T02:47:07.460Z"
+        },
+        {
+          "id": "dbcde379-6d0b-43f1-aa72-d804427feafc",
+          "packageName": "Voucher Position",
+          "packageId": 1,
+          "amount": 100,
+          "status": "completed",
+          "totalEarned": 14,
+          "maxEarning": 180,
+          "remainingCap": 166,
+          "createdAt": "2025-11-26T02:53:05.664Z"
+        },
+        {
+          "id": "1559d423-2478-45b0-a67e-b6d3374f232d",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 4.48,
+          "maxEarning": 15,
+          "remainingCap": 10.52,
+          "createdAt": "2025-11-27T08:59:55.568Z"
+        }
+      ]
+    },
+    {
+      "userId": "sDHwPvT5sY96OqqxBegqMygOFGEgC0lO",
+      "name": "mf596197@gmail.com",
+      "username": "avaxsha",
+      "display": "mf596197@gmail.com",
+      "balance": 14.0972,
+      "totalOnStake": 20,
+      "totalEarned": 73.2492,
+      "totalRemainingCap": 16.750799999999998,
+      "stakes": [
+        {
+          "id": "a9322b5c-5732-48f9-9da3-833afb24ea7d",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2025-11-23T12:27:54.708Z"
+        },
+        {
+          "id": "31cb06fd-6085-4451-9ecd-08f18f26ece3",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 0,
+          "maxEarning": 0,
+          "remainingCap": 0,
+          "createdAt": "2025-11-23T12:28:38.107Z"
+        },
+        {
+          "id": "054a19de-d74a-462d-963a-58b20d879180",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2025-12-17T10:34:31.195Z"
+        },
+        {
+          "id": "1140a7ce-5d55-4bab-a787-c0170fc36357",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2025-12-29T16:37:51.757Z"
+        },
+        {
+          "id": "85eaa36c-2daf-46a5-9c18-9f4f22333f9b",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2026-01-04T11:15:52.774Z"
+        },
+        {
+          "id": "a9661bb7-e54b-428d-8094-ba02a53b01a0",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 12.8492,
+          "maxEarning": 15,
+          "remainingCap": 2.1508000000000003,
+          "createdAt": "2026-01-10T19:17:25.233Z"
+        },
+        {
+          "id": "cbce32b2-1288-4a8e-b7d5-4c6c3d9b2965",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 0.4,
+          "maxEarning": 15,
+          "remainingCap": 14.6,
+          "createdAt": "2026-01-18T00:14:00.198Z"
+        }
+      ]
+    },
+    {
+      "userId": "T3XiYPFo4iIOVfJtDJkOTiHl5qlRnU48",
+      "name": "gbutt7793@gmail.com",
+      "username": "adafire",
+      "display": "gbutt7793@gmail.com",
+      "balance": 7.050400000000008,
+      "totalOnStake": 20,
+      "totalEarned": 56.9504,
+      "totalRemainingCap": 18.049599999999998,
+      "stakes": [
+        {
+          "id": "4774e879-0d7c-4d70-8236-f04d7542f30c",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2025-11-22T10:18:48.627Z"
+        },
+        {
+          "id": "20275f2f-9b24-4bdd-9098-f9bf051dc85f",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2025-12-20T05:10:48.215Z"
+        },
+        {
+          "id": "f4444b85-12ad-4df3-8891-1b40c7f26a32",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2026-01-02T20:23:43.496Z"
+        },
+        {
+          "id": "df64b716-bc20-44c8-83a3-727338e600ec",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 11.6304,
+          "maxEarning": 15,
+          "remainingCap": 3.3696,
+          "createdAt": "2026-01-11T20:50:20.487Z"
+        },
+        {
+          "id": "4253eb49-4f79-437f-9815-f9bddf51ae7f",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 0.32,
+          "maxEarning": 15,
+          "remainingCap": 14.68,
+          "createdAt": "2026-01-19T04:38:48.797Z"
+        }
+      ]
+    },
+    {
+      "userId": "0OXROzpTjcOa0MMRMmqvy4gWylf7n3Em",
+      "name": "paulspaeth717@gmail.com",
+      "username": "chain58",
+      "display": "paulspaeth717@gmail.com",
+      "balance": 3.840000000000002,
+      "totalOnStake": 10,
+      "totalEarned": 3.84,
+      "totalRemainingCap": 11.16,
+      "stakes": [
+        {
+          "id": "fc52bef3-dd8a-4acb-9c3e-21eb3f59440a",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 3.84,
+          "maxEarning": 15,
+          "remainingCap": 11.16,
+          "createdAt": "2025-12-05T08:16:57.026Z"
+        }
+      ]
+    },
+    {
+      "userId": "aWRpcNicM433gwF5EfWBXJuc7pLoiACM",
+      "name": "ua7619281@gmail.com",
+      "username": "ethquee",
+      "display": "ua7619281@gmail.com",
+      "balance": 5.600000000000002,
+      "totalOnStake": 10,
+      "totalEarned": 4.48,
+      "totalRemainingCap": 10.52,
+      "stakes": [
+        {
+          "id": "0d582de5-6b59-49ad-8680-62beefcd120a",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 4.48,
+          "maxEarning": 15,
+          "remainingCap": 10.52,
+          "createdAt": "2025-11-27T17:24:56.284Z"
+        },
+        {
+          "id": "1d76af91-1b4a-437f-80b4-9774fefdfb43",
+          "packageName": "Voucher Position",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 0,
+          "maxEarning": 0,
+          "remainingCap": 0,
+          "createdAt": "2025-11-27T17:25:41.005Z"
+        }
+      ]
+    },
+    {
+      "userId": "eKbBXpbyoouwhnCaSG9o1Gx77LshYZ9x",
+      "name": "muhammad.saleem0115@gmail.com",
+      "username": "token20",
+      "display": "muhammad.saleem0115@gmail.com",
+      "balance": 7.450000000000004,
+      "totalOnStake": 10,
+      "totalEarned": 7.4399999999999995,
+      "totalRemainingCap": 22.560000000000002,
+      "stakes": [
+        {
+          "id": "ebbfb8c2-20ba-4a2b-b5b0-87d3bfc1638d",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 5.04,
+          "maxEarning": 15,
+          "remainingCap": 9.96,
+          "createdAt": "2025-11-20T18:29:19.924Z"
+        },
+        {
+          "id": "0684162c-227b-4d82-83c5-cae24b0b85c5",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 2.4,
+          "maxEarning": 15,
+          "remainingCap": 12.6,
+          "createdAt": "2025-11-22T15:52:41.378Z"
+        }
+      ]
+    },
+    {
+      "userId": "epx2FdV3olfl6jumJPPl7p8JevSa5s4I",
+      "name": "romanast8@gmail.com",
+      "username": "meta275",
+      "display": "romanast8@gmail.com",
+      "balance": 1.6,
+      "totalOnStake": 10,
+      "totalEarned": 1.6,
+      "totalRemainingCap": 13.4,
+      "stakes": [
+        {
+          "id": "633207f1-1f93-460d-85a9-24dd513f3e44",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 1.6,
+          "maxEarning": 15,
+          "remainingCap": 13.4,
+          "createdAt": "2026-01-03T20:57:38.046Z"
+        }
+      ]
+    },
+    {
+      "userId": "FWbsU63WrJnGazO8LbWNEUkQioU9jmTS",
+      "name": "ub25241@gmail.com",
+      "username": "ethwolf",
+      "display": "ub25241@gmail.com",
+      "balance": 5.060000000000003,
+      "totalOnStake": 10,
+      "totalEarned": 4.96,
+      "totalRemainingCap": 10.04,
+      "stakes": [
+        {
+          "id": "dfd78144-91d2-40a0-9f40-57b1a8c5a90b",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 4.96,
+          "maxEarning": 15,
+          "remainingCap": 10.04,
+          "createdAt": "2025-11-21T15:52:36.974Z"
+        }
+      ]
+    },
+    {
+      "userId": "IK2BE10dl0115iAD2oww71WsKdZwxQIG",
+      "name": "m.biendl@sonplas.de",
+      "username": "maticco",
+      "display": "m.biendl@sonplas.de",
+      "balance": 6.244000000000003,
+      "totalOnStake": 10,
+      "totalEarned": 5.124,
+      "totalRemainingCap": 9.876000000000001,
+      "stakes": [
+        {
+          "id": "e5233afe-d929-4561-bc38-44f720820a82",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 5.124,
+          "maxEarning": 15,
+          "remainingCap": 9.876000000000001,
+          "createdAt": "2025-11-30T14:51:50.855Z"
+        },
+        {
+          "id": "48186063-58a5-450a-b6ba-a3f8292cf790",
+          "packageName": "Voucher Position",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 0,
+          "maxEarning": 0,
+          "remainingCap": 0,
+          "createdAt": "2025-12-01T06:27:33.495Z"
+        }
+      ]
+    },
+    {
+      "userId": "ioruUBKhtdeIVCYeigNJ5ftrkiMNCtU8",
+      "name": "rita.biendl@gmx.de",
+      "username": "algolio",
+      "display": "rita.biendl@gmx.de",
+      "balance": 3.760000000000002,
+      "totalOnStake": 10,
+      "totalEarned": 3.76,
+      "totalRemainingCap": 11.24,
+      "stakes": [
+        {
+          "id": "dab30ea1-3de3-4501-9b14-931d599d853e",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 3.76,
+          "maxEarning": 15,
+          "remainingCap": 11.24,
+          "createdAt": "2025-12-06T07:47:21.475Z"
+        }
+      ]
+    },
+    {
+      "userId": "jZyZqYI97f3MBsRF0JeLBRVwgHrdm5Gz",
+      "name": "Azeem",
+      "username": "star403",
+      "display": "Azeem",
+      "balance": 3.950000000000003,
+      "totalOnStake": 10,
+      "totalEarned": 2.96,
+      "totalRemainingCap": 12.04,
+      "stakes": [
+        {
+          "id": "5d231a07-5a8c-43e4-8473-488bf29b373f",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 2.96,
+          "maxEarning": 15,
+          "remainingCap": 12.04,
+          "createdAt": "2025-12-16T12:30:39.352Z"
+        }
+      ]
+    },
+    {
+      "userId": "k22Yz7ljOgwD6nfCMKNMu4Q2vq4xiz2v",
+      "name": "aabidiqbal2001@gmail.com",
+      "username": "aavenod",
+      "display": "aabidiqbal2001@gmail.com",
+      "balance": 3.520000000000002,
+      "totalOnStake": 10,
+      "totalEarned": 3.52,
+      "totalRemainingCap": 11.48,
+      "stakes": [
+        {
+          "id": "326ae4df-f998-46a4-bdd7-8057e4558493",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 3.52,
+          "maxEarning": 15,
+          "remainingCap": 11.48,
+          "createdAt": "2025-12-09T14:00:10.841Z"
+        }
+      ]
+    },
+    {
+      "userId": "LusMrj7CN0s1WaodIiTSDZCFcLeytHkW",
+      "name": "mazeemhanif@gmail.com",
+      "username": "adastar",
+      "display": "mazeemhanif@gmail.com",
+      "balance": 12.18800000000001,
+      "totalOnStake": 10,
+      "totalEarned": 12.188,
+      "totalRemainingCap": 2.8119999999999994,
+      "stakes": [
+        {
+          "id": "09132112-7fb2-423d-afd5-764ef4bcccb8",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 12.188,
+          "maxEarning": 15,
+          "remainingCap": 2.8119999999999994,
+          "createdAt": "2025-12-18T13:04:03.320Z"
+        }
+      ]
+    },
+    {
+      "userId": "NBCpEl2qnpZbQOrzDWhtlIkqrqMRBtfZ",
+      "name": "dominikstoeckert@gmx.de",
+      "username": "ethmine",
+      "display": "dominikstoeckert@gmx.de",
+      "balance": 1.76,
+      "totalOnStake": 10,
+      "totalEarned": 1.76,
+      "totalRemainingCap": 13.24,
+      "stakes": [
+        {
+          "id": "5a923182-30ec-45a0-87a0-603c9f68d52d",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 1.76,
+          "maxEarning": 15,
+          "remainingCap": 13.24,
+          "createdAt": "2026-01-01T20:08:12.690Z"
+        }
+      ]
+    },
+    {
+      "userId": "OGQJFPeHxALzEwTcmVSZm2JGeXFjG36K",
+      "name": "kgul092007@gmail.com",
+      "username": "ftmrock",
+      "display": "kgul092007@gmail.com",
+      "balance": 5.582059060000004,
+      "totalOnStake": 10,
+      "totalEarned": 3.92,
+      "totalRemainingCap": 11.08,
+      "stakes": [
+        {
+          "id": "31b74a49-ccfc-4a8a-8677-abd4e286876e",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 3.92,
+          "maxEarning": 15,
+          "remainingCap": 11.08,
+          "createdAt": "2025-12-04T16:44:41.146Z"
+        }
+      ]
+    },
+    {
+      "userId": "r2cgVI0ysgJsUib5t2ZMuPV3IIHKAgLk",
+      "name": "shadabbhatti.info@gmail.com",
+      "username": "unigem4",
+      "display": "shadabbhatti.info@gmail.com",
+      "balance": 2.730000000000001,
+      "totalOnStake": 10,
+      "totalEarned": 2.72,
+      "totalRemainingCap": 12.28,
+      "stakes": [
+        {
+          "id": "6f873fa4-a42e-4957-95f2-e74a3d1b7f27",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 2.72,
+          "maxEarning": 15,
+          "remainingCap": 12.28,
+          "createdAt": "2025-12-19T13:31:53.315Z"
+        }
+      ]
+    },
+    {
+      "userId": "RRnGj5496d6dqKnX6ZL26B6FNUaSLhId",
+      "name": "msalman0937@gmail.com",
+      "username": "miner29",
+      "display": "msalman0937@gmail.com",
+      "balance": 6.910000000000004,
+      "totalOnStake": 10,
+      "totalEarned": 4.8,
+      "totalRemainingCap": 10.2,
+      "stakes": [
+        {
+          "id": "399608c0-35c8-4272-9b6e-a6c4a65a2842",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 4.8,
+          "maxEarning": 15,
+          "remainingCap": 10.2,
+          "createdAt": "2025-11-23T15:59:25.429Z"
+        },
+        {
+          "id": "5547e7b5-0a19-4644-a4e4-b8d3e0336b7c",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 0,
+          "maxEarning": 0,
+          "remainingCap": 0,
+          "createdAt": "2025-11-23T16:01:06.299Z"
+        }
+      ]
+    },
+    {
+      "userId": "TcCVP0jq8dGvds2lg7ccahfOrYG97dYG",
+      "name": "kq9007327@gmail.com",
+      "username": "crypto9",
+      "display": "kq9007327@gmail.com",
+      "balance": 4.000000000000001,
+      "totalOnStake": 10,
+      "totalEarned": 2.96,
+      "totalRemainingCap": 12.04,
+      "stakes": [
+        {
+          "id": "90d8f901-9120-4e53-982e-c7210130cc25",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 2.96,
+          "maxEarning": 15,
+          "remainingCap": 12.04,
+          "createdAt": "2025-12-16T06:16:50.537Z"
+        },
+        {
+          "id": "ee60dcd7-7c3a-4e84-9690-9513d0ab3d23",
+          "packageName": "Voucher Position",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 0,
+          "maxEarning": 0,
+          "remainingCap": 0,
+          "createdAt": "2025-12-16T20:23:23.690Z"
+        }
+      ]
+    },
+    {
+      "userId": "TEST_USER_1763676484621_0",
+      "name": "Test User 0",
+      "username": "testuser0_1763676484621",
+      "display": "Test User 0",
+      "balance": 4.880000000000003,
+      "totalOnStake": 10,
+      "totalEarned": 5.04,
+      "totalRemainingCap": 9.96,
+      "stakes": [
+        {
+          "id": "439841bd-d478-4ddf-a95c-b371cdc947f0",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 5.04,
+          "maxEarning": 15,
+          "remainingCap": 9.96,
+          "createdAt": "2025-11-20T22:08:11.635Z"
+        }
+      ]
+    },
+    {
+      "userId": "TEST_USER_1763676486617_1",
+      "name": "Test User 1",
+      "username": "testuser1_1763676486617",
+      "display": "Test User 1",
+      "balance": 4.880000000000003,
+      "totalOnStake": 10,
+      "totalEarned": 5.04,
+      "totalRemainingCap": 9.96,
+      "stakes": [
+        {
+          "id": "4f0f4290-0ea6-4e6a-a7e6-0a5af6c9001c",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 5.04,
+          "maxEarning": 15,
+          "remainingCap": 9.96,
+          "createdAt": "2025-11-20T22:08:13.805Z"
+        }
+      ]
+    },
+    {
+      "userId": "TEST_USER_1763676487952_2",
+      "name": "Test User 2",
+      "username": "testuser2_1763676487953",
+      "display": "Test User 2",
+      "balance": 4.880000000000003,
+      "totalOnStake": 10,
+      "totalEarned": 5.04,
+      "totalRemainingCap": 9.96,
+      "stakes": [
+        {
+          "id": "8f5f8197-d05c-432f-9fbf-a9a88d2ab4a3",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 5.04,
+          "maxEarning": 15,
+          "remainingCap": 9.96,
+          "createdAt": "2025-11-20T22:08:15.137Z"
+        }
+      ]
+    },
+    {
+      "userId": "TEST_USER_1763676506805_0",
+      "name": "Test User 0",
+      "username": "testuser0_1763676506805",
+      "display": "Test User 0",
+      "balance": 4.880000000000003,
+      "totalOnStake": 10,
+      "totalEarned": 5.04,
+      "totalRemainingCap": 9.96,
+      "stakes": [
+        {
+          "id": "56a0b208-dca7-426b-babd-dabbfbe5e33f",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 5.04,
+          "maxEarning": 15,
+          "remainingCap": 9.96,
+          "createdAt": "2025-11-20T22:08:37.052Z"
+        }
+      ]
+    },
+    {
+      "userId": "TEST_USER_1763676512188_4",
+      "name": "Test User 4",
+      "username": "testuser4_1763676512189",
+      "display": "Test User 4",
+      "balance": 4.880000000000003,
+      "totalOnStake": 10,
+      "totalEarned": 5.04,
+      "totalRemainingCap": 9.96,
+      "stakes": [
+        {
+          "id": "fe0b8abd-7038-4a1c-a517-4330640eebc9",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 5.04,
+          "maxEarning": 15,
+          "remainingCap": 9.96,
+          "createdAt": "2025-11-20T22:08:43.955Z"
+        }
+      ]
+    },
+    {
+      "userId": "TIZO8DeOLolJ2z1R1j0pXj1PVyTL6I1D",
+      "name": "tombiendl13@gmx.de",
+      "username": "maticqu",
+      "display": "tombiendl13@gmx.de",
+      "balance": 3.760000000000002,
+      "totalOnStake": 10,
+      "totalEarned": 3.76,
+      "totalRemainingCap": 11.24,
+      "stakes": [
+        {
+          "id": "9f859cfc-405d-4533-bf86-ce7013f4c39d",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 3.76,
+          "maxEarning": 15,
+          "remainingCap": 11.24,
+          "createdAt": "2025-12-06T15:29:50.586Z"
+        }
+      ]
+    },
+    {
+      "userId": "uTejJrMEoqEYVxoV3qyRe85Wn7AD3fGv",
+      "name": "Muhammad Faisal",
+      "username": "dao33",
+      "display": "Muhammad Faisal",
+      "balance": 6.7468,
+      "totalOnStake": 10,
+      "totalEarned": 144.1368,
+      "totalRemainingCap": 5.863199999999999,
+      "stakes": [
+        {
+          "id": "fd9bd5e4-ea58-4556-8f4b-b13913c4cb8c",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2025-11-25T09:15:34.276Z"
+        },
+        {
+          "id": "36508ddb-d6f6-45ed-8d86-dc046c202dad",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2025-12-03T19:10:26.693Z"
+        },
+        {
+          "id": "0b4e60f9-400e-4e28-b1c1-e19e316cdf82",
+          "packageName": "Voucher Position",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 0,
+          "maxEarning": 0,
+          "remainingCap": 0,
+          "createdAt": "2025-12-03T19:10:51.720Z"
+        },
+        {
+          "id": "54974038-4908-4927-af87-9fbadd14d969",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2025-12-10T22:28:32.320Z"
+        },
+        {
+          "id": "1081dc7a-cf6f-404b-a9cc-3232a4cf7df7",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2025-12-18T00:05:19.209Z"
+        },
+        {
+          "id": "48d18c40-28f9-4ee2-b76f-8f11de2b9295",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2025-12-25T09:05:59.393Z"
+        },
+        {
+          "id": "20e809a0-abd1-4602-ad9b-99898a7c776f",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2025-12-30T00:14:38.175Z"
+        },
+        {
+          "id": "35bc7fec-f95e-4c9f-97a3-34cc125c7a6f",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2026-01-03T05:48:47.925Z"
+        },
+        {
+          "id": "44395e8d-0218-424c-9e0d-790b81607e17",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2026-01-07T00:58:50.789Z"
+        },
+        {
+          "id": "08fe5dd4-0f69-471c-8093-33dfb0dfd88b",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2026-01-15T09:14:49.200Z"
+        },
+        {
+          "id": "43384371-a069-4dbf-8d59-a778caede24f",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 9.136800000000001,
+          "maxEarning": 15,
+          "remainingCap": 5.863199999999999,
+          "createdAt": "2026-01-17T08:01:41.675Z"
+        }
+      ]
+    },
+    {
+      "userId": "vj1wS28EuAEEbkth0U7pAgBvBtLKajRS",
+      "name": "afangill585@gmail.com",
+      "username": "dotnova",
+      "display": "afangill585@gmail.com",
+      "balance": 4.620000000000002,
+      "totalOnStake": 10,
+      "totalEarned": 3.58,
+      "totalRemainingCap": 11.42,
+      "stakes": [
+        {
+          "id": "8d1c6061-f5a5-48f2-82a0-4c6ab84b3f11",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 3.58,
+          "maxEarning": 15,
+          "remainingCap": 11.42,
+          "createdAt": "2025-12-18T10:21:39.480Z"
+        },
+        {
+          "id": "eb0735fc-dfae-4578-a210-343babe6cc33",
+          "packageName": "Voucher Position",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 0,
+          "maxEarning": 0,
+          "remainingCap": 0,
+          "createdAt": "2025-12-18T10:22:18.106Z"
+        }
+      ]
+    },
+    {
+      "userId": "wa28EI01qpJpQBhlCrDt9pSBcyuhAie9",
+      "name": "zaibulmahi@gmail.com",
+      "username": "ltcchai",
+      "display": "zaibulmahi@gmail.com",
+      "balance": 9.16880000000001,
+      "totalOnStake": 10,
+      "totalEarned": 6.668800000000001,
+      "totalRemainingCap": 8.331199999999999,
+      "stakes": [
+        {
+          "id": "acb6b463-5083-46b9-91cd-564cfa32b70f",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 6.668800000000001,
+          "maxEarning": 15,
+          "remainingCap": 8.331199999999999,
+          "createdAt": "2025-11-20T15:15:14.737Z"
+        }
+      ]
+    },
+    {
+      "userId": "x8nJuL7ArZHXW8VCnvWHg2pTGYRWqHTX",
+      "name": "krompirusa.za10@gmail.com",
+      "username": "xrpgem7",
+      "display": "krompirusa.za10@gmail.com",
+      "balance": 3.840000000000002,
+      "totalOnStake": 10,
+      "totalEarned": 3.84,
+      "totalRemainingCap": 11.16,
+      "stakes": [
+        {
+          "id": "44c63fd6-9fbc-49db-aee1-ce51c49449b4",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 3.84,
+          "maxEarning": 15,
+          "remainingCap": 11.16,
+          "createdAt": "2025-12-05T06:42:18.684Z"
+        }
+      ]
+    },
+    {
+      "userId": "y7G41CtiLroMTaHyNi9pkUx8BIp1zzhX",
+      "name": "masoomazahara753@gmail.com",
+      "username": "tiger81",
+      "display": "masoomazahara753@gmail.com",
+      "balance": 6.650000000000004,
+      "totalOnStake": 10,
+      "totalEarned": 4.8,
+      "totalRemainingCap": 10.2,
+      "stakes": [
+        {
+          "id": "6c0bc868-8f27-4f2f-a059-7bc69c4a853d",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "active",
+          "totalEarned": 4.8,
+          "maxEarning": 15,
+          "remainingCap": 10.2,
+          "createdAt": "2025-11-23T14:17:01.547Z"
+        }
+      ]
+    },
+    {
+      "userId": "4iRXIsOpGtWHGbd0f4ZBoR2DlFDStQQj",
+      "name": "aliaoun7107@gmail.com",
+      "username": "avaxnov",
+      "display": "aliaoun7107@gmail.com",
+      "balance": 0.09600000000000364,
+      "totalOnStake": 0,
+      "totalEarned": 0,
+      "totalRemainingCap": 0,
+      "stakes": [
+        {
+          "id": "9dc8f8c0-1ab7-4223-9c41-3ed51271876b",
+          "packageName": "Voucher Position",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 0,
+          "maxEarning": 0,
+          "remainingCap": 0,
+          "createdAt": "2025-12-23T14:20:04.303Z"
+        }
+      ]
+    },
+    {
+      "userId": "IzZ3SLa2aRTQKBnddT1zTHQn1JxuRzxZ",
+      "name": "ajmalazam88@gmail.com",
+      "username": "cosmic7",
+      "display": "ajmalazam88@gmail.com",
+      "balance": 58.73199999999994,
+      "totalOnStake": 0,
+      "totalEarned": 56.49199999999999,
+      "totalRemainingCap": 18.50800000000001,
+      "stakes": [
+        {
+          "id": "c68e40ec-2299-4c1b-b65e-b06b0cdc52a3",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 15,
+          "maxEarning": 15,
+          "remainingCap": 0,
+          "createdAt": "2025-11-22T08:58:37.427Z"
+        },
+        {
+          "id": "a767bcb9-140a-4232-8ed7-cff80f5a762f",
+          "packageName": "Silver Node",
+          "packageId": 2,
+          "amount": 30,
+          "status": "completed",
+          "totalEarned": 41.49199999999999,
+          "maxEarning": 60,
+          "remainingCap": 18.50800000000001,
+          "createdAt": "2025-11-24T19:42:59.084Z"
+        },
+        {
+          "id": "3258a83c-2016-4044-a0fd-59d24b0b6798",
+          "packageName": "Voucher Position",
+          "packageId": 0,
+          "amount": 20,
+          "status": "completed",
+          "totalEarned": 0,
+          "maxEarning": 0,
+          "remainingCap": 0,
+          "createdAt": "2025-11-24T19:47:14.490Z"
+        }
+      ]
+    },
+    {
+      "userId": "UQu7NLDWFZQi5RJg25V0qidgmJi0XEBa",
+      "name": "khizarilyas91@gmail.com",
+      "username": "nft660",
+      "display": "khizarilyas91@gmail.com",
+      "balance": 2.400000000000001,
+      "totalOnStake": 0,
+      "totalEarned": 2.4,
+      "totalRemainingCap": 12.6,
+      "stakes": [
+        {
+          "id": "ca61a88c-c3a5-4d6f-bc7d-9ff640c58eb7",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 2.4,
+          "maxEarning": 15,
+          "remainingCap": 12.6,
+          "createdAt": "2025-11-22T09:36:17.746Z"
+        }
+      ]
+    },
+    {
+      "userId": "X0PsvSFxeQDlhnuBCsQkSrr92gIEexbv",
+      "name": "sayadrook@gmail.com",
+      "username": "ethdex1",
+      "display": "sayadrook@gmail.com",
+      "balance": 0.2560000000000027,
+      "totalOnStake": 0,
+      "totalEarned": 10.456,
+      "totalRemainingCap": 4.5440000000000005,
+      "stakes": [
+        {
+          "id": "7ad76a75-9ca1-40b6-98f7-dee781853815",
+          "packageName": "Trial Node",
+          "packageId": 0,
+          "amount": 10,
+          "status": "completed",
+          "totalEarned": 10.456,
+          "maxEarning": 15,
+          "remainingCap": 4.5440000000000005,
+          "createdAt": "2025-11-22T15:52:36.900Z"
+        }
+      ]
+    },
+    {
+      "userId": "ZPLdarP9UYCOEUxnuJwqfGVIckRHmyEA",
+      "name": "fktrader2010@gmail.com",
+      "username": "aavecry",
+      "display": "fktrader2010@gmail.com",
+      "balance": 0,
+      "totalOnStake": 0,
+      "totalEarned": 14,
+      "totalRemainingCap": 166,
+      "stakes": [
+        {
+          "id": "b1d24ae5-6275-4a28-9c62-303e4ac55818",
+          "packageName": "Voucher Position",
+          "packageId": 1,
+          "amount": 100,
+          "status": "completed",
+          "totalEarned": 14,
+          "maxEarning": 180,
+          "remainingCap": 166,
+          "createdAt": "2025-11-29T02:21:40.511Z"
+        }
+      ]
+    }
+  ]
+}

@@ -137,15 +137,9 @@ async function generateReport(): Promise<void> {
       },
     });
 
-    // Get user balances for pending withdrawals
-    const userBalances = await prisma.userBalance.findMany({
-      where: {
-        userId: { in: userIds },
-      },
-      select: {
-        balance: true,
-      },
-    });
+    // NOTE: Do NOT use `userBalance.balance` as "pending withdrawals".
+    // `balance` is the user's available balance, not a withdrawal queue.
+    // Pending withdrawals are tracked via `transactionRecord` statuses.
 
     console.log("📈 Calculating statistics from StakingEntry...\n");
 
@@ -263,20 +257,105 @@ async function generateReport(): Promise<void> {
     reportData.totalVoucherValue = reportData.totalVoucherValueUsed + reportData.totalVoucherValueActive;
 
     // Process transactions
-    const deposits = allTransactions.filter(t => t.type === "deposit" && t.status === "completed");
-    const withdrawals = allTransactions.filter(t => t.type === "withdrawal" && t.status === "completed");
-    const pendingWithdrawals = allTransactions.filter(t => t.type === "withdrawal" && t.status === "pending");
-    const rewards = allTransactions.filter(t => t.type === "reward" && t.status === "completed");
+    const deposits = allTransactions.filter(
+      (t) => t.type === "deposit" && t.status === "completed"
+    );
 
-    reportData.totalWithdrawals = withdrawals.reduce((sum, t) => sum + (t.amount || 0), 0);
-    reportData.totalDirectBonuses = rewards.reduce((sum, t) => sum + (t.amount || 0), 0);
+    const completedWithdrawals = allTransactions.filter(
+      (t) => t.type === "withdrawal" && t.status === "completed"
+    );
 
-    // Calculate total pending withdrawals (balance from userBalance)
-    const totalPendingWithdrawals = userBalances.reduce((sum, b) => sum + (b.balance || 0), 0);
-    const totalPendingWithdrawalTransactions = pendingWithdrawals.reduce((sum, t) => sum + (t.amount || 0), 0);
+    const inFlightWithdrawals = allTransactions.filter(
+      (t) =>
+        t.type === "withdrawal" &&
+        (t.status === "pending" || t.status === "initiated")
+    );
+
+    const withdrawalFees = allTransactions.filter(
+      (t) => t.type === "withdrawal_fee" && t.status === "completed"
+    );
+
+    const refunds = allTransactions.filter(
+      (t) => t.type === "refund" && t.status === "completed"
+    );
+
+    const rewards = allTransactions.filter(
+      (t) => t.type === "reward" && t.status === "completed"
+    );
+
+    // IMPORTANT:
+    // - `withdrawal.amount` is the amount sent to CoinPayments (after fee).
+    // - Fee is a separate `withdrawal_fee` transaction.
+    // - Refunds are `refund` transactions when a withdrawal fails/cancels.
+    //
+    // Net withdrawals (cash leaving the system) should include fees and subtract refunds.
+    const totalWithdrawalSent = completedWithdrawals.reduce(
+      (sum, t) => sum + (t.amount || 0),
+      0
+    );
+    const totalWithdrawalFees = withdrawalFees.reduce(
+      (sum, t) => sum + (t.amount || 0),
+      0
+    );
+    const totalRefunds = refunds.reduce((sum, t) => sum + (t.amount || 0), 0);
+
+    const totalWithdrawalsNet = totalWithdrawalSent + totalWithdrawalFees - totalRefunds;
+    reportData.totalWithdrawals = totalWithdrawalsNet;
+
+    reportData.totalDirectBonuses = rewards.reduce(
+      (sum, t) => sum + (t.amount || 0),
+      0
+    );
+
+    // Pending withdrawals should be derived from in-flight withdrawal records (initiated/pending).
+    // This is a *lower-bound* estimate because initiated records may not yet include fee txns.
+    const totalPendingWithdrawalTransactions = inFlightWithdrawals.reduce(
+      (sum, t) => sum + (t.amount || 0),
+      0
+    );
+    const totalPendingWithdrawals = 0; // Deprecated (do not use wallet balances here)
 
     // Analyze withdrawal patterns for 30-day forecast
-    const withdrawalForecast = analyzeWithdrawalPattern(withdrawals, allStakes);
+    // NOTE: This forecast uses only completed `withdrawal.amount` (amount sent), not fees/refunds.
+    // We also compute a daily NET outflow series (withdrawals + fees - refunds) below for spike detection.
+    const withdrawalForecast = analyzeWithdrawalPattern(completedWithdrawals, allStakes);
+
+    // Daily net withdrawals series (PKT day boundaries)
+    const dailyNet = buildDailyNetWithdrawalSeries({
+      withdrawals: completedWithdrawals,
+      fees: withdrawalFees,
+      refunds,
+    });
+    const last90 = sliceLastNDays(dailyNet, 90);
+    const last30 = sliceLastNDays(dailyNet, 30);
+    const maxDailyLast90Days = last90.reduce((m, d) => Math.max(m, d.net), 0);
+    const maxDailyLast30Days = last30.reduce((m, d) => Math.max(m, d.net), 0);
+    const p90DailyLast30Days = percentile(last30.map((d) => d.net), 0.9);
+
+    // Growth-based forward forecast for next 14 days (based on the existing withdrawalForecast growthRate)
+    const baselineDaily = withdrawalForecast.dailyAverage;
+    const robustDailyGrowthPercent = computeRobustDailyGrowthPercentFromDailyNet(last30);
+    const next14Days = forecastNextDays({
+      baselineDaily,
+      growthRatePercent: robustDailyGrowthPercent,
+      days: 14,
+    });
+    const next14Total = next14Days.reduce((sum, d) => sum + d.projected, 0);
+    const stress14Total = (p90DailyLast30Days ?? 0) * 14;
+
+    const next30Days = forecastNextDays({
+      baselineDaily,
+      growthRatePercent: robustDailyGrowthPercent,
+      days: 30,
+    });
+    const next30Total = next30Days.reduce((sum, d) => sum + d.projected, 0);
+    const stress30Total = (p90DailyLast30Days ?? 0) * 30;
+
+    // Attach to forecast object for PDF/console rendering
+    withdrawalForecast.maxDailyLast90Days = maxDailyLast90Days;
+    withdrawalForecast.maxDailyLast30Days = maxDailyLast30Days;
+    withdrawalForecast.p90DailyLast30Days = p90DailyLast30Days;
+    withdrawalForecast.next14Days = next14Days;
 
     // Get all users for growth analysis
     const allUsersForGrowth = await prisma.user.findMany({
@@ -309,7 +388,8 @@ async function generateReport(): Promise<void> {
     console.log(`   6 Months Staking: ${futureProjections.staking6Months.toFixed(2)} USDT\n`);
     const bankruptcyAnalysis = analyzeBankruptcyRisk(
       deposits,
-      withdrawals,
+      // Use net withdrawals (with fees, minus refunds) to avoid inflated/incorrect outflow.
+      completedWithdrawals,
       reportData,
       withdrawalForecast,
       allStakes.filter(s => s.status === "active" || s.status === "unstaking"),
@@ -320,9 +400,7 @@ async function generateReport(): Promise<void> {
     reportData.totalTeamEarnings = teamEarnings.reduce((sum, e) => sum + (e.amount || 0), 0);
 
     // Calculate total given from transactions (not UserBalance)
-    const totalEarningsWithdrawn = withdrawals
-      .filter(t => t.type === "withdrawal")
-      .reduce((sum, t) => sum + (t.amount || 0), 0);
+    const totalEarningsWithdrawn = totalWithdrawalSent;
     
     reportData.totalGiven = reportData.totalDirectBonuses + reportData.totalTeamEarnings + reportData.totalEarnings;
 
@@ -330,7 +408,7 @@ async function generateReport(): Promise<void> {
     const reportPath = "STAKING_REPORT.pdf";
     generatePDFReport(reportData, {
       deposits: deposits.length,
-      withdrawals: withdrawals.length,
+      withdrawals: completedWithdrawals.length,
       rewards: rewards.length,
       activeVouchersCount: activeVouchers.length,
       usedVouchersCount: usedVouchers.length,
@@ -356,6 +434,19 @@ async function generateReport(): Promise<void> {
     console.log(`   Total Value Given: ${reportData.totalGiven.toFixed(2)} USDT`);
     console.log(`   Pending Withdrawals: ${totalPendingWithdrawals.toFixed(2)} USDT`);
     console.log(`   Projected 30-Day Withdrawals: ${withdrawalForecast.projected30DaysWithGrowth.toFixed(2)} USDT`);
+    console.log(`   Max Daily Net Withdraw (last 30d): ${(withdrawalForecast.maxDailyLast30Days ?? 0).toFixed(2)} USDT`);
+    console.log(`   Max Daily Net Withdraw (last 90d): ${(withdrawalForecast.maxDailyLast90Days ?? 0).toFixed(2)} USDT`);
+    console.log(`   P90 Daily Net Withdraw (last 30d): ${(withdrawalForecast.p90DailyLast30Days ?? 0).toFixed(2)} USDT`);
+    if (withdrawalForecast.next14Days?.length) {
+      console.log(`\n📅 Next 14 days withdrawal forecast (baseline=${baselineDaily.toFixed(2)}/day, dailyGrowth≈${robustDailyGrowthPercent.toFixed(2)}%)`);
+      withdrawalForecast.next14Days.forEach((d) => {
+        console.log(`   ${d.day}: ${d.projected.toFixed(2)} USDT`);
+      });
+      console.log(`\n💰 Cash needed (next 14d, base forecast): ${next14Total.toFixed(2)} USDT`);
+      console.log(`💰 Cash needed (next 14d, stress=P90/day): ${stress14Total.toFixed(2)} USDT`);
+      console.log(`💰 Cash needed (next 30d, base forecast): ${next30Total.toFixed(2)} USDT`);
+      console.log(`💰 Cash needed (next 30d, stress=P90/day): ${stress30Total.toFixed(2)} USDT`);
+    }
     console.log(`   Active Stakes: ${reportData.activeStakes}`);
     console.log(`   Users with Stakes: ${reportData.usersWithStakes}`);
     console.log("=" .repeat(80));
@@ -375,6 +466,10 @@ interface WithdrawalForecast {
   projected30DaysWithGrowth: number;
   growthRate: number;
   analysisPeriod: string;
+  maxDailyLast90Days?: number;
+  maxDailyLast30Days?: number;
+  p90DailyLast30Days?: number;
+  next14Days?: Array<{ day: string; projected: number }>;
 }
 
 interface GrowthAnalysis {
@@ -465,6 +560,95 @@ function analyzeWithdrawalPattern(
     growthRate,
     analysisPeriod: `${formatDate(firstWithdrawal)} to ${formatDate(lastWithdrawal)} (${daysDiff} days)`,
   };
+}
+
+// --- Helpers for daily withdrawal spike + forward forecast (PKT day boundaries) ---
+const PKT_OFFSET_MINUTES = 5 * 60;
+function toPktDayKey(d: Date): string {
+  const shifted = new Date(d.getTime() + PKT_OFFSET_MINUTES * 60 * 1000);
+  return shifted.toISOString().slice(0, 10); // YYYY-MM-DD
+}
+
+function percentile(values: number[], p: number): number {
+  if (!values.length) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const idx = Math.min(sorted.length - 1, Math.max(0, Math.floor(p * (sorted.length - 1))));
+  return sorted[idx] ?? 0;
+}
+
+function buildDailyNetWithdrawalSeries(params: {
+  withdrawals: Array<{ amount: number; createdAt: Date }>;
+  fees: Array<{ amount: number; createdAt: Date }>;
+  refunds: Array<{ amount: number; createdAt: Date }>;
+}): Array<{ day: string; net: number }> {
+  const map = new Map<string, number>();
+
+  for (const w of params.withdrawals) {
+    const day = toPktDayKey(w.createdAt);
+    map.set(day, (map.get(day) ?? 0) + (w.amount || 0));
+  }
+  for (const f of params.fees) {
+    const day = toPktDayKey(f.createdAt);
+    map.set(day, (map.get(day) ?? 0) + (f.amount || 0));
+  }
+  for (const r of params.refunds) {
+    const day = toPktDayKey(r.createdAt);
+    map.set(day, (map.get(day) ?? 0) - (r.amount || 0));
+  }
+
+  return Array.from(map.entries())
+    .map(([day, net]) => ({ day, net }))
+    .sort((a, b) => a.day.localeCompare(b.day));
+}
+
+function sliceLastNDays(
+  series: Array<{ day: string; net: number }>,
+  n: number
+): Array<{ day: string; net: number }> {
+  if (!series.length) return [];
+  return series.slice(Math.max(0, series.length - n));
+}
+
+function forecastNextDays(params: {
+  baselineDaily: number;
+  growthRatePercent: number;
+  days: number;
+}): Array<{ day: string; projected: number }> {
+  const now = new Date();
+  const start = new Date(now.getTime() + PKT_OFFSET_MINUTES * 60 * 1000); // PKT
+  start.setUTCHours(0, 0, 0, 0);
+
+  const g = params.growthRatePercent / 100;
+  const out: Array<{ day: string; projected: number }> = [];
+  for (let i = 1; i <= params.days; i++) {
+    const d = new Date(start);
+    d.setUTCDate(d.getUTCDate() + i);
+    const key = d.toISOString().slice(0, 10);
+    const projected = params.baselineDaily * Math.pow(1 + g, i);
+    out.push({ day: key, projected: Number.isFinite(projected) ? projected : 0 });
+  }
+  return out;
+}
+
+function computeRobustDailyGrowthPercentFromDailyNet(last30: Array<{ day: string; net: number }>): number {
+  // Compare last 7 days average to previous 7 days average (on daily net outflow).
+  // Then convert weekly growth -> daily compounded growth. Cap to avoid exploding forecasts on small samples.
+  const tail = last30.slice(Math.max(0, last30.length - 14));
+  if (tail.length < 8) return 0;
+
+  const first7 = tail.slice(0, 7).map((d) => d.net);
+  const last7 = tail.slice(7).map((d) => d.net);
+  const avg = (arr: number[]) => (arr.length ? arr.reduce((s, v) => s + v, 0) / arr.length : 0);
+  const a1 = avg(first7);
+  const a2 = avg(last7);
+  if (a1 <= 0) return 0;
+
+  let weeklyGrowth = (a2 - a1) / a1; // e.g. 0.1 = +10% per week
+  // Cap weekly growth to +/- 20% to keep forecast realistic
+  weeklyGrowth = Math.max(-0.2, Math.min(0.2, weeklyGrowth));
+  const dailyGrowth = Math.pow(1 + weeklyGrowth, 1 / 7) - 1;
+  const dailyGrowthPercent = dailyGrowth * 100;
+  return Number.isFinite(dailyGrowthPercent) ? dailyGrowthPercent : 0;
 }
 
 function formatDate(d: Date | null): string {

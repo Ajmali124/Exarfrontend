@@ -211,11 +211,11 @@ export async function POST(request: Request) {
           try {
             const user = await prisma.user.findUnique({
               where: { id: withdrawalTransaction.userId },
-              select: { name: true, location: true },
+              select: { name: true, location: true, image: true },
             });
             const kyc = await (prisma as any).kycSubmission?.findUnique?.({
               where: { userId: withdrawalTransaction.userId },
-              select: { address: true },
+              select: { address: true, fullName: true },
             });
             const country = parseCountryFromAddress(
               (kyc?.address as string | null | undefined) ?? user?.location ?? null
@@ -228,6 +228,8 @@ export async function POST(request: Request) {
               status: status,
               userId: withdrawalTransaction.userId,
               userName: user?.name ?? null,
+              kycName: kyc?.fullName ?? null,
+              profileImage: user?.image ?? null,
               country,
               toAddress: withdrawalTransaction.toAddress,
               description: withdrawalTransaction.description,

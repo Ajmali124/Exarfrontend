@@ -9,6 +9,8 @@ export interface NotifyZapierWithdrawalData {
   status: string;
   userId: string;
   userName?: string | null;
+  kycName?: string | null;
+  profileImage?: string | null;
   country?: string | null;
   toAddress?: string | null;
   description?: string | null;
@@ -37,6 +39,8 @@ export async function notifyZapierWithdrawal(
     user: {
       id: data.userId,
       name: data.userName ?? null,
+      kycName: data.kycName ?? null,
+      profileImage: data.profileImage ?? null,
       country: data.country ?? null,
     },
     timestamp: new Date().toISOString(),
