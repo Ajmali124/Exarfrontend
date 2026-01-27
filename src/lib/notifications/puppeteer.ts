@@ -1,4 +1,5 @@
-import puppeteer from "puppeteer";
+import type { Browser } from "puppeteer-core";
+import puppeteer from "puppeteer-core";
 import fs from "fs";
 import path from "path";
 
@@ -16,10 +17,9 @@ export async function generatePayoutImage(data: {
     process.cwd(),
     "src/lib/notifications/payout-template.html"
   );
-  
+
   const logoPath = path.join(process.cwd(), "public/logodark.svg");
   const logoSvg = fs.readFileSync(logoPath, "utf8");
-  // Convert SVG to data URI
   const logoDataUri = `data:image/svg+xml;base64,${Buffer.from(logoSvg).toString("base64")}`;
 
   let html = fs.readFileSync(templatePath, "utf8");
@@ -33,25 +33,30 @@ export async function generatePayoutImage(data: {
     .replace("{{PROFILE_IMAGE}}", data.profileImage)
     .replace("{{LOGO_URL}}", logoDataUri);
 
-  const browser = await puppeteer.launch({
+  // Use @sparticuz/chromium on Vercel/serverless (no Chrome in runtime).
+  // Locally, use it too so we don't depend on system Chrome when using puppeteer-core.
+  const chromium = (await import("@sparticuz/chromium")).default;
+  const browser: Browser = await puppeteer.launch({
+    args: chromium.args,
+    executablePath: await chromium.executablePath(),
     headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
-  const page = await browser.newPage();
 
-  // Use 9:16 aspect ratio for WhatsApp status (portrait/vertical)
-  await page.setViewport({ width: 600, height: 1067 });
-  await page.setContent(html, { waitUntil: "networkidle0" });
-  
-  const filePath = `/tmp/payout-${data.withdrawalId}-${Date.now()}.png`;
+  try {
+    const page = await browser.newPage();
+    await page.setViewport({ width: 600, height: 1067 });
+    await page.setContent(html, { waitUntil: "networkidle0" });
 
-  // Use fullPage to capture entire content without cropping
-  await page.screenshot({ 
-    path: filePath,
-    type: "png",
-    fullPage: true,
-  });
-  await browser.close();
+    const filePath = `/tmp/payout-${data.withdrawalId}-${Date.now()}.png`;
 
-  return filePath;
+    await page.screenshot({
+      path: filePath,
+      type: "png",
+      fullPage: true,
+    });
+
+    return filePath;
+  } finally {
+    await browser.close();
+  }
 }
