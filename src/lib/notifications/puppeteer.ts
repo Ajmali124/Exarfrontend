@@ -18,21 +18,14 @@ export async function generatePayoutImage(data: {
   // instead of importing OG here (in-process import causes ERR_MODULE_NOT_FOUND on Vercel).
   if (process.env.VERCEL === "1") {
     const base = "https://www.exarpro.com";
-    const headers: Record<string, string> = { "Content-Type": "application/json" };
-    if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
-      headers["x-vercel-protection-bypass"] = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
-    }
-    const res = await fetch(`${base}/api/payout-image`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        name: data.name,
-        amount: data.amount,
-        currency: data.currency,
-        withdrawalId: data.withdrawalId,
-        profileImage: data.profileImage,
-      }),
+    const params = new URLSearchParams({
+      name: data.name,
+      amount: data.amount.toString(),
+      currency: data.currency,
+      withdrawalId: data.withdrawalId,
+      profileImage: data.profileImage,
     });
+    const res = await fetch(`${base}/api/payout-image?${params.toString()}`);
     if (!res.ok) {
       throw new Error(`payout-image API failed: ${res.status} ${await res.text()}`);
     }
