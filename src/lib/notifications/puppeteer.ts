@@ -1,5 +1,4 @@
-import type { Browser } from "puppeteer-core";
-import puppeteer from "puppeteer-core";
+import { chromium as playwrightChromium } from "playwright-core";
 import fs from "fs";
 import path from "path";
 
@@ -33,19 +32,30 @@ export async function generatePayoutImage(data: {
     .replace("{{PROFILE_IMAGE}}", data.profileImage)
     .replace("{{LOGO_URL}}", logoDataUri);
 
-  // Use @sparticuz/chromium on Vercel/serverless (no Chrome in runtime).
-  // Locally, use it too so we don't depend on system Chrome when using puppeteer-core.
-  const chromium = (await import("@sparticuz/chromium")).default;
-  const browser: Browser = await puppeteer.launch({
-    args: chromium.args,
-    executablePath: await chromium.executablePath(),
-    headless: true,
-  });
+  // @sparticuz/chromium is built for Linux (Vercel/Lambda). On macOS it fails with "spawn Unknown system error -8".
+  // Use it only when we're actually on Linux (Vercel); locally use Playwright's Chromium.
+  const isVercelLinux = process.env.VERCEL === "1" && process.platform === "linux";
+
+  let browser;
+  if (isVercelLinux) {
+    const chromium = (await import("@sparticuz/chromium")).default;
+    browser = await playwrightChromium.launch({
+      executablePath: await chromium.executablePath(),
+      args: chromium.args,
+      headless: true,
+    });
+  } else {
+    // Local (macOS/Windows) or any non-Linux: use Playwright's bundled Chromium
+    browser = await playwrightChromium.launch({
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
+  }
 
   try {
     const page = await browser.newPage();
-    await page.setViewport({ width: 600, height: 1067 });
-    await page.setContent(html, { waitUntil: "networkidle0" });
+    await page.setViewportSize({ width: 600, height: 1067 });
+    await page.setContent(html, { waitUntil: "networkidle" });
 
     const filePath = `/tmp/payout-${data.withdrawalId}-${Date.now()}.png`;
 

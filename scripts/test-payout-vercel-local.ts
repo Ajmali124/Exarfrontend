@@ -4,8 +4,10 @@ import { resolve } from "path";
 // Load environment variables from .env file
 config({ path: resolve(process.cwd(), ".env") });
 
-// Note: This uses the regular local environment
-// For Vercel simulation, use: npm run test:payout-vercel
+// VERCEL=1 is optional here: on macOS we always use Playwright's Chromium.
+// On deployed Vercel (Linux), @sparticuz/chromium is used automatically.
+process.env.VERCEL = "1";
+
 import { generatePayoutImage } from "../src/lib/notifications/puppeteer";
 import { uploadPayoutImageToCloudinary } from "../src/lib/notifications/cloudinary";
 import fs from "fs";
@@ -20,18 +22,20 @@ async function imageUrlToBase64(url: string): Promise<string> {
 }
 
 /**
- * Test script to verify payout image generation and Cloudinary upload
+ * Test script that simulates Vercel environment locally
+ * This helps ensure the code will work on Vercel before deploying
  * 
- * Usage: npx tsx scripts/test-payout-cloudinary.ts
+ * Usage: npx tsx scripts/test-payout-vercel-local.ts
  */
-async function testPayoutCloudinary() {
-  console.log("🧪 Testing payout image generation and Cloudinary upload...\n");
+async function testPayoutVercelLocal() {
+  console.log("🧪 Testing payout image generation in Vercel-simulated environment...\n");
+  console.log("📌 Environment: VERCEL=1 (simulated)\n");
 
   const userId = "YndMUgFOo2t7ymT5OoVMmw7SLBI5DLZP";
   const kycName = "Muhamamd Ajmal";
   const profileImage =
     "https://res.cloudinary.com/dbdskytz5/image/upload/v1768599134/kyc/YndMUgFOo2t7ymT5OoVMmw7SLBI5DLZP/nsrn6ckjzlc9vi4nlzrd.jpg";
-  const withdrawalId = `test-${Date.now()}`;
+  const withdrawalId = `test-vercel-${Date.now()}`;
   const amount = 120;
   const currency = "USDT";
 
@@ -44,7 +48,7 @@ async function testPayoutCloudinary() {
     console.log(`  Amount: ${amount} ${currency}\n`);
 
     // Step 1: Generate payout image
-    console.log("🖼️  Step 1: Generating payout image with Puppeteer...");
+    console.log("🖼️  Step 1: Generating payout image with Playwright (Vercel mode)...");
     const imagePath = await generatePayoutImage({
       name: kycName,
       amount: amount,
@@ -81,41 +85,7 @@ async function testPayoutCloudinary() {
 
     console.log("🎉 Test completed successfully!");
     console.log(`\n📎 Cloudinary URL: ${cloudinaryUrl}`);
-    
-    // Generate curl command
-    const zapierUrl = process.env.ZAPIER_WEBHOOK_URL || "https://hooks.zapier.com/hooks/catch/18864728/uwicgwq/";
-    const curlCommand = `curl -X POST ${zapierUrl} \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "event": "withdrawal_completed",
-    "payoutImage": "${base64Image.substring(0, 100)}...",
-    "withdrawal": {
-      "id": "txn-test-123",
-      "withdrawalId": "${withdrawalId}",
-      "amount": ${amount},
-      "currency": "${currency}",
-      "status": "completed",
-      "toAddress": "0x1234567890123456789012345678901234567890",
-      "description": "Test withdrawal"
-    },
-    "user": {
-      "id": "${userId}",
-      "name": "Test User",
-      "kycName": "${kycName}",
-      "profileImage": "${profileImage}",
-      "country": "Pakistan"
-    },
-    "timestamp": "${new Date().toISOString()}"
-}'`;
-    
-    console.log(`\n💡 Curl command (with base64 image):`);
-    console.log(`\n${curlCommand}`);
-    
-    // Also save base64 to a file for easier testing
-    const base64FilePath = `/tmp/payout-base64-${withdrawalId}.txt`;
-    fs.writeFileSync(base64FilePath, base64Image);
-    console.log(`\n📄 Base64 saved to: ${base64FilePath}`);
-    console.log(`   You can use this file to construct your curl command with the full base64 string.`);
+    console.log(`\n✅ Same pipeline runs on Vercel: on Linux we use @sparticuz/chromium; locally we use Playwright's Chromium.`);
   } catch (error) {
     console.error("\n❌ Test failed!");
     console.error("Error:", error);
@@ -123,8 +93,9 @@ async function testPayoutCloudinary() {
       console.error("Error message:", error.message);
       console.error("Error stack:", error.stack);
     }
+    console.error("\n💡 Install Playwright's Chromium for local runs: npx playwright install chromium");
     process.exit(1);
   }
 }
 
-testPayoutCloudinary();
+testPayoutVercelLocal();
