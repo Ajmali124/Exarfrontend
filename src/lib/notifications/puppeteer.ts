@@ -17,7 +17,7 @@ export async function generatePayoutImage(data: {
   // compiled @vercel/og module is in that function's bundle. We fetch the payout-image API
   // instead of importing OG here (in-process import causes ERR_MODULE_NOT_FOUND on Vercel).
   if (process.env.VERCEL === "1") {
-    const base = "https://exarpro.com";
+    const base = "https://www.exarpro.com";
     const headers: Record<string, string> = { "Content-Type": "application/json" };
     if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
       headers["x-vercel-protection-bypass"] = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
