@@ -9,19 +9,31 @@ export async function generatePayoutImage(data: {
   withdrawalId: string;
   profileImage: string;
 }) {
-  const PKR_RATE = 294;
-  const pkr = data.amount * PKR_RATE;
-
-  const templatePath = path.join(
-    process.cwd(),
-    "src/lib/notifications/payout-template.html"
-  );
-
   const logoPath = path.join(process.cwd(), "public/logodark.svg");
   const logoSvg = fs.readFileSync(logoPath, "utf8");
   const logoDataUri = `data:image/svg+xml;base64,${Buffer.from(logoSvg).toString("base64")}`;
 
+  // On Vercel, Chromium needs system libs (libnss3 etc.) that aren't available.
+  // Use @vercel/og instead — no browser, works in serverless.
+  if (process.env.VERCEL === "1") {
+    const { generatePayoutImageBuffer } = await import("./payout-og");
+    const buffer = await generatePayoutImageBuffer({
+      ...data,
+      logoUrl: logoDataUri,
+    });
+    const filePath = `/tmp/payout-${data.withdrawalId}-${Date.now()}.png`;
+    fs.writeFileSync(filePath, buffer);
+    return filePath;
+  }
+
+  // Local: use Playwright
+  const templatePath = path.join(
+    process.cwd(),
+    "src/lib/notifications/payout-template.html"
+  );
   let html = fs.readFileSync(templatePath, "utf8");
+  const PKR_RATE = 294;
+  const pkr = data.amount * PKR_RATE;
 
   html = html
     .replace("{{NAME}}", data.name)
@@ -32,25 +44,10 @@ export async function generatePayoutImage(data: {
     .replace("{{PROFILE_IMAGE}}", data.profileImage)
     .replace("{{LOGO_URL}}", logoDataUri);
 
-  // @sparticuz/chromium is built for Linux (Vercel/Lambda). On macOS it fails with "spawn Unknown system error -8".
-  // Use it only when we're actually on Linux (Vercel); locally use Playwright's Chromium.
-  const isVercelLinux = process.env.VERCEL === "1" && process.platform === "linux";
-
-  let browser;
-  if (isVercelLinux) {
-    const chromium = (await import("@sparticuz/chromium")).default;
-    browser = await playwrightChromium.launch({
-      executablePath: await chromium.executablePath(),
-      args: chromium.args,
-      headless: true,
-    });
-  } else {
-    // Local (macOS/Windows) or any non-Linux: use Playwright's bundled Chromium
-    browser = await playwrightChromium.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
-  }
+  const browser = await playwrightChromium.launch({
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
 
   try {
     const page = await browser.newPage();

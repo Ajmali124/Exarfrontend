@@ -4,8 +4,7 @@ import { resolve } from "path";
 // Load environment variables from .env file
 config({ path: resolve(process.cwd(), ".env") });
 
-// VERCEL=1 is optional here: on macOS we always use Playwright's Chromium.
-// On deployed Vercel (Linux), @sparticuz/chromium is used automatically.
+// VERCEL=1 makes the same code path run as on Vercel: @vercel/og (no browser).
 process.env.VERCEL = "1";
 
 import { generatePayoutImage } from "../src/lib/notifications/puppeteer";
@@ -85,7 +84,7 @@ async function testPayoutVercelLocal() {
 
     console.log("🎉 Test completed successfully!");
     console.log(`\n📎 Cloudinary URL: ${cloudinaryUrl}`);
-    console.log(`\n✅ Same pipeline runs on Vercel: on Linux we use @sparticuz/chromium; locally we use Playwright's Chromium.`);
+    console.log(`\n✅ With VERCEL=1 we used @vercel/og (same as production). Deploy to Vercel to confirm.`);
   } catch (error) {
     console.error("\n❌ Test failed!");
     console.error("Error:", error);
