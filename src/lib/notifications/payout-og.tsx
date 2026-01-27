@@ -1,4 +1,3 @@
-import { ImageResponse } from "@vercel/og";
 import React from "react";
 
 const PKR_RATE = 294;
@@ -13,17 +12,13 @@ export type PayoutOgData = {
 };
 
 /**
- * Generates payout card image using @vercel/og (no browser).
- * Use this on Vercel where Chromium/system libs are unavailable.
+ * Pure JSX for the payout card. Used only by the payout-image API route.
+ * ImageResponse must run in a Route Handler — do not call from IPN or other APIs.
  */
-export async function generatePayoutImageBuffer(
-  data: PayoutOgData
-): Promise<Buffer> {
+export function PayoutCardOg(data: PayoutOgData) {
   const pkr = Math.round(data.amount * PKR_RATE);
-
-  const response = new ImageResponse(
-    (
-      <div
+  return (
+    <div
         style={{
           width: "100%",
           height: "100%",
@@ -212,13 +207,5 @@ export async function generatePayoutImageBuffer(
           </div>
         </div>
       </div>
-    ),
-    {
-      width: 600,
-      height: 1067,
-    }
   );
-
-  const arrayBuffer = await response.arrayBuffer();
-  return Buffer.from(arrayBuffer);
 }
