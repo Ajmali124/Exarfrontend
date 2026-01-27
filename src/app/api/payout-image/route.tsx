@@ -47,26 +47,12 @@ function PayoutCard({
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "flex-start",
-        background: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)",
-        padding: 40,
+        background: "#ffffff",
+        padding: "40px 36px 48px",
         fontFamily: "system-ui, sans-serif",
+        position: "relative",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          width: 560,
-          background: "#ffffff",
-          borderRadius: 32,
-          padding: "40px 36px 48px",
-          boxShadow:
-            "0 10px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04)",
-          position: "relative",
-        }}
-      >
         <div
           style={{
             display: "flex",
@@ -76,11 +62,9 @@ function PayoutCard({
             right: 0,
             height: 6,
             background: "linear-gradient(90deg, #00ff9d 0%, #00d4aa 100%)",
-            borderTopLeftRadius: 32,
-            borderTopRightRadius: 32,
           }}
         />
-        <div style={{ display: "flex", marginBottom: 28, marginTop: 8 }}>
+        <div style={{ display: "flex", marginBottom: 28, marginTop: 24 }}>
           <img
             src={logoUrl}
             alt="Logo"
@@ -227,7 +211,6 @@ function PayoutCard({
         >
           EXAR TRADING
         </div>
-      </div>
     </div>
   );
 }
